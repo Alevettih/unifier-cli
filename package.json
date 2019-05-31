@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "npm run build",
     "build": "rimraf dist && tsc && node bin/copy-modules",
-    "start": "node dist/main.js",
+    "start": "node bin/cli",
     "dev": "nodemon -e ts --watch src --exec npm run build",
     "test": "jest --watch",
     "coverage": "jest --coverage"
