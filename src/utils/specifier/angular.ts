@@ -1,8 +1,8 @@
 import { copySync, readJsonSync, writeJsonSync } from 'fs-extra';
 import { join } from 'path';
-import { deepMerge } from '../../utils/helpers';
-import * as angularJsonAdditions from '../../specification/files/angular/angular.json';
-import { Specifier } from "../../utils/specifier";
+import { deepMerge } from '@utils/helpers';
+import * as angularJsonAdditions from '@specification/files/angular/angular.json';
+import { Specifier } from "@utils/specifier";
 
 export class AngularSpecifier extends Specifier {
   async specify (): Promise<void> {

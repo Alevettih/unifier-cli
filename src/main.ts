@@ -1,6 +1,7 @@
+import 'module-alias/register';
 import * as inquirer from 'inquirer';
-import * as projects from './project-types';
-import { questions } from './utils/questions';
+import * as projects from '@src/project-types';
+import { questions } from '@utils/questions';
 
 export type ProjectType = 'plain-js' | 'angular' | 'react' | 'vue';
 

@@ -1,6 +1,6 @@
-import { getCWD } from './helpers';
-import { title } from './validators';
-import { types } from '../project-types';
+import { getCWD } from '@utils/helpers';
+import { title } from '@utils/validators';
+import { types } from '@src/project-types';
 import { Questions } from "inquirer";
 
 export const questions: Questions = [{

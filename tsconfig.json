@@ -13,10 +13,9 @@
     "experimentalDecorators": true,
     "resolveJsonModule": true,
     "importHelpers": true,
-    "target": "es5",
+    "target": "es6",
     "typeRoots": ["node_modules/@types"],
     "paths": {
-      "*": [ "node_modules/*" ],
       "@src/*": ["src/*"],
       "@utils/*": ["src/utils/*"],
       "@specifier/*": ["src/utils/specifier/*"],

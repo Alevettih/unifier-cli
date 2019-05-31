@@ -1,7 +1,7 @@
-import config from '../config';
 import { exec } from 'child_process';
-import { AngularSpecifier } from "../utils/specifier/angular";
+import { AngularSpecifier } from "@utils/specifier/angular";
 import { Answer } from "@src/main";
+import config from '@src/config';
 
 export const angular = ({ title } = { title: '' } as Answer): void => {
   if (!title) {
