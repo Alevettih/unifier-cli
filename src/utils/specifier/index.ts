@@ -1,4 +1,4 @@
-import { copyFileSync, readJsonSync, writeJsonSync } from 'fs-extra';
+import { copySync, readJsonSync, writeJsonSync } from 'fs-extra';
 import { join } from 'path';
 import { exec } from 'child_process';
 
@@ -17,24 +17,31 @@ export class Specifier {
     return this.project
   }
 
-  async specify (): Promise<void> {
-    this.copyEditorconfig();
-    await this.copyStylelintrc();
-    await this.initialCommit();
-  }
-
   copyGitignore(): void {
-    copyFileSync(
+    copySync(
       join(__dirname, '../../specification/files/.gitignore'),
       join(this.name, '.gitignore')
     );
   }
 
   copyEditorconfig(): void {
-    copyFileSync(
+    copySync(
       join(__dirname, '../../specification/files/.editorconfig'),
       join(this.name, '.editorconfig')
     );
+  }
+
+  copyBrowserslistrc(): void {
+    copySync(
+      join(__dirname, '../../specification/files/.browserslistrc'),
+      join(this.name, '.browserslistrc')
+    );
+
+    const json = readJsonSync(join(this.name, 'package.json'));
+
+    delete json.browserslist;
+
+    writeJsonSync(join(this.name, 'package.json'), json, {spaces: 2})
   }
 
   copyStylelintrc(): Promise<void> {
@@ -50,7 +57,7 @@ export class Specifier {
 
       exec(`npm i ${modules.join(' ')}`, {cwd: join(this.name)}, (error) => {
         if (error) {
-          throw new Error(`Angular CLI was fell ${error}`);
+          throw new Error(`Stylelint init was fell ${error}`);
         }
 
         const packageJson = readJsonSync( join(this.name, 'package.json') );
@@ -59,7 +66,7 @@ export class Specifier {
 
         writeJsonSync( join(this.name, 'package.json'), packageJson, { spaces: 2 } );
 
-        copyFileSync(
+        copySync(
           join(__dirname, '../../specification/files/.stylelintrc'),
           join(this.name, '.stylelintrc')
         );

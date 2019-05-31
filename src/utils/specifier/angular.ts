@@ -8,6 +8,7 @@ export class AngularSpecifier extends Specifier {
   async specify (): Promise<void> {
     this.editAngularJson();
     this.copyHtaccess();
+    this.copyBrowserslistrc();
     this.copyTsconfig();
     this.copyBaseStructure();
     this.copyEditorconfig();
