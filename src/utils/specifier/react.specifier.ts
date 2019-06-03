@@ -1,7 +1,8 @@
 import { Specifier } from "@specifier/index";
-import { exec } from "child_process";
+import { ChildProcess, spawn } from "child_process";
 import { join } from "path";
-import { readFile, writeFile, rename, readJsonSync, writeJsonSync, copy, readJson } from "fs-extra";
+import { readFile, writeFile, rename, copy, readJson, writeJson } from "fs-extra";
+import { PackageJson } from "tsconfig-paths/lib/filesystem";
 
 export class ReactSpecifier extends Specifier {
   async specify(): Promise<void> {
@@ -17,7 +18,7 @@ export class ReactSpecifier extends Specifier {
 
   copyEslintrc(): Promise<void> {
     return new Promise((resolve, reject)=> {
-      const modules = [
+      const modules: string[] = [
         'eslint',
         'eslint-config-airbnb',
         'eslint-plugin-compat',
@@ -26,71 +27,62 @@ export class ReactSpecifier extends Specifier {
         'eslint-plugin-react'
       ];
 
-      exec(`npm i ${modules.join(' ')}`, {cwd: join(this.name)}, async (error) => {
-        if (error) {
-          reject(new Error(`Eslint init was fell: ${error}`));
-        }
+      const npm: ChildProcess = spawn('npm', ['i', ...modules], this.childProcessOptions );
 
+      npm.on('error', (err) => {
+        reject(new Error(`Eslint init was fell: ${err}`));
+      });
+
+      npm.on('exit', async () => {
         try {
-          const packageJson = await readJson( join(this.name, 'package.json') );
+          const packageJson: PackageJson = await readJson( join(this.name, 'package.json') );
 
           packageJson.scripts['lint:es'] = 'eslint "./src/**/*.js"';
 
           await Promise.all([
-            writeJsonSync( join(this.name, 'package.json'), packageJson, { spaces: 2 } ),
+            writeJson( join(this.name, 'package.json'), packageJson, { spaces: 2 } ),
             copy(
               join(__dirname, '../../specification/files/react/.eslintrc'),
               join(this.name, '.eslintrc')
             )
           ]);
-
-          console.log('Eslint successfully initiated!');
-
           resolve();
         } catch (err) {
           reject(new Error(`Eslint init was fell: ${err}`));
         }
-      }).stdout.pipe(process.stdout);
-    })
+      });
+    }).then(() => console.log('Eslint successfully initiated!'));
   }
 
   addScss(): Promise<void> {
-    return new Promise(((resolve, reject) => {
-      exec(
-        `npm i node-sass`,
-        { cwd: join(this.name) },
-        async (error) =>  {
-          if (error) {
-            reject(new Error(`SCSS installation was fell: ${error}`));
-          }
+    return new Promise((resolve, reject) => {
+      const npm: ChildProcess = spawn('npm', ['i', 'node-sass'], this.childProcessOptions);
 
-          try {
-            const files = ['App', 'index'];
+      npm.on('error', (err) => {
+        reject(new Error(`SCSS installation was fell: ${err}`));
+      });
 
-            const renames$ = files.map((key) => rename(
-              join(this.name, `src/${key}.css`),
-              join(this.name, `src/${key}.scss`)
-            ));
+      npm.on('exit', async () => {
+        const files: string[] = ['App', 'index'];
 
-            const contentChanges$ = files.map(async (name) => {
-              const file = await readFile(join(this.name, `src/${name}.js`), 'utf-8');
-              return writeFile(
-                join(this.name, `src/${name}.js`),
-                file.replace(`${name}.css`, `${name}.scss`),
-                'utf-8'
-              );
-            });
+        const renames$: Promise<void>[] = files.map((key) => rename(
+          join(this.name, `src/${key}.css`),
+          join(this.name, `src/${key}.scss`)
+        ));
 
-            await Promise.all([...renames$, ...contentChanges$]);
+        const contentChanges$: Promise<void>[] = files.map(async (name: string) => {
+          const file = await readFile(join(this.name, `src/${name}.js`), 'utf-8');
+          return writeFile(
+            join(this.name, `src/${name}.js`),
+            file.replace(`${name}.css`, `${name}.scss`),
+            'utf-8'
+          );
+        });
 
-            console.log('SCSS successfully installed!');
+        await Promise.all([...renames$, ...contentChanges$]);
 
-            resolve();
-          } catch (err) {
-            reject(new Error(`SCSS installation was fell: ${err}`));
-          }
-        }
-      ).stdout.pipe(process.stdout);
-    }))
+        resolve();
+      });
+    }).then(() => console.log('SCSS successfully installed!'))
   }
 }

@@ -1,9 +1,8 @@
 import { Specifier } from "@specifier/index";
-import { spawn } from "child_process";
-import { join } from "path";
+import { ChildProcess, spawn } from "child_process";
 
 export class PlainJSSpecifier extends Specifier {
-  async specify() {
+  async specify(): Promise<void> {
     await Promise.all([
       await this.installNodeModules(),
       await this.copyBrowserslistrc(),
@@ -13,33 +12,31 @@ export class PlainJSSpecifier extends Specifier {
     await this.initialCommit();
   }
 
-  installNodeModules() {
-    return new Promise(((resolve, reject) => {
-      const npm = spawn('npm', ['i'], { cwd: join(this.name), stdio: "inherit" })
+  installNodeModules(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const npm: ChildProcess = spawn('npm', ['i'], this.childProcessOptions);
 
       npm.on('error', () => {
         reject(new Error(''))
       });
 
       npm.on('exit', () => {
-        console.log('node_modules successfully installed!');
         resolve();
       })
-    }))
+    }).then(() => console.log('node_modules successfully installed!'))
   }
 
-  async initialCommit() {
-    return new Promise(((resolve, reject) => {
-      const npm = spawn('rm', ['-rf', '.git'], { cwd: join(this.name), stdio: "inherit" });
+  initialCommit(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const npm: ChildProcess = spawn('rm', ['-rf', '.git'], this.childProcessOptions);
 
-      npm.on('error', () => {
-        reject(new Error(''))
+      npm.on('error', (err) => {
+        reject(new Error(`Initial commit error: ${err}`));
       });
 
       npm.on('exit', async () => {
-        await super.initialCommit();
         resolve();
-      })
-    }))
+      });
+    }).then(() => super.initialCommit());
   }
 }

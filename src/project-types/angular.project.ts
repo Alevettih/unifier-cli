@@ -1,4 +1,4 @@
-import { spawn } from 'child_process';
+import { ChildProcess, spawn } from 'child_process';
 import { AngularSpecifier } from "@specifier/angular.specifier";
 import { Answer } from "@src/main";
 import config from '@src/config';
@@ -8,7 +8,7 @@ export const angularProject = ({ title } = { title: '' } as Answer): void => {
     throw new Error('Title is required!')
   }
 
-  const npx = spawn(
+  const npx: ChildProcess = spawn(
     'npx',
     ['@angular/cli@7', 'new', title, `--style=${config.cssPreprocessor}`, `--skipGit=${config.skipGit}`, '--routing=true'],
     {stdio: "inherit"}

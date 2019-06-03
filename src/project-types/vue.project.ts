@@ -1,5 +1,5 @@
 import { Answer } from "@src/main";
-import { spawn } from "child_process";
+import { ChildProcess, spawn } from "child_process";
 import { VueSpecifier } from "@specifier/vue.specifier";
 import { join } from "path";
 
@@ -8,7 +8,7 @@ export const vueProject = ({ title } = { title: '' } as Answer): void => {
     throw new Error('Title is required!')
   }
 
-  const npx = spawn(
+  const npx: ChildProcess = spawn(
     'npx',
     ['@vue/cli', 'create', `--preset=${join(__dirname, '../specification/files/vue/vue-preset-default.json')}`, title, '-n'],
     {stdio: "inherit"}

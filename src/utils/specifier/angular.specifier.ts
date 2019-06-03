@@ -19,54 +19,69 @@ export class AngularSpecifier extends Specifier {
   }
 
   copyBaseStructure(): Promise<void> {
-    return new Promise(((resolve, reject) => {
-      copy(
-        join(__dirname, '../../codebase/angular'),
-        join(this.name, 'src')
-      ).then(
-        () => resolve(),
-        (err) => reject(new Error(err))
-      );
-    })).then(() => console.log('Base structure successfully copied!'));
+    return new Promise( async (resolve, reject) => {
+      try {
+        await copy(
+          join(__dirname, '../../codebase/angular'),
+          join(this.name, 'src')
+        );
+
+        resolve();
+      } catch (err) {
+        reject(`Base structure copying failed: ${err}`);
+      }
+    }).then(() => console.log('Base structure successfully copied!'));
   }
 
-  async editAngularJson(): Promise<void> {
-    const json = readJsonSync(`${this.name}/angular.json`);
+  editAngularJson(): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const json = readJsonSync(`${this.name}/angular.json`);
 
-    if (!json) {
-      throw new Error('The file does not exist!');
-    }
+        if (!json) {
+          reject(new Error('The file does not exist!'));
+        }
 
-    await writeJson(
-      `${this.name}/angular.json`,
-      deepMerge({}, json, {projects: {[this.name]: angularJsonAdditions}}),
-      { spaces: 2 }
-    ).then(() => {
-      console.log('Angular.json successfully edited!')
-    }, (err) => {
-      throw new Error(err);
-    });
+        await writeJson(
+          `${this.name}/angular.json`,
+          deepMerge({}, json, {projects: {[this.name]: angularJsonAdditions}}),
+          { spaces: 2 }
+        );
+
+        resolve();
+      } catch (err) {
+        reject(`angular.json editing failed: ${err}`);
+      }
+    }).then(() => console.log('Angular.json successfully edited!'));
   }
 
-  async copyTsconfig(): Promise<void> {
-    await copy(
-      join(__dirname, '../../specification/files/angular/tsconfig.json'),
-      join(this.name, 'tsconfig.json')
-    ).then(() => {
-      console.log('Tsconfig successfully copied!')
-    }, (err) => {
-      throw new Error(err);
-    });
+  copyTsconfig(): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await copy(
+          join(__dirname, '../../specification/files/angular/tsconfig.json'),
+          join(this.name, 'tsconfig.json')
+        );
+
+        resolve();
+      } catch (err) {
+        reject(`Tsconfig copying failed: ${err}`);
+      }
+    }).then(() => console.log('Tsconfig successfully copied!'));
   }
 
   async copyHtaccess(): Promise<void> {
-    await copy(
-      join(__dirname, '../../specification/files/angular/.htaccess'),
-      join(this.name, 'src/.htaccess')
-    ).then(() => {
-      console.log('Htaccess successfully copied!')
-    }, (err) => {
-      throw new Error(err);
-    });
+    return new Promise(async (resolve, reject) => {
+      try {
+        await copy(
+          join(__dirname, '../../specification/files/angular/.htaccess'),
+          join(this.name, 'src/.htaccess')
+        );
+
+        resolve();
+      } catch (err) {
+        reject(new Error(`Htaccess copying failed: ${err}`));
+      }
+    }).then(() => console.log('Htaccess successfully copied!'));
   }
 }
