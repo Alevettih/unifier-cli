@@ -15,16 +15,16 @@ export default (): Promise<void | TypeError> => {
   return inquirer.prompt(questions).then((answers: Answer): void | TypeError => {
     switch (answers && answers.type) {
       case projects.types.PLAIN: {
-        return projects.plain(answers);
+        return projects.plainProject(answers);
       }
       case projects.types.ANGULAR: {
-        return projects.angular(answers);
+        return projects.angularProject(answers);
       }
       case projects.types.REACT: {
-        return projects.react(answers);
+        return projects.reactProject(answers);
       }
       case projects.types.VUE: {
-        return projects.vue(answers);
+        return projects.vueProject(answers);
       }
       default: {
         return TypeError('Invalid project type!');

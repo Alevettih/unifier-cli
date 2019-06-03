@@ -11,7 +11,7 @@ export const types: Types = {
   VUE: 'vue'
 };
 
-export { plain } from './plain';
-export { angular } from './angular';
-export { react } from './react';
-export { vue } from './vue';
+export { plainProject } from './plain.project';
+export { angularProject } from './angular.project';
+export { reactProject } from './react.project';
+export { vueProject } from './vue.project';

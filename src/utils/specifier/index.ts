@@ -1,4 +1,4 @@
-import { copySync, readJsonSync, writeJsonSync } from 'fs-extra';
+import { copy, readJsonSync, writeJson } from 'fs-extra';
 import { join } from 'path';
 import { exec } from 'child_process';
 
@@ -17,35 +17,48 @@ export class Specifier {
     return this.project
   }
 
-  copyGitignore(): void {
-    copySync(
+  async copyGitignore(): Promise<void> {
+    await copy(
       join(__dirname, '../../specification/files/.gitignore'),
       join(this.name, '.gitignore')
-    );
+    ).then(() => {
+      console.log('Gitignore successfully copied')
+    }, (err) => {
+      throw new Error(err);
+    });
   }
 
-  copyEditorconfig(): void {
-    copySync(
+  async copyEditorconfig(): Promise<void> {
+    await copy(
       join(__dirname, '../../specification/files/.editorconfig'),
       join(this.name, '.editorconfig')
-    );
+    ).then(() => {
+      console.log('Editorconfig successfully copied')
+    }, (err) => {
+      throw new Error(err);
+    });
   }
 
-  copyBrowserslistrc(): void {
-    copySync(
-      join(__dirname, '../../specification/files/.browserslistrc'),
-      join(this.name, '.browserslistrc')
-    );
-
+  async copyBrowserslistrc(): Promise<void> {
     const json = readJsonSync(join(this.name, 'package.json'));
 
     delete json.browserslist;
 
-    writeJsonSync(join(this.name, 'package.json'), json, {spaces: 2})
+    await Promise.all([
+      writeJson(join(this.name, 'package.json'), json, {spaces: 2}),
+      copy(
+        join(__dirname, '../../specification/files/.browserslistrc'),
+        join(this.name, '.browserslistrc')
+      )
+    ]).then(() => {
+      console.log('Browserslist successfully copied!');
+    }, (err) => {
+      throw new Error(err);
+    })
   }
 
   copyStylelintrc(): Promise<void> {
-    return new Promise((resolve)=> {
+    return new Promise((resolve, reject)=> {
       const modules = [
         'stylelint',
         'stylelint-config-standard',
@@ -57,27 +70,31 @@ export class Specifier {
 
       exec(`npm i ${modules.join(' ')}`, {cwd: join(this.name)}, (error) => {
         if (error) {
-          throw new Error(`Stylelint init was fell ${error}`);
+          reject(new Error(`Stylelint init was fell: ${error}`));
         }
 
         const packageJson = readJsonSync( join(this.name, 'package.json') );
 
         packageJson.scripts['lint:scss'] = 'stylelint --syntax scss "./src/**/*.scss"';
 
-        writeJsonSync( join(this.name, 'package.json'), packageJson, { spaces: 2 } );
-
-        copySync(
-          join(__dirname, '../../specification/files/.stylelintrc'),
-          join(this.name, '.stylelintrc')
-        );
-
-        resolve();
+        Promise.all([
+          writeJson( join(this.name, 'package.json'), packageJson, { spaces: 2 } ),
+          copy(
+            join(__dirname, '../../specification/files/.stylelintrc'),
+            join(this.name, '.stylelintrc')
+          )
+        ]).then(() => {
+          console.log('Stylelint successfully initiated!');
+          resolve()
+        }, (err) => {
+          reject(new Error(`Stylelint init was fell: ${err}`));
+        });
       }).stdout.pipe(process.stdout);
     })
   }
 
-  initialCommit() {
-    exec(
+  async initialCommit() {
+    await exec(
       `git init; git add .; git commit -m "Initial commit"`,
       {cwd: join(this.name)},
       (error, stdout) => {

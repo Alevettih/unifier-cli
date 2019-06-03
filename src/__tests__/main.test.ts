@@ -31,7 +31,7 @@ describe('User answers', () => {
 
       await main();
 
-      expect(projects.plain).toHaveBeenCalled();
+      expect(projects.plainProject).toHaveBeenCalled();
     });
 
     test('Angular', async () => {
@@ -43,7 +43,7 @@ describe('User answers', () => {
 
       await main();
 
-      expect(projects.angular).toHaveBeenCalled();
+      expect(projects.angularProject).toHaveBeenCalled();
     });
 
     test('React', async () => {
@@ -55,7 +55,7 @@ describe('User answers', () => {
 
       await main();
 
-      expect(projects.react).toHaveBeenCalled();
+      expect(projects.reactProject).toHaveBeenCalled();
     });
 
     test('Vue', async () => {
@@ -67,7 +67,7 @@ describe('User answers', () => {
 
       await main();
 
-      expect(projects.vue).toHaveBeenCalled();
+      expect(projects.vueProject).toHaveBeenCalled();
     });
 
     test('should throw TypeError with invalid project type', async () => {

@@ -12,14 +12,14 @@ describe('Generate angular project', () => {
     Object.defineProperty(cli, 'default', {value: jest.fn()});
     specifier.angular.editAngularJson = jest.fn();
 
-    projects.angular({title: projectName});
+    projects.angularProject({title: projectName});
     expect(cli.default).toHaveBeenCalled();
   });
 
   test('should throw an Error without "title" property', () => {
     Object.defineProperty(cli, 'default', {value: jest.fn()});
 
-    expect(projects.angular()).rejects.toThrow();
+    expect(projects.angularProject()).rejects.toThrow();
     expect(cli.default).not.toHaveBeenCalled();
   });
 
@@ -31,7 +31,7 @@ describe('Generate angular project', () => {
       Object.defineProperty(specifier, 'copyEditorconfig', {value: jest.fn()});
       Object.defineProperty(specifier, 'copyStylelintrc', {value: jest.fn()});
 
-      return projects.angular({title: projectName});
+      return projects.angularProject({title: projectName});
     });
 
     test('editAngularJson with project title', () => {
