@@ -93,19 +93,22 @@ export class Specifier {
     })
   }
 
-  async initialCommit() {
-    await exec(
-      `git init; git add .; git commit -m "Initial commit"`,
-      {cwd: join(this.name)},
-      (error, stdout) => {
-        if (error) {
-          throw new Error(`Initial commit error: ${error}`);
-        }
+  initialCommit() {
+    return new Promise(((resolve, reject) => {
+      exec(
+        `git init; git add .; git commit -m "Initial commit"`,
+        {cwd: join(this.name)},
+        (error, stdout) => {
+          if (error) {
+            reject(new Error(`Initial commit error: ${error}`));
+          }
 
-        if (stdout) {
-          console.log('Git repository successfully initiated!')
+          if (stdout) {
+            console.log('Git repository successfully initiated!');
+            resolve();
+          }
         }
-      }
-    );
+      );
+    }))
   }
 }

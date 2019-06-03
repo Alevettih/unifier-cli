@@ -42,7 +42,8 @@ export class ReactSpecifier extends Specifier {
             join(this.name, '.eslintrc')
           )
         ]).then(() => {
-          console.log('Eslint successfully initiated!')
+          console.log('Eslint successfully initiated!');
+          resolve();
         }, (err) => {
           reject(new Error(`Eslint init was fell: ${err}`));
         });
@@ -50,37 +51,40 @@ export class ReactSpecifier extends Specifier {
     })
   }
 
-  async addScss(): Promise<void> {
-    await exec(
-      `npm i node-sass`,
-      { cwd: join(this.name) },
-      async (error) =>  {
-        if (error) {
-          throw new Error(`SCSS installation was fell: ${error}`);
+  addScss(): Promise<void> {
+    return new Promise(((resolve, reject) => {
+      exec(
+        `npm i node-sass`,
+        { cwd: join(this.name) },
+        async (error) =>  {
+          if (error) {
+            reject(new Error(`SCSS installation was fell: ${error}`));
+          }
+
+          const files = ['App', 'index'];
+
+          const renames$ = files.map((key) => rename(
+            join(this.name, `src/${key}.css`),
+            join(this.name, `src/${key}.scss`)
+          ));
+
+          const contentChanges$ = files.map(async (name) => {
+            const file = await readFile(join(this.name, `src/${name}.js`), 'utf-8');
+            return writeFile(
+              join(this.name, `src/${name}.js`),
+              file.replace(`${name}.css`, `${name}.scss`),
+              'utf-8'
+            );
+          });
+
+          await Promise.all([...renames$, ...contentChanges$]).then(() => {
+            console.log('SCSS successfully installed!');
+            resolve();
+          }, (err) => {
+            reject(new Error(`SCSS installation was fell: ${err}`));
+          });
         }
-
-        const files = ['App', 'index'];
-
-        const renames$ = files.map((key) => rename(
-          join(this.name, `src/${key}.css`),
-          join(this.name, `src/${key}.scss`)
-        ));
-
-        const contentChanges$ = files.map(async (name) => {
-          const file = await readFile(join(this.name, `src/${name}.js`), 'utf-8');
-          return writeFile(
-            join(this.name, `src/${name}.js`),
-            file.replace(`${name}.css`, `${name}.scss`),
-            'utf-8'
-          );
-        });
-
-        await Promise.all([...renames$, ...contentChanges$]).then(() => {
-          console.log('SCSS successfully installed!')
-        }, (err) => {
-          throw new Error(`SCSS installation was fell: ${err}`);
-        });
-      }
-    ).stdout.pipe(process.stdout);
+      ).stdout.pipe(process.stdout);
+    }))
   }
 }
