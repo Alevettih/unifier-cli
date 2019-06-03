@@ -15,9 +15,7 @@ export const angularProject = ({ title } = { title: '' } as Answer): void => {
   );
 
   npx.on('error', (e) => {
-    if (e) {
-      throw new Error(`Angular CLI was fell ${e}`);
-    }
+    throw new Error(`Angular CLI was fell ${e}`);
   });
 
   npx.on('exit', async () => {

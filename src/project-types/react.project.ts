@@ -14,9 +14,7 @@ export const reactProject = ({ title } = { title: '' } as Answer): void => {
   );
 
   npx.on('error', (e) => {
-    if (e) {
-      throw new Error(`create-react-app CLI was fell: ${e}`);
-    }
+    throw new Error(`create-react-app CLI was fell: ${e}`);
   });
 
   npx.on('exit', async () => {

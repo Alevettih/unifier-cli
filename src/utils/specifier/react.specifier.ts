@@ -1,7 +1,7 @@
 import { Specifier } from "@specifier/index";
 import { exec } from "child_process";
 import { join } from "path";
-import { readFile, writeFile, rename, readJsonSync, writeJsonSync, copy } from "fs-extra";
+import { readFile, writeFile, rename, readJsonSync, writeJsonSync, copy, readJson } from "fs-extra";
 
 export class ReactSpecifier extends Specifier {
   async specify(): Promise<void> {
@@ -26,27 +26,30 @@ export class ReactSpecifier extends Specifier {
         'eslint-plugin-react'
       ];
 
-      exec(`npm i ${modules.join(' ')}`, {cwd: join(this.name)}, (error) => {
+      exec(`npm i ${modules.join(' ')}`, {cwd: join(this.name)}, async (error) => {
         if (error) {
           reject(new Error(`Eslint init was fell: ${error}`));
         }
 
-        const packageJson = readJsonSync( join(this.name, 'package.json') );
+        try {
+          const packageJson = await readJson( join(this.name, 'package.json') );
 
-        packageJson.scripts['lint:es'] = 'eslint "./src/**/*.js"';
+          packageJson.scripts['lint:es'] = 'eslint "./src/**/*.js"';
 
-        Promise.all([
-          writeJsonSync( join(this.name, 'package.json'), packageJson, { spaces: 2 } ),
-          copy(
-            join(__dirname, '../../specification/files/react/.eslintrc'),
-            join(this.name, '.eslintrc')
-          )
-        ]).then(() => {
+          await Promise.all([
+            writeJsonSync( join(this.name, 'package.json'), packageJson, { spaces: 2 } ),
+            copy(
+              join(__dirname, '../../specification/files/react/.eslintrc'),
+              join(this.name, '.eslintrc')
+            )
+          ]);
+
           console.log('Eslint successfully initiated!');
+
           resolve();
-        }, (err) => {
+        } catch (err) {
           reject(new Error(`Eslint init was fell: ${err}`));
-        });
+        }
       }).stdout.pipe(process.stdout);
     })
   }
@@ -61,28 +64,31 @@ export class ReactSpecifier extends Specifier {
             reject(new Error(`SCSS installation was fell: ${error}`));
           }
 
-          const files = ['App', 'index'];
+          try {
+            const files = ['App', 'index'];
 
-          const renames$ = files.map((key) => rename(
-            join(this.name, `src/${key}.css`),
-            join(this.name, `src/${key}.scss`)
-          ));
+            const renames$ = files.map((key) => rename(
+              join(this.name, `src/${key}.css`),
+              join(this.name, `src/${key}.scss`)
+            ));
 
-          const contentChanges$ = files.map(async (name) => {
-            const file = await readFile(join(this.name, `src/${name}.js`), 'utf-8');
-            return writeFile(
-              join(this.name, `src/${name}.js`),
-              file.replace(`${name}.css`, `${name}.scss`),
-              'utf-8'
-            );
-          });
+            const contentChanges$ = files.map(async (name) => {
+              const file = await readFile(join(this.name, `src/${name}.js`), 'utf-8');
+              return writeFile(
+                join(this.name, `src/${name}.js`),
+                file.replace(`${name}.css`, `${name}.scss`),
+                'utf-8'
+              );
+            });
 
-          await Promise.all([...renames$, ...contentChanges$]).then(() => {
+            await Promise.all([...renames$, ...contentChanges$]);
+
             console.log('SCSS successfully installed!');
+
             resolve();
-          }, (err) => {
+          } catch (err) {
             reject(new Error(`SCSS installation was fell: ${err}`));
-          });
+          }
         }
       ).stdout.pipe(process.stdout);
     }))

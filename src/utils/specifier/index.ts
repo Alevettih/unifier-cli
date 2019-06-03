@@ -33,7 +33,7 @@ export class Specifier {
       join(__dirname, '../../specification/files/.editorconfig'),
       join(this.name, '.editorconfig')
     ).then(() => {
-      console.log('Editorconfig successfully copied')
+      console.log('Editorconfig successfully copied!')
     }, (err) => {
       throw new Error(err);
     });

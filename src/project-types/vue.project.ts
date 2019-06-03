@@ -10,14 +10,12 @@ export const vueProject = ({ title } = { title: '' } as Answer): void => {
 
   const npx = spawn(
     'npx',
-    ['@vue/cli', 'create', '--preset', join(__dirname, '../specification/files/vue/vue-preset-default.json'), title, '-n'],
+    ['@vue/cli', 'create', `--preset=${join(__dirname, '../specification/files/vue/vue-preset-default.json')}`, title, '-n'],
     {stdio: "inherit"}
   );
 
   npx.on('error', (e) => {
-    if (e) {
-      throw new Error(`@vue/cli was fell: ${e}`);
-    }
+    throw new Error(`@vue/cli was fell: ${e}`);
   });
 
   npx.on('exit', async () => {

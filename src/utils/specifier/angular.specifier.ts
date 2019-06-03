@@ -18,15 +18,16 @@ export class AngularSpecifier extends Specifier {
     await this.initialCommit();
   }
 
-  async copyBaseStructure(): Promise<void> {
-    await copy(
-      join(__dirname, '../../codebase/angular'),
-      join(this.name, 'src')
-    ).then(() => {
-      console.log('Base structure successfully copied!')
-    }, (err) => {
-      throw new Error(err);
-    });
+  copyBaseStructure(): Promise<void> {
+    return new Promise(((resolve, reject) => {
+      copy(
+        join(__dirname, '../../codebase/angular'),
+        join(this.name, 'src')
+      ).then(
+        () => resolve(),
+        (err) => reject(new Error(err))
+      );
+    })).then(() => console.log('Base structure successfully copied!'));
   }
 
   async editAngularJson(): Promise<void> {
