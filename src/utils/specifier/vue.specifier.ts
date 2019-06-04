@@ -20,7 +20,7 @@ export class VueSpecifier extends Specifier {
       'stylelint-z-index-value-constraint',
       'stylelint-processor-arbitrary-tags'
     ],
-    script: 'stylelint --syntax scss "./src/**/*.vue"',
+    script: 'stylelint "./src/**/*.vue"',
     path: '../../specification/files/vue/.stylelintrc'
   }
 }
