@@ -1,8 +1,7 @@
-import { Specifier } from "@specifier/index";
+import { LinterConfig, Specifier } from "@specifier/index";
 import { ChildProcess, spawn } from "child_process";
 import { join } from "path";
-import { readFile, writeFile, rename, copy, readJson, writeJson } from "fs-extra";
-import { PackageJson } from "tsconfig-paths/lib/filesystem";
+import { readFile, writeFile, rename } from "fs-extra";
 
 export class ReactSpecifier extends Specifier {
   async specify(): Promise<void> {
@@ -16,43 +15,19 @@ export class ReactSpecifier extends Specifier {
     await this.initialCommit();
   }
 
-  copyEslintrc(): Promise<void> {
-    return new Promise((resolve, reject)=> {
-      const modules: string[] = [
-        'eslint',
-        'eslint-config-airbnb',
-        'eslint-plugin-compat',
-        'eslint-plugin-import',
-        'eslint-plugin-jsx-a11y',
-        'eslint-plugin-react'
-      ];
-
-      const npm: ChildProcess = spawn('npm', ['i', ...modules], this.childProcessOptions );
-
-      npm.on('error', (err) => {
-        reject(new Error(`Eslint init was fell: ${err}`));
-      });
-
-      npm.on('exit', async () => {
-        try {
-          const packageJson: PackageJson = await readJson( join(this.name, 'package.json') );
-
-          packageJson.scripts['lint:es'] = 'eslint "./src/**/*.js"';
-
-          await Promise.all([
-            writeJson( join(this.name, 'package.json'), packageJson, { spaces: 2 } ),
-            copy(
-              join(__dirname, '../../specification/files/react/.eslintrc'),
-              join(this.name, '.eslintrc')
-            )
-          ]);
-          resolve();
-        } catch (err) {
-          reject(new Error(`Eslint init was fell: ${err}`));
-        }
-      });
-    }).then(() => console.log('Eslint successfully initiated!'));
-  }
+  eslint: LinterConfig = {
+    modules: [
+      'eslint',
+      'eslint-config-airbnb',
+      'eslint-plugin-compat',
+      'eslint-plugin-import',
+      'eslint-plugin-jsx-a11y',
+      'eslint-plugin-react',
+      'eslint-plugin-jest',
+    ],
+    script: 'eslint "./src/**/*.js"',
+    path: '../../specification/files/react/.eslintrc'
+  };
 
   addScss(): Promise<void> {
     return new Promise((resolve, reject) => {

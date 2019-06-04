@@ -1,11 +1,42 @@
-import { copy, readJsonSync, writeJson } from 'fs-extra';
+import { copy, readJson, readJsonSync, writeJson } from 'fs-extra';
 import { join } from 'path';
 import { ChildProcess, spawn } from 'child_process';
 import { PackageJson } from "tsconfig-paths/lib/filesystem";
 
+export interface LinterConfig {
+  modules: string[];
+  script: string;
+  path: string;
+}
+
 export class Specifier {
   readonly project: string;
   readonly childProcessOptions: object;
+
+  stylelint: LinterConfig = {
+    modules: [
+      'stylelint',
+      'stylelint-config-standard',
+      'stylelint-declaration-strict-value',
+      'stylelint-no-unsupported-browser-features',
+      'stylelint-scss',
+      'stylelint-z-index-value-constraint'
+    ],
+    script: 'stylelint --syntax scss "./src/**/*.scss"',
+    path: '../../specification/files/.stylelintrc'
+  };
+
+  eslint: LinterConfig = {
+    modules: [
+      'eslint',
+      'eslint-config-airbnb',
+      'eslint-plugin-compat',
+      'eslint-plugin-import',
+      'eslint-plugin-jsx-a11y'
+    ],
+    script: 'eslint "./src/**/*.js"',
+    path: '../../specification/files/.eslintrc'
+  };
 
   constructor(project: string) {
     if (!project) {
@@ -74,18 +105,10 @@ export class Specifier {
 
   copyStylelintrc(): Promise<void> {
     return new Promise((resolve, reject)=> {
-      const modules: string[] = [
-        'stylelint',
-        'stylelint-config-standard',
-        'stylelint-declaration-strict-value',
-        'stylelint-no-unsupported-browser-features',
-        'stylelint-scss',
-        'stylelint-z-index-value-constraint'
-      ];
 
       const npm: ChildProcess = spawn(
         'npm',
-        ['i', ...modules],
+        ['i', ...this.stylelint.modules],
         this.childProcessOptions
       );
 
@@ -97,12 +120,12 @@ export class Specifier {
         try {
           const packageJson: PackageJson = readJsonSync( join(this.name, 'package.json') );
 
-          packageJson.scripts['lint:scss'] = 'stylelint --syntax scss "./src/**/*.scss"';
+          packageJson.scripts['lint:scss'] = this.stylelint.script;
 
           await Promise.all([
             writeJson( join(this.name, 'package.json'), packageJson, { spaces: 2 } ),
             copy(
-              join(__dirname, '../../specification/files/.stylelintrc'),
+              join(__dirname, this.stylelint.path),
               join(this.name, '.stylelintrc')
             )
           ]);
@@ -113,6 +136,35 @@ export class Specifier {
         }
       })
     }).then(() => console.log('Stylelint successfully initiated!'))
+  }
+
+  copyEslintrc(): Promise<void> {
+    return new Promise((resolve, reject)=> {
+      const npm: ChildProcess = spawn('npm', ['i', ...this.eslint.modules], this.childProcessOptions );
+
+      npm.on('error', (err) => {
+        reject(new Error(`Eslint init was fell: ${err}`));
+      });
+
+      npm.on('exit', async () => {
+        try {
+          const packageJson: PackageJson = await readJson( join(this.name, 'package.json') );
+
+          packageJson.scripts['lint:es'] = this.eslint.script;
+
+          await Promise.all([
+            writeJson( join(this.name, 'package.json'), packageJson, { spaces: 2 } ),
+            copy(
+              join(__dirname, this.eslint.path),
+              join(this.name, '.eslintrc')
+            )
+          ]);
+          resolve();
+        } catch (err) {
+          reject(new Error(`Eslint init was fell: ${err}`));
+        }
+      });
+    }).then(() => console.log('Eslint successfully initiated!'));
   }
 
   initialCommit() {

@@ -23,7 +23,7 @@ export default (): Promise<void | TypeError> => {
     if (isDirectoryExistsAndNotEmpty(answers.title)) {
       console.log(`Erasing directory "${join(answers.title)}"...`);
       removeSync( join(answers.title) );
-      console.log(`Directory "${join(answers.title)}" has been erase!`);
+      console.log(`Directory "${join(answers.title)}" has been erased!`);
     }
 
     switch (answers && answers.type) {
