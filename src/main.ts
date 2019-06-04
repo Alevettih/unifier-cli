@@ -5,6 +5,8 @@ import { questions } from '@utils/questions';
 import { isDirectoryExistsAndNotEmpty } from "@utils/helpers";
 import { removeSync } from "fs-extra";
 import { join } from "path";
+import * as minimist from 'minimist';
+import { ParsedArgs }  from 'minimist';
 
 export type ProjectType = 'plain-js' | 'angular' | 'react' | 'vue';
 
@@ -14,8 +16,18 @@ export interface Answer {
   type: ProjectType
 }
 
+export const args: ParsedArgs = minimist(process.argv.slice(2));
+
 export default (): Promise<void | TypeError> => {
+  if (args._[0]) {
+    args.title = args._[0];
+  }
+
+  delete args._;
+
   return inquirer.prompt(questions).then((answers: Answer): void | TypeError => {
+    answers = Object.assign(answers, args);
+
     if (!answers.title) {
       throw new Error('Title is required!')
     }
@@ -40,7 +52,8 @@ export default (): Promise<void | TypeError> => {
         return projects.vueProject(answers);
       }
       default: {
-        return TypeError('Invalid project type!');
+        const types = `\n - ${Object.values(projects.types).join('\n - ')}`;
+        throw new TypeError(`Invalid project type!\nAvailable types:${types} \n`);
       }
     }
   })

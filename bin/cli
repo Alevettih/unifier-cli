@@ -12,4 +12,4 @@ Object.keys(paths).forEach((key) => {
 
 moduleAlias.addAliases(paths);
 
-require('../dist/main.js').default();
+require('../dist/main.js').default().catch((err) => console.error(err));

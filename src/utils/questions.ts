@@ -3,13 +3,22 @@ import { title } from '@utils/validators';
 import { isDirectoryExistsAndNotEmpty } from '@utils/helpers'
 import { types } from '@src/project-types';
 import { Questions } from "inquirer";
+import { args } from "@src/main";
 
 export const questions: Questions = [{
   name: 'title',
   type: 'input',
   message: 'Project name:',
   default: getCWD(),
-  validate: title
+  validate: title,
+  when(answers) {
+    if (!args.title) {
+      return true;
+    } else {
+      answers.title = args.title;
+      return false
+    }
+  }
 }, {
   type: 'input',
   name: 'title',
@@ -18,14 +27,17 @@ export const questions: Questions = [{
   default: (answers) => answers.title,
   when: (answers) => isDirectoryExistsAndNotEmpty(answers.title)
 }, {
-  name: 'description',
-  type: 'input',
-  message: 'Project description:',
-  default: ''
-}, {
   name: 'type',
   type: 'list',
   message: 'Project type:',
+  when(answers) {
+    if (!args.type) {
+      return true;
+    } else {
+      answers.type = args.type;
+      return false
+    }
+  },
   choices: [
     {name: 'Plain JS', value: types.PLAIN},
     {name: 'Angular', value: types.ANGULAR},
