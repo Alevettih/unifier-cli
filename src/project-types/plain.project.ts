@@ -4,10 +4,6 @@ import { ChildProcess, spawn } from "child_process";
 import { join } from "path";
 
 export const plainProject = ({ title } = { title: '' } as Answer): void => {
-  if (!title) {
-    throw new Error('Title is required!')
-  }
-
   const npx: ChildProcess = spawn(
     'git',
     ['clone', 'git@gitlab.requestum.com:Tykhonenko/project-template-gulp.git', join(title)],

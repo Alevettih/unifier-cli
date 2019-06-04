@@ -4,10 +4,6 @@ import { Answer } from "@src/main";
 import config from '@src/config';
 
 export const angularProject = ({ title } = { title: '' } as Answer): void => {
-  if (!title) {
-    throw new Error('Title is required!')
-  }
-
   const npx: ChildProcess = spawn(
     'npx',
     ['@angular/cli@7', 'new', title, `--style=${config.cssPreprocessor}`, `--skipGit=${config.skipGit}`, '--routing=true'],

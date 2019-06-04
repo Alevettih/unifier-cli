@@ -1,4 +1,10 @@
 import { sep } from "path";
+import { pathExistsSync } from "fs-extra";
+import { readdirSync } from "fs";
+
+export function isDirectoryExistsAndNotEmpty(input?: string): boolean {
+  return !!(pathExistsSync(input) && readdirSync(input).length);
+}
 
 export function getCWD(): string {
   return process.cwd().split(sep).pop()

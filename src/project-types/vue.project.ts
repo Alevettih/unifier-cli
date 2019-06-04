@@ -4,10 +4,6 @@ import { VueSpecifier } from "@specifier/vue.specifier";
 import { join } from "path";
 
 export const vueProject = ({ title } = { title: '' } as Answer): void => {
-  if (!title) {
-    throw new Error('Title is required!')
-  }
-
   const npx: ChildProcess = spawn(
     'npx',
     ['@vue/cli', 'create', `--preset=${join(__dirname, '../specification/files/vue/vue-preset-default.json')}`, title, '-n'],

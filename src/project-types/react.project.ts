@@ -3,9 +3,6 @@ import { ChildProcess, spawn } from "child_process";
 import { ReactSpecifier } from "@specifier/react.specifier";
 
 export const reactProject = ({ title } = { title: '' } as Answer): void => {
-  if (!title) {
-    throw new Error('Title is required!')
-  }
 
   const npx: ChildProcess = spawn(
     'npx',
