@@ -2,18 +2,18 @@ import 'module-alias/register';
 import * as inquirer from 'inquirer';
 import * as projects from '@src/project-types';
 import { questions } from '@utils/questions';
-import { isDirectoryExistsAndNotEmpty } from "@utils/helpers";
-import { removeSync } from "fs-extra";
-import { join } from "path";
+import { isDirectoryExistsAndNotEmpty } from '@utils/helpers';
+import { removeSync } from 'fs-extra';
+import { join } from 'path';
 import * as minimist from 'minimist';
-import { ParsedArgs }  from 'minimist';
+import { ParsedArgs } from 'minimist';
 
 export type ProjectType = 'plain-js' | 'angular' | 'react' | 'vue';
 
 export interface Answer {
-  title: string,
-  description: string,
-  type: ProjectType
+  title: string;
+  description: string;
+  type: ProjectType;
 }
 
 export const args: ParsedArgs = minimist(process.argv.slice(2));
@@ -29,7 +29,7 @@ export default (): Promise<void | TypeError> => {
     answers = Object.assign(answers, args);
 
     if (!answers.title) {
-      throw new Error('Title is required!')
+      throw new Error('Title is required!');
     }
 
     if (isDirectoryExistsAndNotEmpty(answers.title)) {
@@ -56,5 +56,5 @@ export default (): Promise<void | TypeError> => {
         throw new TypeError(`Invalid project type!\nAvailable types:${types} \n`);
       }
     }
-  })
+  });
 };

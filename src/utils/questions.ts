@@ -1,9 +1,9 @@
 import { getCWD } from '@utils/helpers';
 import { title } from '@utils/validators';
-import { isDirectoryExistsAndNotEmpty } from '@utils/helpers'
+import { isDirectoryExistsAndNotEmpty } from '@utils/helpers';
 import { types } from '@src/project-types';
-import { Questions } from "inquirer";
-import { args } from "@src/main";
+import { Questions } from 'inquirer';
+import { args } from '@src/main';
 
 export const questions: Questions = [{
   name: 'title',
@@ -16,13 +16,15 @@ export const questions: Questions = [{
       return true;
     } else {
       answers.title = args.title;
-      return false
+      return false;
     }
   }
 }, {
   type: 'input',
   name: 'title',
-  prefix: `Directory with that name is already exists and contain files.\nChange the name or proceed with that value for erasing the directory.\n `,
+  prefix:
+    '\n  Directory with that name is already exists and contain files.' +
+    '\n  Change the name or proceed with that value for erasing the directory.\n ',
   message: 'Project name:',
   default: (answers) => answers.title,
   when: (answers) => isDirectoryExistsAndNotEmpty(answers.title)
@@ -35,7 +37,7 @@ export const questions: Questions = [{
       return true;
     } else {
       answers.type = args.type;
-      return false
+      return false;
     }
   },
   choices: [

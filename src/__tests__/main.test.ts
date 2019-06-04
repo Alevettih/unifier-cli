@@ -1,7 +1,6 @@
 import main from '../main';
 import * as projects from '../project-types';
 import * as inquirer from 'inquirer';
-import * as fs from "fs";
 
 jest.mock('inquirer');
 jest.mock('fs-extra');
@@ -9,7 +8,7 @@ jest.mock('fs-extra');
 describe('User answers', () => {
   test('can call inquirer', () => {
 
-    Object.defineProperty(inquirer, 'prompt', {value: jest.fn(async () => {return;})});
+    Object.defineProperty(inquirer, 'prompt', {value: jest.fn(async () => { return; })});
     main();
     expect(inquirer.prompt).toHaveBeenCalled();
   });

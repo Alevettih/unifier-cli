@@ -1,8 +1,8 @@
 import * as path from 'path';
 
 interface Fs {
-  __setMockFiles: Function;
-  readdirSync: Function;
+  __setMockFiles: (newMockFiles: any) => void;
+  readdirSync: (directoryPath: any) => void;
 }
 
 const fs: Fs = jest.genMockFromModule('fs-extra');
@@ -14,12 +14,14 @@ let mockFiles = Object.create(null);
 function __setMockFiles(newMockFiles) {
   mockFiles = Object.create(null);
   for (const file in newMockFiles) {
-    const dir = path.dirname(file);
+    if (newMockFiles.hasOwnProperty(file)) {
+      const dir = path.dirname(file);
 
-    if (!mockFiles[dir]) {
-      mockFiles[dir] = [];
+      if (!mockFiles[dir]) {
+        mockFiles[dir] = [];
+      }
+      mockFiles[dir].push(path.basename(file));
     }
-    mockFiles[dir].push(path.basename(file));
   }
 }
 

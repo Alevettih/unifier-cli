@@ -1,19 +1,9 @@
-import { LinterConfig, Specifier } from "@specifier/index";
-import { ChildProcess, spawn } from "child_process";
-import { join } from "path";
-import { readFile, writeFile, rename } from "fs-extra";
+import { LinterConfig, Specifier } from '@specifier/index';
+import { ChildProcess, spawn } from 'child_process';
+import { join } from 'path';
+import { readFile, writeFile, rename } from 'fs-extra';
 
 export class ReactSpecifier extends Specifier {
-  async specify(): Promise<void> {
-    await Promise.all([
-      this.copyEditorconfig(),
-      this.copyBrowserslistrc(),
-      this.addScss(),
-      this.copyStylelintrc(),
-      this.copyEslintrc()
-    ]);
-    await this.initialCommit();
-  }
 
   eslint: LinterConfig = {
     modules: [
@@ -28,6 +18,16 @@ export class ReactSpecifier extends Specifier {
     script: 'eslint "./src/**/*.js"',
     path: '../../specification/files/react/.eslintrc'
   };
+  async specify(): Promise<void> {
+    await Promise.all([
+      this.copyEditorconfig(),
+      this.copyBrowserslistrc(),
+      this.addScss(),
+      this.copyStylelintrc(),
+      this.copyEslintrc()
+    ]);
+    await this.initialCommit();
+  }
 
   addScss(): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -58,6 +58,6 @@ export class ReactSpecifier extends Specifier {
 
         resolve();
       });
-    }).then(() => console.log('SCSS successfully installed!'))
+    }).then(() => console.log('SCSS successfully installed!'));
   }
 }

@@ -1,4 +1,4 @@
-export function title (input?: string): boolean | string {
+export function title(input?: string): boolean | string {
   if (input && /^([A-Za-z\-\_\d])+$/.test(input)) {
     return true;
   } else {

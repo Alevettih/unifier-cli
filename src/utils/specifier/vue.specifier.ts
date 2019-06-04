@@ -1,14 +1,6 @@
-import { LinterConfig, Specifier } from "@specifier/index";
+import { LinterConfig, Specifier } from '@specifier/index';
 
 export class VueSpecifier extends Specifier {
-  async specify() {
-    await Promise.all([
-      this.copyEditorconfig(),
-      this.copyBrowserslistrc(),
-      this.copyStylelintrc()
-    ]);
-    await this.initialCommit();
-  }
 
   stylelint: LinterConfig = {
     modules: [
@@ -22,5 +14,13 @@ export class VueSpecifier extends Specifier {
     ],
     script: 'stylelint "./src/**/*.vue"',
     path: '../../specification/files/vue/.stylelintrc'
+  };
+  async specify() {
+    await Promise.all([
+      this.copyEditorconfig(),
+      this.copyBrowserslistrc(),
+      this.copyStylelintrc()
+    ]);
+    await this.initialCommit();
   }
 }

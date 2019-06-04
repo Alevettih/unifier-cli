@@ -10,5 +10,5 @@ describe('Validators can', () => {
     expect(title('project_name')).toBeTruthy();
     expect(title('project/name')).toBe(errorMessage);
     expect(title('project name')).toBe(errorMessage);
-  })
+  });
 });

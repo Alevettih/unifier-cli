@@ -1,13 +1,13 @@
-import { Answer } from "@src/main";
-import { ChildProcess, spawn } from "child_process";
-import { ReactSpecifier } from "@specifier/react.specifier";
+import { Answer } from '@src/main';
+import { ChildProcess, spawn } from 'child_process';
+import { ReactSpecifier } from '@specifier/react.specifier';
 
 export const reactProject = ({ title } = { title: '' } as Answer): void => {
 
   const npx: ChildProcess = spawn(
     'npx',
     ['create-react-app', title],
-    {stdio: "inherit"}
+    {stdio: 'inherit'}
   );
 
   npx.on('error', (e) => {

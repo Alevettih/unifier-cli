@@ -1,13 +1,13 @@
 import { ChildProcess, spawn } from 'child_process';
-import { AngularSpecifier } from "@specifier/angular.specifier";
-import { Answer } from "@src/main";
+import { AngularSpecifier } from '@specifier/angular.specifier';
+import { Answer } from '@src/main';
 import config from '@src/config';
 
 export const angularProject = ({ title } = { title: '' } as Answer): void => {
   const npx: ChildProcess = spawn(
     'npx',
     ['@angular/cli@7', 'new', title, `--style=${config.cssPreprocessor}`, `--skipGit=${config.skipGit}`, '--routing=true'],
-    {stdio: "inherit"}
+    {stdio: 'inherit'}
   );
 
   npx.on('error', (e) => {

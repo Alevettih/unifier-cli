@@ -1,7 +1,7 @@
-import { ProjectType } from "@src/main";
+import { ProjectType } from '@src/main';
 
 interface Types {
-  [key: string]: ProjectType
+  [key: string]: ProjectType;
 }
 
 export const types: Types = {

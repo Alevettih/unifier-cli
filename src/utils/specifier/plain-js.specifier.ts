@@ -1,5 +1,5 @@
-import { Specifier } from "@specifier/index";
-import { ChildProcess, spawn } from "child_process";
+import { Specifier } from '@specifier/index';
+import { ChildProcess, spawn } from 'child_process';
 
 export class PlainJSSpecifier extends Specifier {
   async specify(): Promise<void> {
@@ -17,13 +17,13 @@ export class PlainJSSpecifier extends Specifier {
       const npm: ChildProcess = spawn('npm', ['i'], this.childProcessOptions);
 
       npm.on('error', () => {
-        reject(new Error(''))
+        reject(new Error(''));
       });
 
       npm.on('exit', () => {
         resolve();
-      })
-    }).then(() => console.log('node_modules successfully installed!'))
+      });
+    }).then(() => console.log('node_modules successfully installed!'));
   }
 
   initialCommit(): Promise<void> {

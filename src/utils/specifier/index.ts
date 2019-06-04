@@ -1,7 +1,7 @@
 import { copy, readJson, readJsonSync, writeJson } from 'fs-extra';
 import { join } from 'path';
 import { ChildProcess, spawn } from 'child_process';
-import { PackageJson } from "tsconfig-paths/lib/filesystem";
+import { PackageJson } from 'tsconfig-paths/lib/filesystem';
 
 export interface LinterConfig {
   modules: string[];
@@ -44,11 +44,11 @@ export class Specifier {
     }
 
     this.project = project;
-    this.childProcessOptions = { cwd: join(project), stdio: 'inherit' }
+    this.childProcessOptions = { cwd: join(project), stdio: 'inherit' };
   }
 
   get name(): string {
-    return this.project
+    return this.project;
   }
 
   copyGitignore(): Promise<void> {
@@ -104,7 +104,7 @@ export class Specifier {
   }
 
   copyStylelintrc(): Promise<void> {
-    return new Promise((resolve, reject)=> {
+    return new Promise((resolve, reject) => {
 
       const npm: ChildProcess = spawn(
         'npm',
@@ -130,16 +130,16 @@ export class Specifier {
             )
           ]);
 
-          resolve()
+          resolve();
         } catch (err) {
           reject(new Error(`Stylelint init was fell: ${err}`));
         }
-      })
-    }).then(() => console.log('Stylelint successfully initiated!'))
+      });
+    }).then(() => console.log('Stylelint successfully initiated!'));
   }
 
   copyEslintrc(): Promise<void> {
-    return new Promise((resolve, reject)=> {
+    return new Promise((resolve, reject) => {
       const npm: ChildProcess = spawn('npm', ['i', ...this.eslint.modules], this.childProcessOptions );
 
       npm.on('error', (err) => {
@@ -174,13 +174,13 @@ export class Specifier {
         Object.assign({shell: true}, this.childProcessOptions)
       );
 
-      git.on("exit", () => {
+      git.on('exit', () => {
         resolve();
       });
 
-      git.on("error", (err) => {
+      git.on('error', (err) => {
         reject(new Error(`Initial commit error: ${err}`));
       });
-    }).then(() => console.log('Git repository successfully initiated!'))
+    }).then(() => console.log('Git repository successfully initiated!'));
   }
 }

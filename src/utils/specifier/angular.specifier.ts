@@ -2,10 +2,10 @@ import { copy, readJsonSync, writeJson } from 'fs-extra';
 import { join } from 'path';
 import { deepMerge } from '@utils/helpers';
 import * as angularJsonAdditions from '@specification/files/angular/angular.json';
-import { Specifier } from "@utils/specifier";
+import { Specifier } from '@utils/specifier';
 
 export class AngularSpecifier extends Specifier {
-  async specify (): Promise<void> {
+  async specify(): Promise<void> {
     await Promise.all([
       this.editAngularJson(),
       this.copyHtaccess(),
