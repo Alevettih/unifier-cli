@@ -6,8 +6,7 @@ export class PlainJSSpecifier extends Specifier {
     await Promise.all([
       await this.installNodeModules(),
       await this.copyBrowserslistrc(),
-      await this.copyEditorconfig(),
-      await this.copyGitignore()
+      await this.copyEditorconfig()
     ]);
     await this.initialCommit();
   }
