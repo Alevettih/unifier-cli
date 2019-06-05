@@ -1,7 +1,9 @@
+import { red } from 'colors/safe';
+
 export function title(input?: string): boolean | string {
   if (input && /^([A-Za-z\-\_\d])+$/.test(input)) {
     return true;
   } else {
-    return 'Project name may only include letters, numbers, underscores and hashes.';
+    return red('Project name may only include letters, numbers, underscores and hashes.');
   }
 }

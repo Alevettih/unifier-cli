@@ -7,6 +7,7 @@ import { removeSync } from 'fs-extra';
 import { join } from 'path';
 import * as minimist from 'minimist';
 import { ParsedArgs } from 'minimist';
+import { green, red } from 'colors/safe';
 
 export type ProjectType = 'plain-js' | 'angular' | 'react' | 'vue';
 
@@ -29,13 +30,13 @@ export default (): Promise<void | TypeError> => {
     answers = Object.assign(answers, args);
 
     if (!answers.title) {
-      throw new Error('Title is required!');
+      throw new Error(red('Title is required!'));
     }
 
     if (isDirectoryExistsAndNotEmpty(answers.title)) {
       console.log(`Erasing directory "${join(answers.title)}"...`);
       removeSync( join(answers.title) );
-      console.log(`Directory "${join(answers.title)}" has been erased!`);
+      console.log(green(`Directory "${join(answers.title)}" has been erased!`));
     }
 
     switch (answers && answers.type) {
@@ -53,7 +54,7 @@ export default (): Promise<void | TypeError> => {
       }
       default: {
         const types = `\n - ${Object.values(projects.types).join('\n - ')}`;
-        throw new TypeError(`Invalid project type!\nAvailable types:${types} \n`);
+        throw new TypeError(red(`\nInvalid project type!\nAvailable types:${types}`));
       }
     }
   });

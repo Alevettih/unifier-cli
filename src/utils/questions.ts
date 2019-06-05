@@ -4,6 +4,7 @@ import { isDirectoryExistsAndNotEmpty } from '@utils/helpers';
 import { types } from '@src/project-types';
 import { Questions } from 'inquirer';
 import { args } from '@src/main';
+import { yellow } from 'colors/safe';
 
 export const questions: Questions = [{
   name: 'title',
@@ -23,8 +24,8 @@ export const questions: Questions = [{
   type: 'input',
   name: 'title',
   prefix:
-    '\n  Directory with that name is already exists and contain files.' +
-    '\n  Change the name or proceed with that value for erasing the directory.\n ',
+    yellow('Directory with that name is already exists and contain files.\n') +
+    yellow('Change the name or proceed with that value for erasing the directory.\n '),
   message: 'Project name:',
   default: (answers) => answers.title,
   when: (answers) => isDirectoryExistsAndNotEmpty(answers.title)

@@ -1,8 +1,9 @@
-import { copy, readJsonSync, writeJson } from 'fs-extra';
+import { copy, readJsonSync, removeSync, writeJson } from 'fs-extra';
 import { join } from 'path';
 import { deepMerge } from '@utils/helpers';
 import * as angularJsonAdditions from '@specification/files/angular/angular.json';
 import { Specifier } from '@utils/specifier';
+import { green, red } from 'colors/safe';
 
 export class AngularSpecifier extends Specifier {
   async specify(): Promise<void> {
@@ -18,6 +19,18 @@ export class AngularSpecifier extends Specifier {
     await this.initialCommit();
   }
 
+  copyBrowserslistrc(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      try {
+        removeSync(join(this.name, 'src/browserslist'));
+
+        resolve();
+      } catch (err) {
+        reject(red(`.browserslistrc copying failed: ${err}`));
+      }
+    }).then(() => super.copyBrowserslistrc());
+  }
+
   copyBaseStructure(): Promise<void> {
     return new Promise( async (resolve, reject) => {
       try {
@@ -28,9 +41,9 @@ export class AngularSpecifier extends Specifier {
 
         resolve();
       } catch (err) {
-        reject(`Base structure copying failed: ${err}`);
+        reject(red(`Base structure copying failed: ${err}`));
       }
-    }).then(() => console.log('Base structure successfully copied!'));
+    }).then(() => console.log(green('Base structure successfully copied!')));
   }
 
   editAngularJson(): Promise<void> {
@@ -39,7 +52,7 @@ export class AngularSpecifier extends Specifier {
         const json = readJsonSync(`${this.name}/angular.json`);
 
         if (!json) {
-          reject(new Error('The file does not exist!'));
+          reject(new Error(red('The file does not exist!')));
         }
 
         await writeJson(
@@ -50,9 +63,9 @@ export class AngularSpecifier extends Specifier {
 
         resolve();
       } catch (err) {
-        reject(`angular.json editing failed: ${err}`);
+        reject(red(`angular.json editing failed: ${err}`));
       }
-    }).then(() => console.log('Angular.json successfully edited!'));
+    }).then(() => console.log(green('Angular.json successfully edited!')));
   }
 
   copyTsconfig(): Promise<void> {
@@ -65,12 +78,12 @@ export class AngularSpecifier extends Specifier {
 
         resolve();
       } catch (err) {
-        reject(`Tsconfig copying failed: ${err}`);
+        reject(red(`Tsconfig copying failed: ${err}`));
       }
-    }).then(() => console.log('Tsconfig successfully copied!'));
+    }).then(() => console.log(green('Tsconfig successfully copied!')));
   }
 
-  async copyHtaccess(): Promise<void> {
+  copyHtaccess(): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
         await copy(
@@ -80,8 +93,8 @@ export class AngularSpecifier extends Specifier {
 
         resolve();
       } catch (err) {
-        reject(new Error(`Htaccess copying failed: ${err}`));
+        reject(new Error(red(`Htaccess copying failed: ${err}`)));
       }
-    }).then(() => console.log('Htaccess successfully copied!'));
+    }).then(() => console.log(green('Htaccess successfully copied!')));
   }
 }

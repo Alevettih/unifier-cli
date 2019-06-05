@@ -2,6 +2,7 @@ import { LinterConfig, Specifier } from '@specifier/index';
 import { ChildProcess, spawn } from 'child_process';
 import { join } from 'path';
 import { readFile, writeFile, rename } from 'fs-extra';
+import { green, red } from 'colors/safe';
 
 export class ReactSpecifier extends Specifier {
 
@@ -34,7 +35,7 @@ export class ReactSpecifier extends Specifier {
       const npm: ChildProcess = spawn('npm', ['i', 'node-sass'], this.childProcessOptions);
 
       npm.on('error', (err) => {
-        reject(new Error(`SCSS installation was fell: ${err}`));
+        reject(new Error(red(`SCSS installation was fell: ${err}`)));
       });
 
       npm.on('exit', async () => {
@@ -58,6 +59,6 @@ export class ReactSpecifier extends Specifier {
 
         resolve();
       });
-    }).then(() => console.log('SCSS successfully installed!'));
+    }).then(() => console.log(green('SCSS successfully installed!')));
   }
 }

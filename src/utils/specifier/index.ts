@@ -2,6 +2,7 @@ import { copy, readJson, readJsonSync, writeJson } from 'fs-extra';
 import { join } from 'path';
 import { ChildProcess, spawn } from 'child_process';
 import { PackageJson } from 'tsconfig-paths/lib/filesystem';
+import { green, red } from 'colors/safe';
 
 export interface LinterConfig {
   modules: string[];
@@ -61,9 +62,9 @@ export class Specifier {
 
         resolve();
       } catch (err) {
-        reject(new Error(`Gitignore copying failed: ${err}`));
+        reject(new Error(red(`Gitignore copying failed: ${err}`)));
       }
-    }).then(() => console.log('Gitignore successfully copied'));
+    }).then(() => console.log(green('Gitignore successfully copied')));
   }
 
   async copyEditorconfig(): Promise<void> {
@@ -76,9 +77,9 @@ export class Specifier {
 
         resolve();
       } catch (err) {
-        reject(new Error(`Editorconfig copying failed: ${err}`));
+        reject(new Error(red(`Editorconfig copying failed: ${err}`)));
       }
-    }).then(() => console.log('Editorconfig successfully copied!'));
+    }).then(() => console.log(green('Editorconfig successfully copied!')));
   }
 
   async copyBrowserslistrc(): Promise<void> {
@@ -98,9 +99,9 @@ export class Specifier {
 
         resolve();
       } catch (err) {
-        reject(new Error(`browserslistrc copying failed: ${err}`));
+        reject(new Error(red(`browserslistrc copying failed: ${err}`)));
       }
-    }).then(() => console.log('Browserslist successfully copied!'));
+    }).then(() => console.log(green('Browserslist successfully copied!')));
   }
 
   copyStylelintrc(): Promise<void> {
@@ -113,7 +114,7 @@ export class Specifier {
       );
 
       npm.on('error', (err) => {
-        reject(new Error(`Stylelint installation failed: ${err}`));
+        reject(new Error(red(`Stylelint installation failed: ${err}`)));
       });
 
       npm.on('exit', async () => {
@@ -132,10 +133,10 @@ export class Specifier {
 
           resolve();
         } catch (err) {
-          reject(new Error(`Stylelint init was fell: ${err}`));
+          reject(new Error(red(`Stylelint init was fell: ${err}`)));
         }
       });
-    }).then(() => console.log('Stylelint successfully initiated!'));
+    }).then(() => console.log(green('Stylelint successfully initiated!')));
   }
 
   copyEslintrc(): Promise<void> {
@@ -143,7 +144,7 @@ export class Specifier {
       const npm: ChildProcess = spawn('npm', ['i', ...this.eslint.modules], this.childProcessOptions );
 
       npm.on('error', (err) => {
-        reject(new Error(`Eslint init was fell: ${err}`));
+        reject(new Error(red(`Eslint init was fell: ${err}`)));
       });
 
       npm.on('exit', async () => {
@@ -161,10 +162,10 @@ export class Specifier {
           ]);
           resolve();
         } catch (err) {
-          reject(new Error(`Eslint init was fell: ${err}`));
+          reject(new Error(red(`Eslint init was fell: ${err}`)));
         }
       });
-    }).then(() => console.log('Eslint successfully initiated!'));
+    }).then(() => console.log(green('Eslint successfully initiated!')));
   }
 
   initialCommit() {
@@ -179,8 +180,8 @@ export class Specifier {
       });
 
       git.on('error', (err) => {
-        reject(new Error(`Initial commit error: ${err}`));
+        reject(new Error(red(`Initial commit error: ${err}`)));
       });
-    }).then(() => console.log('Git repository successfully initiated!'));
+    }).then(() => console.log(green('Git repository successfully initiated!')));
   }
 }

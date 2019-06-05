@@ -1,5 +1,6 @@
 import { Specifier } from '@specifier/index';
 import { ChildProcess, spawn } from 'child_process';
+import { green, red } from 'colors/safe';
 
 export class PlainJSSpecifier extends Specifier {
   async specify(): Promise<void> {
@@ -15,14 +16,14 @@ export class PlainJSSpecifier extends Specifier {
     return new Promise((resolve, reject) => {
       const npm: ChildProcess = spawn('npm', ['i'], this.childProcessOptions);
 
-      npm.on('error', () => {
-        reject(new Error(''));
+      npm.on('error', (err) => {
+        reject(new Error(red(`node_modules installation error: ${err}`)));
       });
 
       npm.on('exit', () => {
         resolve();
       });
-    }).then(() => console.log('node_modules successfully installed!'));
+    }).then(() => console.log(green('node_modules successfully installed!')));
   }
 
   initialCommit(): Promise<void> {
@@ -30,7 +31,7 @@ export class PlainJSSpecifier extends Specifier {
       const npm: ChildProcess = spawn('rm', ['-rf', '.git'], this.childProcessOptions);
 
       npm.on('error', (err) => {
-        reject(new Error(`Initial commit error: ${err}`));
+        reject(new Error(red(`Initial commit error: ${err}`)));
       });
 
       npm.on('exit', async () => {
