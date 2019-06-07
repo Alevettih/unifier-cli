@@ -3,6 +3,7 @@ import * as fs from 'fs-extra';
 import * as child_process from 'child_process';
 
 jest.mock('fs-extra');
+jest.mock('child_process');
 
 describe('Specifier should', () => {
   const testDir = 'target-tmp';
@@ -38,11 +39,12 @@ describe('Specifier should', () => {
   test('copy .stylelintrc file from specification', () => {
     const specifier = new Specifier(testDir);
 
-    Object.defineProperty(fs, 'readJsonSync', {value: jest.fn().mockReturnValue({test: 2})});
+    Object.defineProperty(fs, 'readJsonSync', {value: jest.fn().mockReturnValue({scripts: {}})});
 
     return specifier.copyStylelintrc().then(() => {
       expect(child_process.spawn).toBeCalled();
-      expect(fs.readJsonSync).not.toBeCalled();
+
+      expect(fs.readJsonSync).toBeCalled();
       expect(fs.writeJson).toBeCalled();
       expect(fs.copy).toBeCalled();
     });
