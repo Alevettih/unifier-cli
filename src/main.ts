@@ -20,7 +20,7 @@ export interface Answer {
 export const args: ParsedArgs = minimist(process.argv.slice(2));
 
 export default (): Promise<void | TypeError> => {
-  if (args._[0]) {
+  if (args && args._ && args._[0]) {
     args.title = args._[0];
   }
 
@@ -57,5 +57,5 @@ export default (): Promise<void | TypeError> => {
         throw new TypeError(red(`\nInvalid project type!\nAvailable types:${types}`));
       }
     }
-  });
+  }).catch(e => e);
 };

@@ -1,8 +1,9 @@
 import { title } from '../validators';
+import { red } from 'colors/safe';
 
 describe('Validators can', () => {
   test('check title correct', () => {
-    const errorMessage = 'Project name may only include letters, numbers, underscores and hashes.';
+    const errorMessage = red('Project name may only include letters, numbers, underscores and hashes.');
     expect(title()).toBe(errorMessage);
     expect(title('')).toBe(errorMessage);
     expect(title('project')).toBeTruthy();

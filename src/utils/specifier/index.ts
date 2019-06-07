@@ -52,21 +52,6 @@ export class Specifier {
     return this.project;
   }
 
-  copyGitignore(): Promise<void> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        await copy(
-          join(__dirname, '../../specification/files/.gitignore'),
-          join(this.name, '.gitignore')
-        );
-
-        resolve();
-      } catch (err) {
-        reject(new Error(red(`Gitignore copying failed: ${err}`)));
-      }
-    }).then(() => console.log(green('Gitignore successfully copied')));
-  }
-
   async copyEditorconfig(): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
@@ -82,7 +67,7 @@ export class Specifier {
     }).then(() => console.log(green('Editorconfig successfully copied!')));
   }
 
-  async copyBrowserslistrc(): Promise<void> {
+  copyBrowserslistrc(): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
         const json: PackageJson = readJsonSync(join(this.name, 'package.json'));

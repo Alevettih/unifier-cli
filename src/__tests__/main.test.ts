@@ -14,17 +14,19 @@ describe('User answers', () => {
   });
 
   describe('can select correct project type', () => {
+    const title = 'test-test';
+
     beforeAll(() => {
-      Object.defineProperty(projects, 'plain', {value: jest.fn()});
-      Object.defineProperty(projects, 'angular', {value: jest.fn()});
-      Object.defineProperty(projects, 'react', {value: jest.fn()});
-      Object.defineProperty(projects, 'vue', {value: jest.fn()});
+      Object.defineProperty(projects, 'plainProject', {value: jest.fn()});
+      Object.defineProperty(projects, 'angularProject', {value: jest.fn()});
+      Object.defineProperty(projects, 'reactProject', {value: jest.fn()});
+      Object.defineProperty(projects, 'vueProject', {value: jest.fn()});
     });
 
     test('Plain JS', async () => {
       Object.defineProperty(inquirer, 'prompt', {
         value: jest.fn(
-          async () => ({ type: projects.types.PLAIN })
+          async () => ({ title, type: projects.types.PLAIN })
         )
       });
 
@@ -36,7 +38,7 @@ describe('User answers', () => {
     test('Angular', async () => {
       Object.defineProperty(inquirer, 'prompt', {
         value: jest.fn(
-          async () => ({ type: projects.types.ANGULAR })
+          async () => ({ title, type: projects.types.ANGULAR })
         )
       });
 
@@ -48,7 +50,7 @@ describe('User answers', () => {
     test('React', async () => {
       Object.defineProperty(inquirer, 'prompt', {
         value: jest.fn(
-          async () => ({ type: projects.types.REACT })
+          async () => ({ title, type: projects.types.REACT })
         )
       });
 
@@ -60,7 +62,7 @@ describe('User answers', () => {
     test('Vue', async () => {
       Object.defineProperty(inquirer, 'prompt', {
         value: jest.fn(
-          async () => ({ type: projects.types.VUE })
+          async () => ({ title, type: projects.types.VUE })
         )
       });
 
@@ -72,7 +74,7 @@ describe('User answers', () => {
     test('should throw TypeError with invalid project type', async () => {
       Object.defineProperty(inquirer, 'prompt', {
         value: jest.fn(
-          async () => ({ type: null })
+          async () => ({ title, type: null })
         )
       });
 
