@@ -16,6 +16,8 @@ export class AngularSpecifier extends Specifier {
       this.copyEditorconfig(),
       this.copyStylelintrc()
     ]);
+    await this.initGit();
+    await this.addLintHooks();
     await this.initialCommit();
   }
 

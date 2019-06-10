@@ -1,6 +1,7 @@
 import { sep } from 'path';
 import { pathExistsSync } from 'fs-extra';
 import { readdirSync } from 'fs';
+import { ChildProcess } from 'child_process';
 
 export function isDirectoryExistsAndNotEmpty(input?: string): boolean {
   return !!(pathExistsSync(input) && readdirSync(input).length);
@@ -36,4 +37,11 @@ export function deepMerge(target: object, ...sources: object[]): object {
   }
 
   return deepMerge(target, ...sources);
+}
+
+export function childProcessPromise(childProcess: ChildProcess): Promise<any> {
+  return new Promise((resolve, reject) => {
+    childProcess.on('exit', resolve);
+    childProcess.on('error', reject);
+  });
 }

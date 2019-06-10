@@ -21,6 +21,7 @@ export class VueSpecifier extends Specifier {
       this.copyBrowserslistrc(),
       this.copyStylelintrc()
     ]);
+    await this.initGit();
     await this.initialCommit();
   }
 }

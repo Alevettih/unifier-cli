@@ -22,11 +22,12 @@ export class ReactSpecifier extends Specifier {
   async specify(): Promise<void> {
     await Promise.all([
       this.copyEditorconfig(),
-      this.copyBrowserslistrc(),
-      this.addScss(),
-      this.copyStylelintrc(),
-      this.copyEslintrc()
+      this.copyBrowserslistrc()
     ]);
+    await this.addScss();
+    await this.copyStylelintrc();
+    await this.copyEslintrc();
+    await this.addLintHooks();
     await this.initialCommit();
   }
 

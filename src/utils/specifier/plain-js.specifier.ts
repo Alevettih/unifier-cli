@@ -9,6 +9,7 @@ export class PlainJSSpecifier extends Specifier {
       await this.copyBrowserslistrc(),
       await this.copyEditorconfig()
     ]);
+    await this.initGit();
     await this.initialCommit();
   }
 
@@ -26,7 +27,7 @@ export class PlainJSSpecifier extends Specifier {
     }).then(() => console.log(green('node_modules successfully installed!')));
   }
 
-  initialCommit(): Promise<void> {
+  initGit(): Promise<void> {
     return new Promise((resolve, reject) => {
       const npm: ChildProcess = spawn('rm', ['-rf', '.git'], this.childProcessOptions);
 
@@ -37,6 +38,6 @@ export class PlainJSSpecifier extends Specifier {
       npm.on('exit', async () => {
         resolve();
       });
-    }).then(() => super.initialCommit());
+    }).then(() => super.initGit());
   }
 }

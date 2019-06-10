@@ -1,8 +1,9 @@
-import { copy, readJson, readJsonSync, writeJson } from 'fs-extra';
+import { copy, readJsonSync, writeJson } from 'fs-extra';
 import { join } from 'path';
 import { ChildProcess, spawn } from 'child_process';
 import { PackageJson } from 'tsconfig-paths/lib/filesystem';
 import { green, red } from 'colors/safe';
+import { childProcessPromise } from '@utils/helpers';
 
 export interface LinterConfig {
   modules: string[];
@@ -134,7 +135,7 @@ export class Specifier {
 
       npm.on('exit', async () => {
         try {
-          const packageJson: PackageJson = await readJson( join(this.name, 'package.json') );
+          const packageJson: PackageJson = readJsonSync( join(this.name, 'package.json') );
 
           packageJson.scripts['lint:es'] = this.eslint.script;
 
@@ -153,10 +154,27 @@ export class Specifier {
     }).then(() => console.log(green('Eslint successfully initiated!')));
   }
 
+  initGit() {
+    return new Promise((resolve, reject) => {
+      const git: ChildProcess = spawn(
+        'git init',
+        Object.assign({shell: true}, this.childProcessOptions)
+      );
+
+      git.on('exit', () => {
+        resolve();
+      });
+
+      git.on('error', (err) => {
+        reject(new Error(red(`Git init error: ${err}`)));
+      });
+    }).then(() => console.log(green('Git repository successfully initiated!')));
+  }
+
   initialCommit() {
     return new Promise((resolve, reject) => {
       const git: ChildProcess = spawn(
-        'git init; git add .; git commit -m "Initial commit"',
+        'git add .; git commit -m "Initial commit" -n',
         Object.assign({shell: true}, this.childProcessOptions)
       );
 
@@ -167,6 +185,35 @@ export class Specifier {
       git.on('error', (err) => {
         reject(new Error(red(`Initial commit error: ${err}`)));
       });
-    }).then(() => console.log(green('Git repository successfully initiated!')));
+    }).then(() => console.log(green('initial commit was successfully done!')));
+  }
+
+  addLintHooks() {
+    return childProcessPromise(
+      spawn('npm', ['i', 'husky'], this.childProcessOptions )
+    ).then(
+      () => {
+        const packageJson: PackageJson & { husky: {} } = readJsonSync( join(this.name, 'package.json') );
+        const lintScripts: string[] = Object.keys(packageJson.scripts)
+          .filter((key: string): boolean => key.includes('lint'))
+          .map((script: string): string => `npm run ${script}`);
+
+        packageJson.scripts['lint:all'] = lintScripts.join(' && ');
+        packageJson.husky = {
+          hooks: {
+            'pre-commit': 'npm run lint:all'
+          }
+        };
+
+        return writeJson(
+          join(this.name, 'package.json'),
+          packageJson,
+          { spaces: 2 }
+        );
+      },
+      (err: Error) => {
+        throw new Error(red(`lint hooks install was fell: ${err}`));
+      }
+    ).then(() => console.log(green('lint hooks successfully installed!')));
   }
 }

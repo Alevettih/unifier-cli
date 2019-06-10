@@ -1,52 +1,100 @@
 import { Specifier } from '../specifier';
 import * as fs from 'fs-extra';
 import * as child_process from 'child_process';
+import { join } from 'path';
 
 jest.mock('fs-extra');
 jest.mock('child_process');
 
 describe('Specifier should', () => {
   const testDir = 'target-tmp';
+  let specifier: Specifier;
 
-  test('init an instance', () => {
+  beforeEach(() => {
+    specifier = new Specifier(testDir);
+  });
+
+  test('init an instance', (): void => {
     expect(() => new Specifier('')).toThrow();
     expect(() => new Specifier(testDir)).not.toThrow();
-    expect(new Specifier(testDir)).toBeInstanceOf(Specifier);
-    expect(new Specifier(testDir).project).toBe(testDir);
-    expect(new Specifier(testDir).childProcessOptions).toBeInstanceOf(Object);
+    expect(specifier).toBeInstanceOf(Specifier);
+    expect(specifier.project).toBe(testDir);
+    expect(specifier.childProcessOptions).toBeInstanceOf(Object);
   });
 
-  test('copy .editorconfig file from specification', () => {
-    const specifier = new Specifier(testDir);
+  test('copy .editorconfig file from specification', async (): Promise<void> => {
+    await specifier.copyEditorconfig();
 
-    return specifier.copyEditorconfig().then(() => {
-      expect(fs.copy).toBeCalled();
-    });
+    expect(fs.copy).toBeCalled();
   });
 
-  test('copy .browserslistrc file from specification', () => {
-    const specifier = new Specifier(testDir);
+  test('copy .browserslistrc file from specification', async (): Promise<void> => {
+    Object.defineProperty(fs, 'readJsonSync', { value: jest.fn().mockReturnValue({ browserslist: { test: 2 } }) });
 
-    Object.defineProperty(fs, 'readJsonSync', {value: jest.fn().mockReturnValue({browserslist: {test: 2}})});
+    await specifier.copyBrowserslistrc();
 
-    return specifier.copyBrowserslistrc().then(() => {
-      expect(fs.readJsonSync).toBeCalled();
-      expect(fs.writeJson).toBeCalled();
-      expect(fs.copy).toBeCalled();
-    });
+    expect(fs.readJsonSync).toBeCalled();
+    expect(fs.writeJson).toBeCalledWith(
+      join(specifier.name, 'package.json'),
+      { browserslist: undefined },
+      { spaces: 2 }
+    );
+    expect(fs.copy).toBeCalled();
   });
 
-  test('copy .stylelintrc file from specification', () => {
-    const specifier = new Specifier(testDir);
-
+  test('init .stylelintrc', async (): Promise<void> => {
     Object.defineProperty(fs, 'readJsonSync', {value: jest.fn().mockReturnValue({scripts: {}})});
 
-    return specifier.copyStylelintrc().then(() => {
-      expect(child_process.spawn).toBeCalled();
+    await specifier.copyStylelintrc();
 
-      expect(fs.readJsonSync).toBeCalled();
-      expect(fs.writeJson).toBeCalled();
-      expect(fs.copy).toBeCalled();
-    });
+    expect(child_process.spawn).toBeCalledWith(
+      'npm',
+      ['i', ...specifier.stylelint.modules],
+      specifier.childProcessOptions
+    );
+    expect(fs.readJsonSync).toBeCalled();
+    expect(fs.writeJson).toBeCalledWith(
+      join(specifier.name, 'package.json'),
+      { scripts: { 'lint:scss': specifier.stylelint.script } },
+      { spaces: 2 }
+    );
+    expect(fs.copy).toBeCalled();
+  });
+
+  test('init .eslintrc', async (): Promise<void> => {
+    Object.defineProperty(fs, 'readJsonSync', {value: jest.fn().mockReturnValue({scripts: {}})});
+
+    await specifier.copyEslintrc();
+
+    expect(child_process.spawn).toBeCalledWith(
+      'npm',
+      ['i', ...specifier.eslint.modules],
+      specifier.childProcessOptions
+    );
+    expect(fs.readJsonSync).toBeCalled();
+    expect(fs.writeJson).toBeCalledWith(
+      join(specifier.name, 'package.json'),
+      { scripts: { 'lint:es': specifier.eslint.script } },
+      { spaces: 2 }
+    );
+    expect(fs.copy).toBeCalled();
+  });
+
+  test('Create Git repo', async (): Promise<void> => {
+    await specifier.initGit();
+
+    expect(child_process.spawn).toBeCalledWith(
+      'git init',
+      Object.assign({shell: true}, specifier.childProcessOptions)
+    );
+  });
+
+  test('Do initial commit', async (): Promise<void> => {
+    await specifier.initialCommit();
+
+    expect(child_process.spawn).toBeCalledWith(
+      'git add .; git commit -m "Initial commit" -n',
+      Object.assign({shell: true}, specifier.childProcessOptions)
+    );
   });
 });
