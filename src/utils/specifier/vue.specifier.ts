@@ -16,12 +16,13 @@ export class VueSpecifier extends Specifier {
     path: '../../specification/files/vue/.stylelintrc'
   };
   async specify() {
+    await this.initGit();
+    await this.npmInstall([...this.stylelint.modules]);
     await Promise.all([
       this.copyEditorconfig(),
       this.copyBrowserslistrc(),
       this.copyStylelintrc()
     ]);
-    await this.initGit();
     await this.initialCommit();
   }
 }

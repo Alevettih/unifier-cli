@@ -53,167 +53,135 @@ export class Specifier {
     return this.project;
   }
 
-  async copyEditorconfig(): Promise<void> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        await copy(
-          join(__dirname, '../../specification/files/.editorconfig'),
-          join(this.name, '.editorconfig')
-        );
+  npmInstall(modules = [] as string[]) {
+    return childProcessPromise(
+      spawn(
+        'npm',
+        ['i', ...modules],
+        this.childProcessOptions
+      )
+    ).then(
+      () => { console.log(green('Modules successfully installed!')); },
+      (err) => { throw new Error(red(`Modules installation failed: ${err}`)); }
+    );
+  }
 
-        resolve();
-      } catch (err) {
-        reject(new Error(red(`Editorconfig copying failed: ${err}`)));
-      }
-    }).then(() => console.log(green('Editorconfig successfully copied!')));
+  copyEditorconfig(): Promise<void> {
+    return copy(
+      join(__dirname, '../../specification/files/.editorconfig'),
+      join(this.name, '.editorconfig')
+    ).then(
+      () => { console.log(green('Editorconfig successfully copied!')); },
+      (err) => { throw new Error(red(`Editorconfig copying failed: ${err}`)); }
+    );
   }
 
   copyBrowserslistrc(): Promise<void> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const json: PackageJson = readJsonSync(join(this.name, 'package.json'));
+    return copy(
+      join(__dirname, '../../specification/files/.browserslistrc'),
+      join(this.name, '.browserslistrc')
+    ).then(
+      () => { console.log(green('Browserslist successfully copied!')); },
+      (err) => { throw new Error(red(`browserslistrc copying failed: ${err}`)); }
+    );
+  }
 
-        delete json.browserslist;
-
-        await Promise.all([
-          writeJson(join(this.name, 'package.json'), json, {spaces: 2}),
-          copy(
-            join(__dirname, '../../specification/files/.browserslistrc'),
-            join(this.name, '.browserslistrc')
-          )
-        ]);
-
-        resolve();
-      } catch (err) {
-        reject(new Error(red(`browserslistrc copying failed: ${err}`)));
-      }
-    }).then(() => console.log(green('Browserslist successfully copied!')));
+  addStylelintTaskToPackageJson(): Promise<void> {
+    const packageJson: PackageJson = readJsonSync( join(this.name, 'package.json') );
+    packageJson.scripts['lint:scss'] = this.stylelint.script;
+    return writeJson(
+      join(this.name, 'package.json'),
+      packageJson,
+      { spaces: 2 }
+    ).then(
+      () => { console.log(green('stylelint task successfully added!')); },
+      (err) => { throw new Error(red(`adding of stylelint task failed: ${err}`)); }
+    );
   }
 
   copyStylelintrc(): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return copy(
+      join(__dirname, this.stylelint.path),
+      join(this.name, '.stylelintrc')
+    ).then(
+      () => { console.log(green('Stylelint successfully initiated!')); },
+      (err) => { throw new Error(red(`Stylelint init was fell: ${err}`)); }
+    );
+  }
 
-      const npm: ChildProcess = spawn(
-        'npm',
-        ['i', ...this.stylelint.modules],
-        this.childProcessOptions
-      );
-
-      npm.on('error', (err) => {
-        reject(new Error(red(`Stylelint installation failed: ${err}`)));
-      });
-
-      npm.on('exit', async () => {
-        try {
-          const packageJson: PackageJson = readJsonSync( join(this.name, 'package.json') );
-
-          packageJson.scripts['lint:scss'] = this.stylelint.script;
-
-          await Promise.all([
-            writeJson( join(this.name, 'package.json'), packageJson, { spaces: 2 } ),
-            copy(
-              join(__dirname, this.stylelint.path),
-              join(this.name, '.stylelintrc')
-            )
-          ]);
-
-          resolve();
-        } catch (err) {
-          reject(new Error(red(`Stylelint init was fell: ${err}`)));
-        }
-      });
-    }).then(() => console.log(green('Stylelint successfully initiated!')));
+  addEslintTaskToPackageJson(): Promise<void> {
+    const packageJson: PackageJson = readJsonSync( join(this.name, 'package.json') );
+    packageJson.scripts['lint:es'] = this.eslint.script;
+    return writeJson(
+      join(this.name, 'package.json'),
+      packageJson,
+      { spaces: 2 }
+    ).then(
+      () => { console.log(green('eslint task successfully added!')); },
+      (err) => { throw new Error(red(`adding of eslint task failed: ${err}`)); }
+    );
   }
 
   copyEslintrc(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const npm: ChildProcess = spawn('npm', ['i', ...this.eslint.modules], this.childProcessOptions );
+    return copy(
+      join(__dirname, this.eslint.path),
+      join(this.name, '.eslintrc')
+    ).then(
+      () => { console.log(green('.eslintrc successfully copied!')); },
+      (err) => { throw new Error(red(`.eslintrc copying was fell: ${err}`)); }
+    );
+  }
 
-      npm.on('error', (err) => {
-        reject(new Error(red(`Eslint init was fell: ${err}`)));
-      });
-
-      npm.on('exit', async () => {
-        try {
-          const packageJson: PackageJson = readJsonSync( join(this.name, 'package.json') );
-
-          packageJson.scripts['lint:es'] = this.eslint.script;
-
-          await Promise.all([
-            writeJson( join(this.name, 'package.json'), packageJson, { spaces: 2 } ),
-            copy(
-              join(__dirname, this.eslint.path),
-              join(this.name, '.eslintrc')
-            )
-          ]);
-          resolve();
-        } catch (err) {
-          reject(new Error(red(`Eslint init was fell: ${err}`)));
-        }
-      });
-    }).then(() => console.log(green('Eslint successfully initiated!')));
+  removeDefaultGit(): Promise<void> {
+    return childProcessPromise(
+      spawn('rm', ['-rf', '.git'], this.childProcessOptions)
+    ).then(
+      () => { console.log(green('Default Git removed')); },
+      (err) => { throw new Error(red(`Default Git removing error: ${err}`)); }
+    );
   }
 
   initGit() {
-    return new Promise((resolve, reject) => {
-      const git: ChildProcess = spawn(
+    return childProcessPromise(
+      spawn(
         'git init',
         Object.assign({shell: true}, this.childProcessOptions)
-      );
-
-      git.on('exit', () => {
-        resolve();
-      });
-
-      git.on('error', (err) => {
-        reject(new Error(red(`Git init error: ${err}`)));
-      });
-    }).then(() => console.log(green('Git repository successfully initiated!')));
+      )
+    ).then(
+      () => { console.log(green('Git repository successfully initiated!')); },
+      (err) => { throw new Error(red(`Git init error: ${err}`)); }
+    );
   }
 
   initialCommit() {
-    return new Promise((resolve, reject) => {
-      const git: ChildProcess = spawn(
+    return childProcessPromise(
+      spawn(
         'git add .; git commit -m "Initial commit" -n',
         Object.assign({shell: true}, this.childProcessOptions)
-      );
-
-      git.on('exit', () => {
-        resolve();
-      });
-
-      git.on('error', (err) => {
-        reject(new Error(red(`Initial commit error: ${err}`)));
-      });
-    }).then(() => console.log(green('initial commit was successfully done!')));
+      )
+    ).then(
+      () => { console.log(green('initial commit was successfully done!')); },
+      (err) => { throw new Error(red(`Initial commit error: ${err}`)); }
+    );
   }
 
   addLintHooks() {
-    return childProcessPromise(
-      spawn('npm', ['i', 'husky'], this.childProcessOptions )
-    ).then(
-      () => {
-        const packageJson: PackageJson & { husky: {} } = readJsonSync( join(this.name, 'package.json') );
-        const lintScripts: string[] = Object.keys(packageJson.scripts)
-          .filter((key: string): boolean => key.includes('lint'))
-          .map((script: string): string => `npm run ${script}`);
+    const packageJson: PackageJson & { husky: {} } = readJsonSync( join(this.name, 'package.json') );
+    const lintScripts: string[] = Object.keys(packageJson.scripts)
+      .filter((key: string): boolean => key.includes('lint'))
+      .map((script: string): string => `npm run ${script}`);
 
-        packageJson.scripts['lint:all'] = lintScripts.join(' && ');
-        packageJson.husky = {
-          hooks: {
-            'pre-commit': 'npm run lint:all'
-          }
-        };
-
-        return writeJson(
-          join(this.name, 'package.json'),
-          packageJson,
-          { spaces: 2 }
-        );
-      },
-      (err: Error) => {
-        throw new Error(red(`lint hooks install was fell: ${err}`));
+    packageJson.scripts['lint:all'] = lintScripts.join(' && ');
+    packageJson.husky = {
+      hooks: {
+        'pre-commit': 'npm run lint:all'
       }
-    ).then(() => console.log(green('lint hooks successfully installed!')));
+    };
+
+    return writeJson(
+      join(this.name, 'package.json'),
+      packageJson,
+      { spaces: 2 }
+    );
   }
 }

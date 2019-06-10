@@ -1,8 +1,8 @@
 import { LinterConfig, Specifier } from '@specifier/index';
-import { ChildProcess, spawn } from 'child_process';
 import { join } from 'path';
-import { readFile, writeFile, rename } from 'fs-extra';
+import { readFile, writeFile, rename, readJsonSync, writeJson } from 'fs-extra';
 import { green, red } from 'colors/safe';
+import { PackageJson } from 'tsconfig-paths/lib/filesystem';
 
 export class ReactSpecifier extends Specifier {
 
@@ -20,46 +20,58 @@ export class ReactSpecifier extends Specifier {
     path: '../../specification/files/react/.eslintrc'
   };
   async specify(): Promise<void> {
+    await this.removeDefaultGit();
+    await this.initGit();
+    await this.npmInstall(['node-sass', 'husky', ...this.eslint.modules, ...this.stylelint.modules]);
     await Promise.all([
       this.copyEditorconfig(),
-      this.copyBrowserslistrc()
+      this.copyBrowserslistrc(),
+      this.copyStylelintrc(),
+      this.copyEslintrc(),
+      this.cssToScss()
     ]);
-    await this.addScss();
-    await this.copyStylelintrc();
-    await this.copyEslintrc();
+    await this.removeBrowserslistrcFromPackageJson();
+    await this.addStylelintTaskToPackageJson();
+    await this.addEslintTaskToPackageJson();
     await this.addLintHooks();
     await this.initialCommit();
   }
 
-  addScss(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const npm: ChildProcess = spawn('npm', ['i', 'node-sass'], this.childProcessOptions);
+  cssToScss(): Promise<void> {
+    const files: string[] = ['App', 'index'];
 
-      npm.on('error', (err) => {
-        reject(new Error(red(`SCSS installation was fell: ${err}`)));
-      });
+    const renames$: Promise<void>[] = files.map((key) => rename(
+      join(this.name, `src/${key}.css`),
+      join(this.name, `src/${key}.scss`)
+    ));
 
-      npm.on('exit', async () => {
-        const files: string[] = ['App', 'index'];
+    const contentChanges$: Promise<void>[] = files.map(async (name: string) => {
+      const file = await readFile(join(this.name, `src/${name}.js`), 'utf-8');
+      return writeFile(
+        join(this.name, `src/${name}.js`),
+        file.replace(`${name}.css`, `${name}.scss`),
+        'utf-8'
+      );
+    });
 
-        const renames$: Promise<void>[] = files.map((key) => rename(
-          join(this.name, `src/${key}.css`),
-          join(this.name, `src/${key}.scss`)
-        ));
+    return Promise.all(
+      [...renames$, ...contentChanges$]
+    ).then(
+      () => { console.log(green('.css successfully replaced by .scss')); },
+      (err) => { throw new Error(`.css replacing failed: ${err}`); }
+    );
+  }
 
-        const contentChanges$: Promise<void>[] = files.map(async (name: string) => {
-          const file = await readFile(join(this.name, `src/${name}.js`), 'utf-8');
-          return writeFile(
-            join(this.name, `src/${name}.js`),
-            file.replace(`${name}.css`, `${name}.scss`),
-            'utf-8'
-          );
-        });
-
-        await Promise.all([...renames$, ...contentChanges$]);
-
-        resolve();
-      });
-    }).then(() => console.log(green('SCSS successfully installed!')));
+  removeBrowserslistrcFromPackageJson(): Promise<void> {
+    const json: PackageJson = readJsonSync(join(this.name, 'package.json'));
+    delete json.browserslist;
+    return writeJson(
+      join(this.name, 'package.json'),
+      json,
+      {spaces: 2}
+    ).then(
+      () => { console.log(green('Browserslist successfully removed from package.json!')); },
+      (err) => { throw new Error(red(`Browserslist removing from package.json failed: ${err}`)); }
+    );
   }
 }

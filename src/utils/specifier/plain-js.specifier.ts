@@ -1,43 +1,14 @@
 import { Specifier } from '@specifier/index';
-import { ChildProcess, spawn } from 'child_process';
-import { green, red } from 'colors/safe';
 
 export class PlainJSSpecifier extends Specifier {
   async specify(): Promise<void> {
+    await this.removeDefaultGit();
+    await this.initGit();
     await Promise.all([
-      await this.installNodeModules(),
+      await this.npmInstall(),
       await this.copyBrowserslistrc(),
       await this.copyEditorconfig()
     ]);
-    await this.initGit();
     await this.initialCommit();
-  }
-
-  installNodeModules(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const npm: ChildProcess = spawn('npm', ['i'], this.childProcessOptions);
-
-      npm.on('error', (err) => {
-        reject(new Error(red(`node_modules installation error: ${err}`)));
-      });
-
-      npm.on('exit', () => {
-        resolve();
-      });
-    }).then(() => console.log(green('node_modules successfully installed!')));
-  }
-
-  initGit(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const npm: ChildProcess = spawn('rm', ['-rf', '.git'], this.childProcessOptions);
-
-      npm.on('error', (err) => {
-        reject(new Error(red(`Initial commit error: ${err}`)));
-      });
-
-      npm.on('exit', async () => {
-        resolve();
-      });
-    }).then(() => super.initGit());
   }
 }
