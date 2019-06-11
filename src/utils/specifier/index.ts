@@ -6,9 +6,9 @@ import { green, red } from 'colors/safe';
 import { childProcessPromise } from '@utils/helpers';
 
 export interface LinterConfig {
-  modules: string[];
-  script: string;
-  path: string;
+  modules?: string[];
+  script?: string;
+  path?: string;
 }
 
 export class Specifier {
