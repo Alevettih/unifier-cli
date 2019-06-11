@@ -22,65 +22,67 @@ describe('Specifier should', () => {
     expect(specifier.childProcessOptions).toBeInstanceOf(Object);
   });
 
+  test('execute "npm i" with passed modules', async (): Promise<void> => {
+    specifier.npmInstall();
+    expect(child_process.spawn).toBeCalledWith('npm', ['i'], specifier.childProcessOptions);
+
+    specifier.npmInstall(['test']);
+    expect(child_process.spawn).toBeCalledWith('npm', ['i', 'test'], specifier.childProcessOptions);
+  });
+
   test('copy .editorconfig file from specification', async (): Promise<void> => {
     await specifier.copyEditorconfig();
-
     expect(fs.copy).toBeCalled();
   });
 
   test('copy .browserslistrc file from specification', async (): Promise<void> => {
-    Object.defineProperty(fs, 'readJsonSync', { value: jest.fn().mockReturnValue({ browserslist: { test: 2 } }) });
-
     await specifier.copyBrowserslistrc();
-
-    expect(fs.readJsonSync).toBeCalled();
-    expect(fs.writeJson).toBeCalledWith(
-      join(specifier.name, 'package.json'),
-      { browserslist: undefined },
-      { spaces: 2 }
-    );
     expect(fs.copy).toBeCalled();
   });
 
-  test('init .stylelintrc', async (): Promise<void> => {
+  test('add stylelint task to package.json', async (): Promise<void> => {
     Object.defineProperty(fs, 'readJsonSync', {value: jest.fn().mockReturnValue({scripts: {}})});
 
-    await specifier.copyStylelintrc();
+    await specifier.addStylelintTaskToPackageJson();
 
-    expect(child_process.spawn).toBeCalledWith(
-      'npm',
-      ['i', ...specifier.stylelint.modules],
-      specifier.childProcessOptions
-    );
     expect(fs.readJsonSync).toBeCalled();
     expect(fs.writeJson).toBeCalledWith(
       join(specifier.name, 'package.json'),
       { scripts: { 'lint:scss': specifier.stylelint.script } },
       { spaces: 2 }
     );
+  });
+
+  test('copy .stylelintrc', async (): Promise<void> => {
+    await specifier.copyStylelintrc();
     expect(fs.copy).toBeCalled();
   });
 
-  test('init .eslintrc', async (): Promise<void> => {
+  test('add eslint task to package.json', async (): Promise<void> => {
     Object.defineProperty(fs, 'readJsonSync', {value: jest.fn().mockReturnValue({scripts: {}})});
 
-    await specifier.copyEslintrc();
+    await specifier.addEslintTaskToPackageJson();
 
-    expect(child_process.spawn).toBeCalledWith(
-      'npm',
-      ['i', ...specifier.eslint.modules],
-      specifier.childProcessOptions
-    );
     expect(fs.readJsonSync).toBeCalled();
     expect(fs.writeJson).toBeCalledWith(
       join(specifier.name, 'package.json'),
       { scripts: { 'lint:es': specifier.eslint.script } },
       { spaces: 2 }
     );
+  });
+
+  test('copy .eslintrc', async (): Promise<void> => {
+    await specifier.copyEslintrc();
     expect(fs.copy).toBeCalled();
   });
 
-  test('Create Git repo', async (): Promise<void> => {
+  test('remove default Git', async (): Promise<void> => {
+    await specifier.removeDefaultGit();
+
+    expect(child_process.spawn).toBeCalledWith('rm', ['-rf', '.git'], specifier.childProcessOptions);
+  });
+
+  test('init Git repo', async (): Promise<void> => {
     await specifier.initGit();
 
     expect(child_process.spawn).toBeCalledWith(
@@ -95,6 +97,28 @@ describe('Specifier should', () => {
     expect(child_process.spawn).toBeCalledWith(
       'git add .; git commit -m "Initial commit" -n',
       Object.assign({shell: true}, specifier.childProcessOptions)
+    );
+  });
+
+  test('add pre-commit lint hooks', async (): Promise<void> => {
+    const scripts = {
+      'lint:es': '',
+      'lint:scss': ''
+    };
+    const husky = {
+      hooks: {
+        'pre-commit': 'npm run lint:all'
+      }
+    };
+    Object.defineProperty(fs, 'readJsonSync', {value: jest.fn().mockReturnValue({ scripts })});
+
+    await specifier.addLintHooks();
+
+    expect(fs.readJsonSync).toBeCalled();
+    expect(fs.writeJson).toBeCalledWith(
+      join(specifier.name, 'package.json'),
+      { husky, scripts: Object.assign({ 'lint:all': 'npm run lint:es && npm run lint:scss' }, scripts) },
+      { spaces: 2 }
     );
   });
 });

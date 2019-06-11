@@ -1,6 +1,6 @@
 import { copy, readJsonSync, writeJson } from 'fs-extra';
 import { join } from 'path';
-import { ChildProcess, spawn } from 'child_process';
+import { spawn } from 'child_process';
 import { PackageJson } from 'tsconfig-paths/lib/filesystem';
 import { green, red } from 'colors/safe';
 import { childProcessPromise } from '@utils/helpers';
