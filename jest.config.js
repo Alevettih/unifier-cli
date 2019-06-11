@@ -8,6 +8,7 @@ module.exports = {
   roots: [
     '<rootDir>/src',
   ],
+  verbose: true,
   testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$',
   testPathIgnorePatterns: [
     '/codebase/',
@@ -22,6 +23,7 @@ module.exports = {
     'ts',
     'tsx',
   ],
+  silent: true,
   preset: 'ts-jest',
   testMatch: null,
 };

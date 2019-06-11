@@ -3,6 +3,7 @@ const child_process: ChildProcess = jest.genMockFromModule('child_process');
 import { EventEmitter } from 'events';
 
 const emitter = new EventEmitter();
+emitter.setMaxListeners(100);
 emitter.on('newListener', (event, listener) => {
   if (event === 'exit') {
     listener();
