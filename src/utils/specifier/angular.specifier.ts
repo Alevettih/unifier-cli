@@ -1,4 +1,4 @@
-import { copy, readJsonSync, remove, writeJson } from 'fs-extra';
+import { copy, outputFile, readJsonSync, remove, writeJson } from 'fs-extra';
 import { join } from 'path';
 import { deepMerge } from '@utils/helpers';
 import * as angularJsonAdditions from '@specification/files/angular/angular.json';
@@ -13,6 +13,7 @@ export class AngularSpecifier extends Specifier {
       this.copyBrowserslistrc(),
       this.copyTsconfig(),
       this.copyBaseStructure(),
+      this.addConfigJsonToAssets(),
       this.copyEditorconfig(),
       this.copyStylelintrc()
     ]);
@@ -76,6 +77,17 @@ export class AngularSpecifier extends Specifier {
     ).then(
       () => { console.log(green('Htaccess successfully copied!')); },
       (err) => { throw new Error(red(`Htaccess copying failed: ${err}`)); }
+    );
+  }
+
+  addConfigJsonToAssets(): Promise<void> {
+    return outputFile(
+      join(this.name, 'src/assets/config.json'),
+      '{}',
+      'utf-8'
+    ).then(
+      () => { console.log(green('config.json successfully created!')); },
+      (err) => { throw new Error(red(`config.json creation failed: ${err}`)); }
     );
   }
 }
