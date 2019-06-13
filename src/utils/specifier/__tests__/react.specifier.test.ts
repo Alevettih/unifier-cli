@@ -1,4 +1,6 @@
-import { ReactSpecifier } from '../react.specifier';
+import { ReactSpecifier } from '@utils/specifier/react.specifier';
+import { Specifier } from '@utils/specifier';
+import { mockClassMethods } from '@utils/helpers';
 import * as fs from 'fs-extra';
 import * as child_process from 'child_process';
 import { join } from 'path';
@@ -12,6 +14,10 @@ describe('react specifier should', () => {
 
   beforeEach(() => {
     specifier = new ReactSpecifier(testDir);
+  });
+
+  test('extends from Specifier', () => {
+    expect(specifier).toBeInstanceOf(Specifier);
   });
 
   test('change css to scss', async (): Promise<void> => {
@@ -37,27 +43,18 @@ describe('react specifier should', () => {
   });
 
   describe('specify React project', () => {
-    beforeEach(() => {
-      specifier.copyBrowserslistrc = jest.fn(async () => {});
-      specifier.copyEditorconfig = jest.fn(async () => {});
-      specifier.copyStylelintrc = jest.fn(async () => {});
-      specifier.copyEslintrc = jest.fn(async () => {});
+    beforeEach(async (): Promise<void> => {
+      mockClassMethods(specifier, [Specifier, ReactSpecifier], ['specify']);
 
-      specifier.npmInstall = jest.fn(async () => {});
+      await specifier.specify();
+    });
 
-      specifier.removeDefaultGit = jest.fn(async () => {});
-      specifier.initGit = jest.fn(async () => {});
-      specifier.addLintHooks = jest.fn(async () => {});
-      specifier.initialCommit = jest.fn(async () => {});
-
-      specifier.removeBrowserslistrcFromPackageJson = jest.fn(async () => {});
-      specifier.addStylelintTaskToPackageJson = jest.fn(async () => {});
-      specifier.addEslintTaskToPackageJson = jest.fn(async () => {});
+    test('add runtime config', async (): Promise<void> => {
+      expect(specifier.addConfigJs).toBeCalled();
+      expect(specifier.addLinkToConfigJsInHtml).toBeCalled();
     });
 
     test('copy configs', async (): Promise<void> => {
-      await specifier.specify();
-
       expect(specifier.copyBrowserslistrc).toBeCalled();
       expect(specifier.copyEditorconfig).toBeCalled();
       expect(specifier.copyStylelintrc).toBeCalled();
@@ -65,41 +62,29 @@ describe('react specifier should', () => {
     });
 
     test('execute "npm i"', async (): Promise<void> => {
-      await specifier.specify();
-
       expect(specifier.npmInstall).toBeCalledWith(
         ['node-sass', 'husky', ...specifier.eslint.modules, ...specifier.stylelint.modules]
       );
     });
 
     test('remove default Git repo', async (): Promise<void> => {
-      await specifier.specify();
-
       expect(specifier.removeDefaultGit).toBeCalled();
     });
 
     test('init Git repo', async (): Promise<void> => {
-      await specifier.specify();
-
       expect(specifier.initGit).toBeCalled();
     });
 
     test('remove browserslist config from package.json', async (): Promise<void> => {
-      await specifier.specify();
-
       expect(specifier.removeBrowserslistrcFromPackageJson).toBeCalled();
     });
 
     test('remove tasks for linters ro package.json', async (): Promise<void> => {
-      await specifier.specify();
-
       expect(specifier.addStylelintTaskToPackageJson).toBeCalled();
       expect(specifier.addEslintTaskToPackageJson).toBeCalled();
     });
 
     test('Do init commit', async (): Promise<void> => {
-      await specifier.specify();
-
       expect(specifier.initialCommit).toBeCalled();
     });
   });

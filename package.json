@@ -15,7 +15,7 @@
     "type": "git",
     "url": "git+https://github.com/Alevettih/afflux-cli.git"
   },
-  "author": "Alex Tykhonenko",
+  "author": "Alex Tykhonenko <alevettih@gmail.com>",
   "license": "ISC",
   "bin": {
     "afflux": "bin/cli"

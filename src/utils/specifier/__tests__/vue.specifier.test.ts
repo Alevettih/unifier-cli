@@ -1,4 +1,6 @@
-import { VueSpecifier } from '../vue.specifier';
+import { VueSpecifier } from '@utils/specifier/vue.specifier';
+import { Specifier } from '@utils/specifier';
+import { mockClassMethods } from '@utils/helpers';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 
@@ -13,6 +15,10 @@ describe('Vue specifier should', () => {
     specifier = new VueSpecifier(testDir);
   });
 
+  test('extends from Specifier', () => {
+    expect(specifier).toBeInstanceOf(Specifier);
+  });
+
   test('remove .eslintrc.js and copy .eslintrc from specification', async (): Promise<void> => {
     await specifier.copyEslintrc();
 
@@ -21,41 +27,37 @@ describe('Vue specifier should', () => {
   });
 
   describe('specify Vue project', () => {
-    test('copy configs', async (): Promise<void> => {
-      specifier.copyBrowserslistrc = jest.fn(async () => {});
-      specifier.copyEditorconfig = jest.fn(async () => {});
-      specifier.copyStylelintrc = jest.fn(async () => {});
-      specifier.copyEslintrc = jest.fn(async () => {});
+    beforeEach(async (): Promise<void> => {
+      mockClassMethods(specifier, [Specifier, VueSpecifier], ['specify']);
 
       await specifier.specify();
+    });
 
+    test('copy configs', async (): Promise<void> => {
       expect(specifier.copyBrowserslistrc).toBeCalled();
       expect(specifier.copyEditorconfig).toBeCalled();
       expect(specifier.copyStylelintrc).toBeCalled();
       expect(specifier.copyEslintrc).toBeCalled();
     });
 
+    test('add runtime config', async (): Promise<void> => {
+      expect(specifier.addConfigJs).toBeCalled();
+      expect(specifier.addLinkToConfigJsInHtml).toBeCalled();
+    });
+
     test('execute "npm i"', async (): Promise<void> => {
-      specifier.npmInstall = jest.fn(async () => {});
-
-      await specifier.specify();
-
       expect(specifier.npmInstall).toBeCalledWith([...specifier.stylelint.modules]);
     });
 
+    test('add stylelint task to package.json', async (): Promise<void> => {
+      expect(specifier.addStylelintTaskToPackageJson).toBeCalled();
+    });
+
     test('init Git repo', async (): Promise<void> => {
-      specifier.initGit = jest.fn(async () => {});
-
-      await specifier.specify();
-
       expect(specifier.initGit).toBeCalled();
     });
 
     test('Do init commit', async (): Promise<void> => {
-      specifier.initialCommit = jest.fn(async () => {});
-
-      await specifier.specify();
-
       expect(specifier.initialCommit).toBeCalled();
     });
   });

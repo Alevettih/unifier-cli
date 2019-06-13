@@ -2,6 +2,8 @@ import { sep } from 'path';
 import { pathExistsSync } from 'fs-extra';
 import { readdirSync } from 'fs';
 import { ChildProcess } from 'child_process';
+import { Specifier } from "@utils/specifier";
+import { VueSpecifier } from "@specifier/vue.specifier";
 
 export function isDirectoryExistsAndNotEmpty(input?: string): boolean {
   return !!(pathExistsSync(input) && readdirSync(input).length);
@@ -43,5 +45,19 @@ export function childProcessPromise(childProcess: ChildProcess): Promise<any> {
   return new Promise((resolve, reject) => {
     childProcess.on('exit', resolve);
     childProcess.on('error', reject);
+  });
+}
+
+export function mockClassMethods(target, classes, excludedMethods) {
+  const isNotExcluded = (key) => {
+    return ['constructor', ...excludedMethods].every(excludedValue => key !== excludedValue);
+  };
+
+  classes.forEach(classInstance => {
+    Object.getOwnPropertyNames(classInstance.prototype).forEach(key => {
+      if (isNotExcluded(key) && typeof target[key] === 'function') {
+        target[key] = jest.fn(async () => {});
+      }
+    });
   });
 }

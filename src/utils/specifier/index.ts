@@ -1,4 +1,4 @@
-import { copy, readJsonSync, writeJson } from 'fs-extra';
+import { copy, outputFile, readFileSync, readJsonSync, writeJson } from 'fs-extra';
 import { join } from 'path';
 import { spawn } from 'child_process';
 import { PackageJson } from 'tsconfig-paths/lib/filesystem';
@@ -182,6 +182,35 @@ export class Specifier {
       join(this.name, 'package.json'),
       packageJson,
       { spaces: 2 }
+    ).then(
+      () => { console.log(green('Lint hooks successfully added!')); },
+      (err) => { throw new Error(red(`Lint hooks addition failed: ${err}`)); }
+    );
+  }
+
+  addConfigJs(): Promise<void> {
+    return outputFile(
+      join(this.name, 'public/config.js'),
+      '// eslint-disable-next-line no-underscore-dangle\n(window || global).__ENV__ = Object.freeze({\n\n});',
+      'utf-8'
+    ).then(
+      () => { console.log(green('config.js successfully created!')); },
+      (err) => { throw new Error(red(`config.js creation failed: ${err}`)); }
+    );
+  }
+
+  addLinkToConfigJsInHtml(): Promise<void>  {
+    const html: string = readFileSync(
+      join(this.name, 'public/index.html'), 'utf-8'
+    );
+
+    return outputFile(
+      join(this.name, 'public/index.html'),
+      html.replace('</title>', '</title>\n    <script src="./config.js"></script>'),
+      'utf-8'
+    ).then(
+      () => { console.log(green('index.html successfully updated!')); },
+      (err) => { throw new Error(red(`index.html update failed: ${err}`)); }
     );
   }
 }

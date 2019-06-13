@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { outputFile } from 'fs-extra';
 
 interface FsExtra {
   __setMockFiles: (newMockFiles: any) => void;
@@ -6,6 +7,7 @@ interface FsExtra {
   copy: (from: string, to: string) => Promise<void>;
   remove: (from: string, to: string) => Promise<void>;
   writeJson: (to: string, json: string, opts: object) => Promise<void>;
+  outputFile: (to: string, json: string, opts: object) => Promise<void>;
 }
 
 const fs: FsExtra = jest.genMockFromModule('fs-extra');
@@ -39,5 +41,6 @@ fs.readdirSync = readdirSync;
 fs.copy = jest.fn(async () => {});
 fs.remove = jest.fn(async () => {});
 fs.writeJson = jest.fn(async () => {});
+fs.outputFile = jest.fn(async () => {});
 
 module.exports = fs;

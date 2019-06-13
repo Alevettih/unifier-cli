@@ -29,8 +29,11 @@ export class VueSpecifier extends Specifier {
       this.copyEditorconfig(),
       this.copyBrowserslistrc(),
       this.copyStylelintrc(),
-      this.copyEslintrc()
+      this.copyEslintrc(),
+      this.addConfigJs(),
+      this.addLinkToConfigJsInHtml()
     ]);
+    await this.addStylelintTaskToPackageJson();
     await this.initialCommit();
   }
 

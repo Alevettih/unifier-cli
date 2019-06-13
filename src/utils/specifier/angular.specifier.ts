@@ -51,7 +51,7 @@ export class AngularSpecifier extends Specifier {
     }
 
     return writeJson(
-      `${this.name}/angular.json`,
+      join(this.project, 'angular.json'),
       deepMerge({}, json, {projects: {[this.name]: angularJsonAdditions}}),
       { spaces: 2 }
     ).then(

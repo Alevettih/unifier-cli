@@ -5,11 +5,11 @@ export class PlainJSSpecifier extends Specifier {
     await this.removeDefaultGit();
     await this.initGit();
     await Promise.all([
-      await this.copyBrowserslistrc(),
-      await this.copyEditorconfig(),
-      await this.copyStylelintrc(),
-      await this.copyEslintrc(),
-      await this.npmInstall()
+      this.copyBrowserslistrc(),
+      this.copyEditorconfig(),
+      this.copyStylelintrc(),
+      this.copyEslintrc(),
+      this.npmInstall()
     ]);
     await this.initialCommit();
   }

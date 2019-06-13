@@ -1,4 +1,6 @@
-import { PlainJSSpecifier } from '../plain-js.specifier';
+import { PlainJSSpecifier } from '@utils/specifier/plain-js.specifier';
+import { Specifier } from '@utils/specifier';
+import { mockClassMethods } from '@utils/helpers';
 import * as child_process from 'child_process';
 
 jest.mock('child_process');
@@ -11,15 +13,18 @@ describe('Plain JS specifier should', () => {
     specifier = new PlainJSSpecifier(testDir);
   });
 
+  test('extends from Specifier', () => {
+    expect(specifier).toBeInstanceOf(Specifier);
+  });
+
   describe('specify Plain JS project', () => {
-    test('copy configs', async (): Promise<void> => {
-      specifier.copyBrowserslistrc = jest.fn(async () => {});
-      specifier.copyEditorconfig = jest.fn(async () => {});
-      specifier.copyStylelintrc = jest.fn(async () => {});
-      specifier.copyEslintrc = jest.fn(async () => {});
+    beforeEach(async (): Promise<void> => {
+      mockClassMethods(specifier, [Specifier], ['specify']);
 
       await specifier.specify();
+    });
 
+    test('copy configs', async (): Promise<void> => {
       expect(specifier.copyBrowserslistrc).toBeCalled();
       expect(specifier.copyEditorconfig).toBeCalled();
       expect(specifier.copyStylelintrc).toBeCalled();
@@ -27,34 +32,18 @@ describe('Plain JS specifier should', () => {
     });
 
     test('execute "npm i"', async (): Promise<void> => {
-      specifier.npmInstall = jest.fn(async () => {});
-
-      await specifier.specify();
-
       expect(specifier.npmInstall).toBeCalledWith();
     });
 
     test('remove default Git repo', async (): Promise<void> => {
-      specifier.removeDefaultGit = jest.fn(async () => {});
-
-      await specifier.specify();
-
       expect(specifier.removeDefaultGit).toBeCalled();
     });
 
     test('init Git repo', async (): Promise<void> => {
-      specifier.initGit = jest.fn(async () => {});
-
-      await specifier.specify();
-
       expect(specifier.initGit).toBeCalled();
     });
 
     test('Do init commit', async (): Promise<void> => {
-      specifier.initialCommit = jest.fn(async () => {});
-
-      await specifier.specify();
-
       expect(specifier.initialCommit).toBeCalled();
     });
   });

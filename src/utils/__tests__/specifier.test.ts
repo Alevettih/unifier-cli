@@ -91,6 +91,25 @@ describe('Specifier should', () => {
     );
   });
 
+  test('add config.js', async (): Promise<void> => {
+    await specifier.addConfigJs();
+
+    expect(fs.outputFile).toBeCalled();
+  });
+
+  test('add link to config js in html', async (): Promise<void> => {
+    Object.defineProperty(fs, 'readFileSync', {value: jest.fn(() => '<title>Test</title>')});
+
+    await specifier.addLinkToConfigJsInHtml();
+
+    expect(fs.readFileSync).toBeCalled();
+    expect(fs.outputFile).toBeCalledWith(
+      join(specifier.name, 'public/index.html'),
+      '<title>Test</title>\n    <script src="./config.js"></script>',
+      'utf-8'
+    );
+  });
+
   test('Do initial commit', async (): Promise<void> => {
     await specifier.initialCommit();
 

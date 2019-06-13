@@ -1,15 +1,17 @@
-import main from '../main';
+import main from '@src/main';
+import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
-import * as projects from '../project-types';
+import * as projects from '@src/project-types';
+import { isDirectoryExistsAndNotEmpty } from '@utils/helpers';
 
 jest.mock('inquirer');
 jest.mock('fs-extra');
-jest.mock('../utils/helpers');
+jest.mock('@utils/helpers');
 
 describe('User answers', () => {
-  test('can call inquirer', () => {
+  test('can call inquirer', async (): Promise<void> => {
     Object.defineProperty(inquirer, 'prompt', {value: jest.fn(async () => { return; })});
-    main();
+    await main();
     expect(inquirer.prompt).toHaveBeenCalled();
   });
 
@@ -82,6 +84,32 @@ describe('User answers', () => {
 
       expect(inquirer.prompt).toHaveBeenCalled();
       expect(main()).resolves.toThrow(TypeError);
+    });
+
+    test('should throw Error without project name', async () => {
+      Object.defineProperty(inquirer, 'prompt', {
+        value: jest.fn(
+          async () => ({ title: null })
+        )
+      });
+
+      await main();
+
+      expect(inquirer.prompt).toHaveBeenCalled();
+      await expect(main()).resolves.toThrow(Error);
+    });
+
+    test('if selected directory is already exists and not empty it should clean it', async () => {
+      Object.defineProperty(inquirer, 'prompt', {
+        value: jest.fn(
+          async () => ({ title: 'same' })
+        )
+      });
+
+      await main();
+
+      expect(isDirectoryExistsAndNotEmpty).toBeCalled();
+      expect(fs.removeSync).toBeCalled();
     });
   });
 });

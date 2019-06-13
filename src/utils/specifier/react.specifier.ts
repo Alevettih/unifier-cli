@@ -28,7 +28,9 @@ export class ReactSpecifier extends Specifier {
       this.copyBrowserslistrc(),
       this.copyStylelintrc(),
       this.copyEslintrc(),
-      this.cssToScss()
+      this.addConfigJs(),
+      this.cssToScss(),
+      this.addLinkToConfigJsInHtml()
     ]);
     await this.removeBrowserslistrcFromPackageJson();
     await this.addStylelintTaskToPackageJson();
