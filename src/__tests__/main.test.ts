@@ -19,10 +19,10 @@ describe('User answers', () => {
     const title = 'test-test';
 
     beforeAll(() => {
-      Object.defineProperty(projects, 'plainProject', {value: jest.fn()});
-      Object.defineProperty(projects, 'angularProject', {value: jest.fn()});
-      Object.defineProperty(projects, 'reactProject', {value: jest.fn()});
-      Object.defineProperty(projects, 'vueProject', {value: jest.fn()});
+      Object.defineProperty(projects, 'plainProject', {value: jest.fn(async () => {})});
+      Object.defineProperty(projects, 'angularProject', {value: jest.fn(async () => {})});
+      Object.defineProperty(projects, 'reactProject', {value: jest.fn(async () => {})});
+      Object.defineProperty(projects, 'vueProject', {value: jest.fn(async () => {})});
     });
 
     test('Plain JS', async () => {

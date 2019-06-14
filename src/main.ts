@@ -26,7 +26,7 @@ export default (): Promise<void | TypeError> => {
 
   delete args._;
 
-  return inquirer.prompt(questions).then((answers: Answer): void | TypeError => {
+  return inquirer.prompt(questions).then((answers: Answer): Promise<void | TypeError> => {
     answers = Object.assign(answers, args);
 
     if (!answers.title) {
