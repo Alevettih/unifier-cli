@@ -40,7 +40,15 @@ export class Specifier {
 
   mergeWithJson(pathToJson: string, objToMerge: object): Promise<void> {
     const json = readJsonSync(pathToJson);
-    return writeJson(pathToJson, deepMerge(json, objToMerge), { spaces: 2 }).then(
+    return writeJson(
+      pathToJson,
+      deepMerge(json, objToMerge, {
+        arrayMerge(target: any[], source: any[]): any[] {
+          return source;
+        }
+      }),
+      { spaces: 2 }
+    ).then(
       () => {
         console.log(green('JSON successfully updated!'));
       },

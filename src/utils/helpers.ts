@@ -22,15 +22,15 @@ export function childProcessPromise(childProcess: ChildProcess): Promise<any> {
   });
 }
 
-export function emptyTarget(value) {
+export function emptyTarget(value: any): any {
   return Array.isArray(value) ? [] : {};
 }
 
-export function clone(value, options) {
+export function clone(value: any, options: deepMerge.Options): object {
   return deepMerge(emptyTarget(value), value, options);
 }
 
-export function arrayMerge(target, source, options) {
+export function arrayMerge(target: any[], source: any[], options: deepMerge.Options): any[] {
   const destination = target.slice();
 
   source.forEach((e, i) => {
@@ -49,13 +49,13 @@ export function arrayMerge(target, source, options) {
   return destination;
 }
 
-export function mockClassMethods(target, classes, excludedMethods) {
+export function mockClassMethods(target: object, classes: ClassDecorator[], excludedMethods: string[]): void {
   const isNotExcluded = key => {
-    return ['constructor', ...excludedMethods].every(excludedValue => key !== excludedValue);
+    return ['constructor', ...excludedMethods].every((excludedValue: string): boolean => key !== excludedValue);
   };
 
-  classes.forEach(classInstance => {
-    Object.getOwnPropertyNames(classInstance.prototype).forEach(key => {
+  classes.forEach((classInstance: ClassDecorator): void => {
+    Object.getOwnPropertyNames(classInstance.prototype).forEach((key: string): void => {
       if (isNotExcluded(key) && typeof target[key] === 'function') {
         target[key] = jest.fn(async () => {});
       }
@@ -67,12 +67,14 @@ export const newlineSeparatedValue = {
   stringify(data: object = {}): string {
     const resArr = [];
 
-    Object.keys(data).forEach(key => {
+    Object.keys(data).forEach((key: string): void => {
       if (key !== '_' && !resArr.includes(`\n# ${key}`)) {
         resArr.push(`\n# ${key}`);
       }
 
-      data[key].forEach(value => resArr.push(value));
+      data[key].forEach((value: string): void => {
+        resArr.push(value);
+      });
     });
 
     return [...new Set(resArr)].join('\n').trim();
@@ -83,7 +85,7 @@ export const newlineSeparatedValue = {
 
     let key = '_';
 
-    dataArr.forEach(value => {
+    dataArr.forEach((value: string): void => {
       if (!value) {
         return;
       }

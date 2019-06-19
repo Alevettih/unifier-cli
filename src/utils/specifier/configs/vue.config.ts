@@ -18,6 +18,12 @@ export default {
     scripts: {
       'lint:scss': 'stylelint "./src/**/*.vue"',
       'lint:all': 'npm run lint && npm run lint:scss'
+    },
+    gitHooks: {
+      'pre-commit': 'pretty-quick --staged; lint-staged'
+    },
+    'lint-staged': {
+      '*.{js,vue}': ['npm run lint:all', 'git add']
     }
   },
   getConfigsPaths(name: string): ConfigPaths[] {
