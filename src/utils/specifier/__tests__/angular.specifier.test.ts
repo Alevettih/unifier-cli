@@ -3,8 +3,7 @@ import { Specifier } from '@utils/specifier';
 import { mockClassMethods } from '@utils/helpers';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
-import * as angularJsonAdditions from '@specification/files/angular/angular.json';
-import { join } from 'path';
+import config from '@utils/specifier/configs/angular.config';
 
 jest.mock('child_process');
 jest.mock('fs-extra');
@@ -21,40 +20,15 @@ describe('Angular specifier should', () => {
     expect(specifier).toBeInstanceOf(Specifier);
   });
 
-  test('remove default .browserslistrc before copy it from specification', async (): Promise<void> => {
-    await specifier.copyBrowserslistrc();
+  test('remove default .browserslistrc before copy configs from specification', async (): Promise<void> => {
+    await specifier.copyConfigs(...config.getConfigsPaths(specifier.name));
 
     expect(fs.remove).toBeCalled();
-    expect(fs.copy).toBeCalled();
+    expect(fs.copy).toBeCalledTimes(config.getConfigsPaths(specifier.name).length);
   });
 
   test('copy base structure of Angular project', async (): Promise<void> => {
     await specifier.copyBaseStructure();
-
-    expect(fs.copy).toBeCalled();
-  });
-
-  test('edit angular.json', async (): Promise<void> => {
-    Object.defineProperty(fs, 'readJsonSync', { value: jest.fn(() => ({}))});
-
-    await specifier.editAngularJson();
-
-    expect(fs.readJsonSync).toBeCalled();
-    expect(fs.writeJson).toBeCalledWith(
-      join(specifier.name, 'angular.json'),
-      { projects: {[specifier.name]: angularJsonAdditions} },
-      { spaces: 2 }
-    );
-  });
-
-  test('copy tsconfig.json from specification', async (): Promise<void> => {
-    await specifier.copyTsconfig();
-
-    expect(fs.copy).toBeCalled();
-  });
-
-  test('copy .htaccess from specification', async (): Promise<void> => {
-    await specifier.copyHtaccess();
 
     expect(fs.copy).toBeCalled();
   });
@@ -77,31 +51,15 @@ describe('Angular specifier should', () => {
     });
 
     test('copy configs', async (): Promise<void> => {
-      expect(specifier.copyHtaccess).toBeCalled();
-      expect(specifier.copyBrowserslistrc).toBeCalled();
-      expect(specifier.copyTsconfig).toBeCalled();
-      expect(specifier.copyEditorconfig).toBeCalled();
-      expect(specifier.copyStylelintrc).toBeCalled();
+      expect(specifier.copyConfigs).toBeCalled();
     });
 
     test('copy base structure from codebase', async (): Promise<void> => {
       expect(specifier.copyBaseStructure).toBeCalled();
     });
 
-    test('add stylelint task to package.json', async (): Promise<void> => {
-      expect(specifier.addStylelintTaskToPackageJson).toBeCalled();
-    });
-
-    test('edit angular.json', async (): Promise<void> => {
-      expect(specifier.editAngularJson).toBeCalled();
-    });
-
-    test('add lint hooks', async (): Promise<void> => {
-      expect(specifier.addLintHooks).toBeCalled();
-    });
-
     test('execute "npm i"', async (): Promise<void> => {
-      expect(specifier.npmInstall).toBeCalledWith(['husky', ...specifier.stylelint.modules]);
+      expect(specifier.npmInstall).toBeCalledWith(config.modules);
     });
 
     test('init Git repo', async (): Promise<void> => {

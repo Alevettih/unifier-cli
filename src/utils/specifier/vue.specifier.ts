@@ -1,43 +1,25 @@
-import { LinterConfig, Specifier } from '@specifier/index';
+import { ConfigPaths, Specifier } from '@specifier/index';
 import { remove } from 'fs-extra';
 import { join } from 'path';
+import config from '@utils/specifier/configs/vue.config';
 
 export class VueSpecifier extends Specifier {
-
-  stylelint: LinterConfig = {
-    modules: [
-      'stylelint',
-      'stylelint-config-standard',
-      'stylelint-declaration-strict-value',
-      'stylelint-no-unsupported-browser-features',
-      'stylelint-scss',
-      'stylelint-z-index-value-constraint',
-      'stylelint-processor-arbitrary-tags'
-    ],
-    script: 'stylelint "./src/**/*.vue"',
-    path: '../../specification/files/vue/.stylelintrc'
-  };
-
-  eslint: LinterConfig = {
-    path: '../../specification/files/vue/.eslintrc'
-  };
-
   async specify() {
-    await this.initGit();
-    await this.npmInstall([...this.stylelint.modules]);
+    await this.npmInstall(config.modules);
     await Promise.all([
-      this.copyEditorconfig(),
-      this.copyBrowserslistrc(),
-      this.copyStylelintrc(),
-      this.copyEslintrc(),
+      this.copyConfigs(...config.getConfigsPaths(this.name)),
       this.addConfigJs(),
-      this.addLinkToConfigJsInHtml()
+      this.updateGitignoreRules(),
+      this.addLinkToConfigJsInHtml(),
+      this.mergeWithJson(
+        join(this.name, 'package.json'),
+        config.packageJson
+      )
     ]);
-    await this.addStylelintTaskToPackageJson();
-    await this.initialCommit();
+    await this.initialCommit('--amend');
   }
 
-  copyEslintrc(): Promise < void > {
-    return remove(join(this.name, '.eslintrc.js')).then(() => super.copyEslintrc());
+  copyConfigs(...configsPaths: ConfigPaths[]): Promise < void > {
+    return remove(join(this.name, '.eslintrc.js')).then(() => super.copyConfigs(...configsPaths));
   }
 }

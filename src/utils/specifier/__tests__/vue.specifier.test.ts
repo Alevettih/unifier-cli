@@ -3,6 +3,7 @@ import { Specifier } from '@utils/specifier';
 import { mockClassMethods } from '@utils/helpers';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
+import config from '@utils/specifier/configs/vue.config';
 
 jest.mock('child_process');
 jest.mock('fs-extra');
@@ -19,11 +20,11 @@ describe('Vue specifier should', () => {
     expect(specifier).toBeInstanceOf(Specifier);
   });
 
-  test('remove .eslintrc.js and copy .eslintrc from specification', async (): Promise<void> => {
-    await specifier.copyEslintrc();
+  test('remove .eslintrc.js before copy configs from specification', async (): Promise<void> => {
+    await specifier.copyConfigs(...config.getConfigsPaths(specifier.name));
 
     expect(fs.remove).toBeCalled();
-    expect(fs.copy).toBeCalled();
+    expect(fs.copy).toBeCalledTimes(config.getConfigsPaths(specifier.name).length);
   });
 
   describe('specify Vue project', () => {
@@ -34,10 +35,7 @@ describe('Vue specifier should', () => {
     });
 
     test('copy configs', async (): Promise<void> => {
-      expect(specifier.copyBrowserslistrc).toBeCalled();
-      expect(specifier.copyEditorconfig).toBeCalled();
-      expect(specifier.copyStylelintrc).toBeCalled();
-      expect(specifier.copyEslintrc).toBeCalled();
+      expect(specifier.copyConfigs).toBeCalled();
     });
 
     test('add runtime config', async (): Promise<void> => {
@@ -46,15 +44,7 @@ describe('Vue specifier should', () => {
     });
 
     test('execute "npm i"', async (): Promise<void> => {
-      expect(specifier.npmInstall).toBeCalledWith([...specifier.stylelint.modules]);
-    });
-
-    test('add stylelint task to package.json', async (): Promise<void> => {
-      expect(specifier.addStylelintTaskToPackageJson).toBeCalled();
-    });
-
-    test('init Git repo', async (): Promise<void> => {
-      expect(specifier.initGit).toBeCalled();
+      expect(specifier.npmInstall).toBeCalledWith(config.modules);
     });
 
     test('Do init commit', async (): Promise<void> => {

@@ -25,10 +25,7 @@ describe('Plain JS specifier should', () => {
     });
 
     test('copy configs', async (): Promise<void> => {
-      expect(specifier.copyBrowserslistrc).toBeCalled();
-      expect(specifier.copyEditorconfig).toBeCalled();
-      expect(specifier.copyStylelintrc).toBeCalled();
-      expect(specifier.copyEslintrc).toBeCalled();
+      expect(specifier.copyConfigs).toBeCalled();
     });
 
     test('execute "npm i"', async (): Promise<void> => {
