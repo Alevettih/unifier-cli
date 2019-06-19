@@ -7,6 +7,9 @@ export default {
 
     'husky',
 
+    'prettier',
+    'pretty-quick',
+
     'stylelint',
     'stylelint-config-standard',
     'stylelint-declaration-strict-value',
@@ -31,12 +34,16 @@ export default {
     browserslist: undefined,
     husky: {
       hooks: {
-        'pre-commit': 'npm run lint:all'
+        'pre-commit': 'pretty-quick --staged; npm run lint:all'
       }
     }
   },
   getConfigsPaths(name: string): ConfigPaths[] {
     return [
+      {
+        src: join(__dirname, '../../../specification/files/.prettierrc'),
+        dist: join(name, '.prettierrc')
+      },
       {
         src: join(__dirname, '../../../specification/files/.editorconfig'),
         dist: join(name, '.editorconfig')

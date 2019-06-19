@@ -3,6 +3,9 @@ import { join } from 'path';
 
 export default {
   modules: [
+    'prettier',
+    'pretty-quick',
+
     'stylelint',
     'stylelint-config-standard',
     'stylelint-declaration-strict-value',
@@ -19,6 +22,10 @@ export default {
   },
   getConfigsPaths(name: string): ConfigPaths[] {
     return [
+      {
+        src: join(__dirname, '../../../specification/files/.prettierrc'),
+        dist: join(name, '.prettierrc')
+      },
       {
         src: join(__dirname, '../../../specification/files/.editorconfig'),
         dist: join(name, '.editorconfig')

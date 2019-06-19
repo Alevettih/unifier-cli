@@ -5,6 +5,10 @@ export default {
   getConfigsPaths(name: string): ConfigPaths[] {
     return [
       {
+        src: join(__dirname, '../../../specification/files/.prettierrc'),
+        dist: join(name, '.prettierrc')
+      },
+      {
         src: join(__dirname, '../../../specification/files/.editorconfig'),
         dist: join(name, '.editorconfig')
       },
