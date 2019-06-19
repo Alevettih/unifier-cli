@@ -23,11 +23,37 @@ describe('Specifier should', () => {
   });
 
   test('execute "npm i" with passed modules', async (): Promise<void> => {
-    specifier.npmInstall();
+    await specifier.npmInstall();
     expect(child_process.spawn).toBeCalledWith('npm', ['i'], specifier.childProcessOptions);
 
-    specifier.npmInstall(['test']);
+    await specifier.npmInstall(['test']);
     expect(child_process.spawn).toBeCalledWith('npm', ['i', 'test'], specifier.childProcessOptions);
+  });
+
+  test('merge object with .json file', async (): Promise<void> => {
+    const fakePath = join(specifier.name, 'fake/path/to.json');
+    Object.defineProperty(fs, 'readJsonSync', { value: jest.fn(() => ({ a: 1 })) });
+
+    await specifier.mergeWithJson(fakePath, { b: 2 });
+
+    expect(fs.writeJson).toBeCalledWith(fakePath, { a: 1, b: 2 }, { spaces: 2 });
+  });
+
+  test('update .gitignore rules', async (): Promise<void> => {
+    Object.defineProperty(fs, 'readFileSync', {
+      value: jest
+        .fn()
+        .mockReturnValueOnce('node_modules/\ndist/')
+        .mockReturnValueOnce('fake_directory/\ndist/')
+    });
+
+    await specifier.updateGitignoreRules();
+
+    expect(fs.outputFile).toBeCalledWith(
+      join(specifier.name, '.gitignore'),
+      'node_modules/\ndist/\nfake_directory/',
+      'utf-8'
+    );
   });
 
   test('copy configs', async (): Promise<void> => {

@@ -9,7 +9,7 @@ import * as minimist from 'minimist';
 import { ParsedArgs } from 'minimist';
 import { green, red } from 'colors/safe';
 
-export type ProjectType = 'plain-js' | 'angular' | 'react' | 'vue';
+export type ProjectType = 'email' | 'plain-js' | 'angular' | 'react' | 'vue';
 
 export interface Answer {
   title: string;
@@ -43,6 +43,9 @@ export default (): Promise<void | TypeError> => {
         }
 
         switch (answers && answers.type) {
+          case projects.types.EMAIL: {
+            return projects.emailProject(answers);
+          }
           case projects.types.PLAIN: {
             return projects.plainProject(answers);
           }

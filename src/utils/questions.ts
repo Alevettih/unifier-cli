@@ -46,6 +46,7 @@ export const questions: Questions = [
     },
     choices: [
       { name: 'Plain JS', value: types.PLAIN },
+      { name: 'Email Template', value: types.EMAIL },
       { name: 'Angular', value: types.ANGULAR },
       { name: 'React', value: types.REACT },
       { name: 'Vue', value: types.VUE }
