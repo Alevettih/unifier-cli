@@ -4,6 +4,7 @@ import { mockClassMethods } from '@utils/helpers';
 import * as fs from 'fs-extra';
 import * as child_process from 'child_process';
 import { join } from 'path';
+import config from '@utils/specifier/configs/react.config';
 
 jest.mock('fs-extra');
 jest.mock('child_process');
@@ -30,18 +31,6 @@ describe('react specifier should', () => {
     expect(fs.writeFile).toBeCalledTimes(2);
   });
 
-  test('remove .browserslistrc from package.json', async (): Promise<void> => {
-    Object.defineProperty(fs, 'readJsonSync', { value: jest.fn(() => ({ browserslist: {} })) });
-
-    await specifier.removeBrowserslistrcFromPackageJson();
-
-    expect(fs.writeJson).toBeCalledWith(
-      join(specifier.name, 'package.json'),
-      {},
-      {spaces: 2}
-    );
-  });
-
   describe('specify React project', () => {
     beforeEach(async (): Promise<void> => {
       mockClassMethods(specifier, [Specifier, ReactSpecifier], ['specify']);
@@ -55,33 +44,11 @@ describe('react specifier should', () => {
     });
 
     test('copy configs', async (): Promise<void> => {
-      expect(specifier.copyBrowserslistrc).toBeCalled();
-      expect(specifier.copyEditorconfig).toBeCalled();
-      expect(specifier.copyStylelintrc).toBeCalled();
-      expect(specifier.copyEslintrc).toBeCalled();
+      expect(specifier.copyConfigs).toBeCalled();
     });
 
     test('execute "npm i"', async (): Promise<void> => {
-      expect(specifier.npmInstall).toBeCalledWith(
-        ['node-sass', 'husky', ...specifier.eslint.modules, ...specifier.stylelint.modules]
-      );
-    });
-
-    test('remove default Git repo', async (): Promise<void> => {
-      expect(specifier.removeDefaultGit).toBeCalled();
-    });
-
-    test('init Git repo', async (): Promise<void> => {
-      expect(specifier.initGit).toBeCalled();
-    });
-
-    test('remove browserslist config from package.json', async (): Promise<void> => {
-      expect(specifier.removeBrowserslistrcFromPackageJson).toBeCalled();
-    });
-
-    test('remove tasks for linters ro package.json', async (): Promise<void> => {
-      expect(specifier.addStylelintTaskToPackageJson).toBeCalled();
-      expect(specifier.addEslintTaskToPackageJson).toBeCalled();
+      expect(specifier.npmInstall).toBeCalledWith(config.modules);
     });
 
     test('Do init commit', async (): Promise<void> => {

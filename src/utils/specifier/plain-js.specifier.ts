@@ -1,14 +1,13 @@
 import { Specifier } from '@specifier/index';
+import config from '@specifier/configs/plain-js.config';
 
 export class PlainJSSpecifier extends Specifier {
   async specify(): Promise<void> {
     await this.removeDefaultGit();
     await this.initGit();
     await Promise.all([
-      this.copyBrowserslistrc(),
-      this.copyEditorconfig(),
-      this.copyStylelintrc(),
-      this.copyEslintrc(),
+      this.copyConfigs(...config.getConfigsPaths(this.name)),
+      this.updateGitignoreRules(),
       this.npmInstall()
     ]);
     await this.initialCommit();

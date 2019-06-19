@@ -2,8 +2,7 @@ import { sep } from 'path';
 import { pathExistsSync } from 'fs-extra';
 import { readdirSync } from 'fs';
 import { ChildProcess } from 'child_process';
-import { Specifier } from "@utils/specifier";
-import { VueSpecifier } from "@specifier/vue.specifier";
+import * as deepMerge from 'deepmerge';
 
 export function isDirectoryExistsAndNotEmpty(input?: string): boolean {
   return !!(pathExistsSync(input) && readdirSync(input).length);
@@ -13,39 +12,38 @@ export function getCWD(): string {
   return process.cwd().split(sep).pop();
 }
 
-export function isObject(item: any): boolean {
-  return !!(item && typeof item === 'object' && !Array.isArray(item));
-}
-
-export function deepMerge(target: object, ...sources: object[]): object {
-  if (!sources.length) {
-    return target;
-  }
-
-  const source = sources.shift();
-
-  if (isObject(target) && isObject(source)) {
-    for (const key in source) {
-      if (isObject(source[key])) {
-        if (!target[key]) {
-          Object.assign(target, { [key]: {} });
-        }
-
-        deepMerge(target[key], source[key]);
-      } else {
-        Object.assign(target, { [key]: source[key] });
-      }
-    }
-  }
-
-  return deepMerge(target, ...sources);
-}
-
 export function childProcessPromise(childProcess: ChildProcess): Promise<any> {
   return new Promise((resolve, reject) => {
     childProcess.on('exit', resolve);
     childProcess.on('error', reject);
   });
+}
+
+export function emptyTarget(value) {
+  return Array.isArray(value) ? [] : {};
+}
+
+export function clone(value, options) {
+  return deepMerge(emptyTarget(value), value, options);
+}
+
+export function arrayMerge(target, source, options) {
+  const destination = target.slice();
+
+  source.forEach((e, i) => {
+    if (typeof destination[i] === 'undefined') {
+      const cloneRequested = options.clone !== false;
+      const shouldClone = cloneRequested && options.isMergeableObject(e);
+
+      destination[i] = shouldClone ? clone(e, options) : e;
+    } else if (options.isMergeableObject(e)) {
+      destination[i] = deepMerge(target[i], e, options);
+    } else if (!target.includes(e)) {
+      destination.push(e);
+    }
+  });
+
+  return destination;
 }
 
 export function mockClassMethods(target, classes, excludedMethods) {
@@ -61,3 +59,43 @@ export function mockClassMethods(target, classes, excludedMethods) {
     });
   });
 }
+
+export const newlineSeparatedValue = {
+  stringify(data: object = {}): string {
+    const resArr = [];
+
+    Object.keys(data).forEach(key => {
+      if (key !== '_' && !resArr.includes(`\n# ${key}`)) {
+        resArr.push(`\n# ${key}`);
+      }
+
+      data[key].forEach(value => resArr.push(value));
+    });
+
+    return  [...new Set(resArr)].join('\n').trim();
+  },
+  parse(data: string = ''): object {
+    const dataArr: string[] = data.split('\n');
+    const res: object = {};
+
+    let key = '_';
+
+    dataArr.forEach(value => {
+      if (!value) {
+        return;
+      }
+
+      if (!res[key]) {
+        res[key] = [];
+      }
+
+      if (value.includes('#')) {
+        key = value.replace('# ', '');
+      } else {
+        res[key].push(value);
+      }
+    });
+
+    return res;
+  }
+};
