@@ -8,14 +8,19 @@ export const vueProject = ({ title } = { title: '' } as Answer): Promise<void> =
   return childProcessPromise(
     spawn(
       'npx',
-      ['@vue/cli', 'create', `--preset=${join(__dirname, '../specification/files/vue/vue-preset-default.json')}`, title],
-      {stdio: 'inherit'}
+      [
+        '@vue/cli',
+        'create',
+        `--preset=${join(__dirname, '../specification/files/vue/vue-preset-default.json')}`,
+        title
+      ],
+      { stdio: 'inherit' }
     )
   ).then(
     async () => {
       await new VueSpecifier(title).specify();
     },
-    (e) => {
+    e => {
       throw new Error(`@vue/cli was fell: ${e}`);
     }
   );

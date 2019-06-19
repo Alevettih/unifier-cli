@@ -26,7 +26,7 @@
   "homepage": "https://github.com/Alevettih/afflux-cli#readme",
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint && jest"
+      "pre-commit": "npm run lint && jest; pretty-quick --staged"
     }
   },
   "dependencies": {
@@ -48,6 +48,8 @@
     "module-alias": "^2.2.0",
     "nodemon": "^1.19.1",
     "path": "^0.12.7",
+    "prettier": "^1.18.2",
+    "pretty-quick": "^1.11.1",
     "rimraf": "^2.6.3",
     "save-dev": "^2.0.0",
     "ts-jest": "^24.0.2",

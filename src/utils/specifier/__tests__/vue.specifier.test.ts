@@ -28,11 +28,13 @@ describe('Vue specifier should', () => {
   });
 
   describe('specify Vue project', () => {
-    beforeEach(async (): Promise<void> => {
-      mockClassMethods(specifier, [Specifier, VueSpecifier], ['specify']);
+    beforeEach(
+      async (): Promise<void> => {
+        mockClassMethods(specifier, [Specifier, VueSpecifier], ['specify']);
 
-      await specifier.specify();
-    });
+        await specifier.specify();
+      }
+    );
 
     test('copy configs', async (): Promise<void> => {
       expect(specifier.copyConfigs).toBeCalled();

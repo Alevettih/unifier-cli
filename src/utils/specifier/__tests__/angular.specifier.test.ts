@@ -38,17 +38,19 @@ describe('Angular specifier should', () => {
 
     expect(fs.outputFile).toBeCalled();
 
-    Object.defineProperty(fs, 'outputFile', {value: jest.fn(() => Promise.reject())});
+    Object.defineProperty(fs, 'outputFile', { value: jest.fn(() => Promise.reject()) });
 
     expect(specifier.addConfigJsonToAssets).toThrowError();
   });
 
   describe('specify Angular project', () => {
-    beforeEach(async (): Promise<void> => {
-      mockClassMethods(specifier, [Specifier, AngularSpecifier], ['specify']);
+    beforeEach(
+      async (): Promise<void> => {
+        mockClassMethods(specifier, [Specifier, AngularSpecifier], ['specify']);
 
-      await specifier.specify();
-    });
+        await specifier.specify();
+      }
+    );
 
     test('copy configs', async (): Promise<void> => {
       expect(specifier.copyConfigs).toBeCalled();

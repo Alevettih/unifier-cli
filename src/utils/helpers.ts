@@ -9,7 +9,10 @@ export function isDirectoryExistsAndNotEmpty(input?: string): boolean {
 }
 
 export function getCWD(): string {
-  return process.cwd().split(sep).pop();
+  return process
+    .cwd()
+    .split(sep)
+    .pop();
 }
 
 export function childProcessPromise(childProcess: ChildProcess): Promise<any> {
@@ -47,7 +50,7 @@ export function arrayMerge(target, source, options) {
 }
 
 export function mockClassMethods(target, classes, excludedMethods) {
-  const isNotExcluded = (key) => {
+  const isNotExcluded = key => {
     return ['constructor', ...excludedMethods].every(excludedValue => key !== excludedValue);
   };
 
@@ -72,7 +75,7 @@ export const newlineSeparatedValue = {
       data[key].forEach(value => resArr.push(value));
     });
 
-    return  [...new Set(resArr)].join('\n').trim();
+    return [...new Set(resArr)].join('\n').trim();
   },
   parse(data: string = ''): object {
     const dataArr: string[] = data.split('\n');

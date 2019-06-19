@@ -4,7 +4,7 @@ interface Inquirer {
   prompt: (questions: any) => Promise<void>;
 }
 
-inquirer.prompt = async (questions) => {
+inquirer.prompt = async () => {
   return;
 };
 

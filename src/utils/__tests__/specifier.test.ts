@@ -31,7 +31,7 @@ describe('Specifier should', () => {
   });
 
   test('copy configs', async (): Promise<void> => {
-    await specifier.copyConfigs({src: '', dist: ''}, {src: '', dist: ''});
+    await specifier.copyConfigs({ src: '', dist: '' }, { src: '', dist: '' });
     expect(fs.copy).toBeCalledTimes(2);
   });
 
@@ -46,7 +46,7 @@ describe('Specifier should', () => {
 
     expect(child_process.spawn).toBeCalledWith(
       'git init',
-      Object.assign({shell: true}, specifier.childProcessOptions)
+      Object.assign({ shell: true }, specifier.childProcessOptions)
     );
   });
 
@@ -57,7 +57,7 @@ describe('Specifier should', () => {
   });
 
   test('add link to config js in html', async (): Promise<void> => {
-    Object.defineProperty(fs, 'readFileSync', {value: jest.fn(() => '<title>Test</title>')});
+    Object.defineProperty(fs, 'readFileSync', { value: jest.fn(() => '<title>Test</title>') });
 
     await specifier.addLinkToConfigJsInHtml();
 
@@ -74,7 +74,7 @@ describe('Specifier should', () => {
 
     expect(child_process.spawn).toBeCalledWith(
       'git add .; git commit -m "Initial commit" -n',
-      Object.assign({shell: true}, specifier.childProcessOptions)
+      Object.assign({ shell: true }, specifier.childProcessOptions)
     );
   });
 });

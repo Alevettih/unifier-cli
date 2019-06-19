@@ -13,45 +13,40 @@ export class AngularSpecifier extends Specifier {
       this.copyBaseStructure(),
       this.addConfigJsonToAssets(),
       this.updateGitignoreRules(),
-      this.mergeWithJson(
-        join(this.name, 'package.json'),
-        config.packageJson
-      ),
-      this.mergeWithJson(
-        join(this.name, 'angular.json'),
-        {projects: {[this.name]: angularJsonAdditions}}
-      )
+      this.mergeWithJson(join(this.name, 'package.json'), config.packageJson),
+      this.mergeWithJson(join(this.name, 'angular.json'), { projects: { [this.name]: angularJsonAdditions } })
     ]);
     await this.initialCommit(true);
   }
 
   copyConfigs(...configPaths: ConfigPaths[]): Promise<void> {
-    return remove(
-      join(this.name, 'src/browserslist')
-    ).then(
+    return remove(join(this.name, 'src/browserslist')).then(
       () => super.copyConfigs(...configPaths),
-      (err) => {throw new Error(red(`.browserslistrc copying failed: ${err}`)); }
+      err => {
+        throw new Error(red(`.browserslistrc copying failed: ${err}`));
+      }
     );
   }
 
   copyBaseStructure(): Promise<void> {
-    return copy(
-      join(__dirname, '../../codebase/angular'),
-      join(this.name, 'src')
-    ).then(
-      () => { console.log(green('Base structure successfully copied!')); },
-      (err) => { throw new Error(red(`Base structure copying failed: ${err}`)); }
+    return copy(join(__dirname, '../../codebase/angular'), join(this.name, 'src')).then(
+      () => {
+        console.log(green('Base structure successfully copied!'));
+      },
+      err => {
+        throw new Error(red(`Base structure copying failed: ${err}`));
+      }
     );
   }
 
   addConfigJsonToAssets(): Promise<void> {
-    return outputFile(
-      join(this.name, 'src/assets/config.json'),
-      '{}',
-      'utf-8'
-    ).then(
-      () => { console.log(green('config.json successfully created!')); },
-      (err) => { throw new Error(red(`config.json creation failed: ${err}`)); }
+    return outputFile(join(this.name, 'src/assets/config.json'), '{}', 'utf-8').then(
+      () => {
+        console.log(green('config.json successfully created!'));
+      },
+      err => {
+        throw new Error(red(`config.json creation failed: ${err}`));
+      }
     );
   }
 }

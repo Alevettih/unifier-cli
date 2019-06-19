@@ -6,16 +6,14 @@ import { childProcessPromise } from '@utils/helpers';
 
 export const plainProject = ({ title } = { title: '' } as Answer): Promise<void> => {
   return childProcessPromise(
-    spawn(
-      'git',
-      ['clone', 'git@gitlab.requestum.com:Tykhonenko/project-template-gulp.git', join(title)],
-      {stdio: 'inherit'}
-    )
+    spawn('git', ['clone', 'git@gitlab.requestum.com:Tykhonenko/project-template-gulp.git', join(title)], {
+      stdio: 'inherit'
+    })
   ).then(
     async () => {
       await new PlainJSSpecifier(title).specify();
     },
-    (e) => {
+    e => {
       throw new Error(`Cloning of Plain JS project was fell ${e}`);
     }
   );

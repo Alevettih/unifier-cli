@@ -10,7 +10,7 @@ jest.mock('@utils/helpers');
 
 describe('User answers', () => {
   test('can call inquirer', async (): Promise<void> => {
-    Object.defineProperty(inquirer, 'prompt', {value: jest.fn(async () => { return; })});
+    Object.defineProperty(inquirer, 'prompt', { value: jest.fn(async () => {}) });
     await main();
     expect(inquirer.prompt).toHaveBeenCalled();
   });
@@ -19,17 +19,15 @@ describe('User answers', () => {
     const title = 'test-test';
 
     beforeAll(() => {
-      Object.defineProperty(projects, 'plainProject', {value: jest.fn(async () => {})});
-      Object.defineProperty(projects, 'angularProject', {value: jest.fn(async () => {})});
-      Object.defineProperty(projects, 'reactProject', {value: jest.fn(async () => {})});
-      Object.defineProperty(projects, 'vueProject', {value: jest.fn(async () => {})});
+      Object.defineProperty(projects, 'plainProject', { value: jest.fn(async () => {}) });
+      Object.defineProperty(projects, 'angularProject', { value: jest.fn(async () => {}) });
+      Object.defineProperty(projects, 'reactProject', { value: jest.fn(async () => {}) });
+      Object.defineProperty(projects, 'vueProject', { value: jest.fn(async () => {}) });
     });
 
     test('Plain JS', async () => {
       Object.defineProperty(inquirer, 'prompt', {
-        value: jest.fn(
-          async () => ({ title, type: projects.types.PLAIN })
-        )
+        value: jest.fn(async () => ({ title, type: projects.types.PLAIN }))
       });
 
       await main();
@@ -39,9 +37,7 @@ describe('User answers', () => {
 
     test('Angular', async () => {
       Object.defineProperty(inquirer, 'prompt', {
-        value: jest.fn(
-          async () => ({ title, type: projects.types.ANGULAR })
-        )
+        value: jest.fn(async () => ({ title, type: projects.types.ANGULAR }))
       });
 
       await main();
@@ -51,9 +47,7 @@ describe('User answers', () => {
 
     test('React', async () => {
       Object.defineProperty(inquirer, 'prompt', {
-        value: jest.fn(
-          async () => ({ title, type: projects.types.REACT })
-        )
+        value: jest.fn(async () => ({ title, type: projects.types.REACT }))
       });
 
       await main();
@@ -63,9 +57,7 @@ describe('User answers', () => {
 
     test('Vue', async () => {
       Object.defineProperty(inquirer, 'prompt', {
-        value: jest.fn(
-          async () => ({ title, type: projects.types.VUE })
-        )
+        value: jest.fn(async () => ({ title, type: projects.types.VUE }))
       });
 
       await main();
@@ -75,9 +67,7 @@ describe('User answers', () => {
 
     test('should throw TypeError with invalid project type', async () => {
       Object.defineProperty(inquirer, 'prompt', {
-        value: jest.fn(
-          async () => ({ title, type: null })
-        )
+        value: jest.fn(async () => ({ title, type: null }))
       });
 
       await main();
@@ -88,9 +78,7 @@ describe('User answers', () => {
 
     test('should throw Error without project name', async () => {
       Object.defineProperty(inquirer, 'prompt', {
-        value: jest.fn(
-          async () => ({ title: null })
-        )
+        value: jest.fn(async () => ({ title: null }))
       });
 
       await main();
@@ -101,9 +89,7 @@ describe('User answers', () => {
 
     test('if selected directory is already exists and not empty it should clean it', async () => {
       Object.defineProperty(inquirer, 'prompt', {
-        value: jest.fn(
-          async () => ({ title: 'same' })
-        )
+        value: jest.fn(async () => ({ title: 'same' }))
       });
 
       await main();

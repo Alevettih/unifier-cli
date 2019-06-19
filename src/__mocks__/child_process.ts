@@ -10,7 +10,6 @@ emitter.on('newListener', (event, listener) => {
   }
 });
 
-
 interface ChildProcess {
   spawn: () => EventEmitter;
 }

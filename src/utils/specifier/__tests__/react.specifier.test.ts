@@ -3,7 +3,6 @@ import { Specifier } from '@utils/specifier';
 import { mockClassMethods } from '@utils/helpers';
 import * as fs from 'fs-extra';
 import * as child_process from 'child_process';
-import { join } from 'path';
 import config from '@utils/specifier/configs/react.config';
 
 jest.mock('fs-extra');
@@ -22,7 +21,7 @@ describe('react specifier should', () => {
   });
 
   test('change css to scss', async (): Promise<void> => {
-    Object.defineProperty(fs, 'readFile', {value: jest.fn(async () => 'App.css index.css')});
+    Object.defineProperty(fs, 'readFile', { value: jest.fn(async () => 'App.css index.css') });
 
     await specifier.cssToScss();
 
@@ -32,11 +31,13 @@ describe('react specifier should', () => {
   });
 
   describe('specify React project', () => {
-    beforeEach(async (): Promise<void> => {
-      mockClassMethods(specifier, [Specifier, ReactSpecifier], ['specify']);
+    beforeEach(
+      async (): Promise<void> => {
+        mockClassMethods(specifier, [Specifier, ReactSpecifier], ['specify']);
 
-      await specifier.specify();
-    });
+        await specifier.specify();
+      }
+    );
 
     test('add runtime config', async (): Promise<void> => {
       expect(specifier.addConfigJs).toBeCalled();

@@ -18,11 +18,13 @@ describe('Plain JS specifier should', () => {
   });
 
   describe('specify Plain JS project', () => {
-    beforeEach(async (): Promise<void> => {
-      mockClassMethods(specifier, [Specifier], ['specify']);
+    beforeEach(
+      async (): Promise<void> => {
+        mockClassMethods(specifier, [Specifier], ['specify']);
 
-      await specifier.specify();
-    });
+        await specifier.specify();
+      }
+    );
 
     test('copy configs', async (): Promise<void> => {
       expect(specifier.copyConfigs).toBeCalled();

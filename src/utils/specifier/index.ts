@@ -28,83 +28,78 @@ export class Specifier {
   }
 
   copyConfigs(...paths: ConfigPaths[]): Promise<void> {
-    return Promise.all(
-      paths.map(
-        (path: ConfigPaths): Promise<void> => copy(path.src, path.dist)
-      )
-    ).then(
-      () => { console.log(green('Configs successfully copied!')); },
-      (err) => { throw new Error(red(`Config copying failed: ${err}`)); }
+    return Promise.all(paths.map((path: ConfigPaths): Promise<void> => copy(path.src, path.dist))).then(
+      () => {
+        console.log(green('Configs successfully copied!'));
+      },
+      err => {
+        throw new Error(red(`Config copying failed: ${err}`));
+      }
     );
   }
 
   mergeWithJson(pathToJson: string, objToMerge: object): Promise<void> {
-    const json = readJsonSync( pathToJson );
-    return writeJson(
-      pathToJson,
-      deepMerge(json, objToMerge),
-      { spaces: 2 }
-    ).then(
-      () => { console.log(green('JSON successfully updated!')); },
-      (err) => { throw new Error(red(`JSON update failed: ${err}`)); }
+    const json = readJsonSync(pathToJson);
+    return writeJson(pathToJson, deepMerge(json, objToMerge), { spaces: 2 }).then(
+      () => {
+        console.log(green('JSON successfully updated!'));
+      },
+      err => {
+        throw new Error(red(`JSON update failed: ${err}`));
+      }
     );
   }
 
   updateGitignoreRules(): Promise<void> {
-    const projectGitignore: object = newlineSeparatedValue.parse(
-      readFileSync(
-        join(this.name, '.gitignore'), 'utf-8'
-      )
-    );
+    const projectGitignore: object = newlineSeparatedValue.parse(readFileSync(join(this.name, '.gitignore'), 'utf-8'));
     const specificationGitignore: object = newlineSeparatedValue.parse(
-      readFileSync(
-        join(__dirname, '../../specification/files/.gitignore'), 'utf-8'
-      )
+      readFileSync(join(__dirname, '../../specification/files/.gitignore'), 'utf-8')
     );
 
     return outputFile(
       join(this.name, '.gitignore'),
-      newlineSeparatedValue.stringify(
-        deepMerge( projectGitignore, specificationGitignore, { arrayMerge } )
-      ),
+      newlineSeparatedValue.stringify(deepMerge(projectGitignore, specificationGitignore, { arrayMerge })),
       'utf-8'
     ).then(
-      () => { console.log(green('.gitignore successfully updated!')); },
-      (err) => { throw new Error(red(`.gitignore update failed: ${err}`)); }
+      () => {
+        console.log(green('.gitignore successfully updated!'));
+      },
+      err => {
+        throw new Error(red(`.gitignore update failed: ${err}`));
+      }
     );
   }
 
   npmInstall(modules = [] as string[]) {
-    return childProcessPromise(
-      spawn(
-        'npm',
-        ['i', ...modules],
-        this.childProcessOptions
-      )
-    ).then(
-      () => { console.log(green('Modules successfully installed!')); },
-      (err) => { throw new Error(red(`Modules installation failed: ${err}`)); }
+    return childProcessPromise(spawn('npm', ['i', ...modules], this.childProcessOptions)).then(
+      () => {
+        console.log(green('Modules successfully installed!'));
+      },
+      err => {
+        throw new Error(red(`Modules installation failed: ${err}`));
+      }
     );
   }
 
   removeDefaultGit(): Promise<void> {
-    return childProcessPromise(
-      spawn('rm', ['-rf', '.git'], this.childProcessOptions)
-    ).then(
-      () => { console.log(green('Default Git removed')); },
-      (err) => { throw new Error(red(`Default Git removing error: ${err}`)); }
+    return childProcessPromise(spawn('rm', ['-rf', '.git'], this.childProcessOptions)).then(
+      () => {
+        console.log(green('Default Git removed'));
+      },
+      err => {
+        throw new Error(red(`Default Git removing error: ${err}`));
+      }
     );
   }
 
   initGit() {
-    return childProcessPromise(
-      spawn(
-        'git init',
-        Object.assign({shell: true}, this.childProcessOptions)
-      )
-    ).then(
-      () => { console.log(green('Git repository successfully initiated!')); },
-      (err) => { throw new Error(red(`Git init error: ${err}`)); }
+    return childProcessPromise(spawn('git init', Object.assign({ shell: true }, this.childProcessOptions))).then(
+      () => {
+        console.log(green('Git repository successfully initiated!'));
+      },
+      err => {
+        throw new Error(red(`Git init error: ${err}`));
+      }
     );
   }
 
@@ -112,11 +107,15 @@ export class Specifier {
     return childProcessPromise(
       spawn(
         `git add .; git commit -m "Initial commit" -n${amend ? ` --amend` : ''}`,
-        Object.assign({shell: true}, this.childProcessOptions)
+        Object.assign({ shell: true }, this.childProcessOptions)
       )
     ).then(
-      () => { console.log(green('initial commit was successfully done!')); },
-      (err) => { throw new Error(red(`Initial commit error: ${err}`)); }
+      () => {
+        console.log(green('initial commit was successfully done!'));
+      },
+      err => {
+        throw new Error(red(`Initial commit error: ${err}`));
+      }
     );
   }
 
@@ -126,23 +125,29 @@ export class Specifier {
       '// eslint-disable-next-line no-underscore-dangle\n(window || global).__ENV__ = Object.freeze({\n\n});',
       'utf-8'
     ).then(
-      () => { console.log(green('config.js successfully created!')); },
-      (err) => { throw new Error(red(`config.js creation failed: ${err}`)); }
+      () => {
+        console.log(green('config.js successfully created!'));
+      },
+      err => {
+        throw new Error(red(`config.js creation failed: ${err}`));
+      }
     );
   }
 
-  addLinkToConfigJsInHtml(): Promise<void>  {
-    const html: string = readFileSync(
-      join(this.name, 'public/index.html'), 'utf-8'
-    );
+  addLinkToConfigJsInHtml(): Promise<void> {
+    const html: string = readFileSync(join(this.name, 'public/index.html'), 'utf-8');
 
     return outputFile(
       join(this.name, 'public/index.html'),
       html.replace('</title>', '</title>\n    <script src="./config.js"></script>'),
       'utf-8'
     ).then(
-      () => { console.log(green('index.html successfully updated!')); },
-      (err) => { throw new Error(red(`index.html update failed: ${err}`)); }
+      () => {
+        console.log(green('index.html successfully updated!'));
+      },
+      err => {
+        throw new Error(red(`index.html update failed: ${err}`));
+      }
     );
   }
 }

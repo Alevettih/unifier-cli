@@ -13,10 +13,7 @@ export class ReactSpecifier extends Specifier {
       this.updateGitignoreRules(),
       this.cssToScss(),
       this.addLinkToConfigJsInHtml(),
-      this.mergeWithJson(
-        join(this.name, 'package.json'),
-        config.packageJson
-      )
+      this.mergeWithJson(join(this.name, 'package.json'), config.packageJson)
     ]);
     await this.initialCommit(true);
   }
@@ -24,25 +21,22 @@ export class ReactSpecifier extends Specifier {
   cssToScss(): Promise<void> {
     const files: string[] = ['App', 'index'];
 
-    const renames$: Promise<void>[] = files.map((key) => rename(
-      join(this.name, `src/${key}.css`),
-      join(this.name, `src/${key}.scss`)
-    ));
+    const renames$: Promise<void>[] = files.map(key =>
+      rename(join(this.name, `src/${key}.css`), join(this.name, `src/${key}.scss`))
+    );
 
     const contentChanges$: Promise<void>[] = files.map(async (name: string) => {
       const file = await readFile(join(this.name, `src/${name}.js`), 'utf-8');
-      return writeFile(
-        join(this.name, `src/${name}.js`),
-        file.replace(`${name}.css`, `${name}.scss`),
-        'utf-8'
-      );
+      return writeFile(join(this.name, `src/${name}.js`), file.replace(`${name}.css`, `${name}.scss`), 'utf-8');
     });
 
-    return Promise.all(
-      [...renames$, ...contentChanges$]
-    ).then(
-      () => { console.log(green('.css successfully replaced by .scss')); },
-      (err) => { throw new Error(`.css replacing failed: ${err}`); }
+    return Promise.all([...renames$, ...contentChanges$]).then(
+      () => {
+        console.log(green('.css successfully replaced by .scss'));
+      },
+      err => {
+        throw new Error(`.css replacing failed: ${err}`);
+      }
     );
   }
 }

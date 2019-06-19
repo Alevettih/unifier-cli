@@ -20,7 +20,7 @@ export default {
     'eslint-plugin-import',
     'eslint-plugin-jsx-a11y',
     'eslint-plugin-react',
-    'eslint-plugin-jest',
+    'eslint-plugin-jest'
   ],
   packageJson: {
     scripts: {

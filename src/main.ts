@@ -26,36 +26,41 @@ export default (): Promise<void | TypeError> => {
 
   delete args._;
 
-  return inquirer.prompt(questions).then((answers: Answer): Promise<void | TypeError> => {
-    answers = Object.assign(answers, args);
+  return inquirer
+    .prompt(questions)
+    .then(
+      (answers: Answer): Promise<void | TypeError> => {
+        answers = Object.assign(answers, args);
 
-    if (!answers.title) {
-      throw new Error(red('Title is required!'));
-    }
+        if (!answers.title) {
+          throw new Error(red('Title is required!'));
+        }
 
-    if (isDirectoryExistsAndNotEmpty(answers.title)) {
-      console.log(`Erasing directory "${join(answers.title)}"...`);
-      removeSync( join(answers.title) );
-      console.log(green(`Directory "${join(answers.title)}" has been erased!`));
-    }
+        if (isDirectoryExistsAndNotEmpty(answers.title)) {
+          console.log(`Erasing directory "${join(answers.title)}"...`);
+          removeSync(join(answers.title));
+          console.log(green(`Directory "${join(answers.title)}" has been erased!`));
+        }
 
-    switch (answers && answers.type) {
-      case projects.types.PLAIN: {
-        return projects.plainProject(answers);
+        switch (answers && answers.type) {
+          case projects.types.PLAIN: {
+            return projects.plainProject(answers);
+          }
+          case projects.types.ANGULAR: {
+            return projects.angularProject(answers);
+          }
+          case projects.types.REACT: {
+            return projects.reactProject(answers);
+          }
+          case projects.types.VUE: {
+            return projects.vueProject(answers);
+          }
+          default: {
+            const types = `\n - ${Object.values(projects.types).join('\n - ')}`;
+            throw new TypeError(red(`\nInvalid project type!\nAvailable types:${types}`));
+          }
+        }
       }
-      case projects.types.ANGULAR: {
-        return projects.angularProject(answers);
-      }
-      case projects.types.REACT: {
-        return projects.reactProject(answers);
-      }
-      case projects.types.VUE: {
-        return projects.vueProject(answers);
-      }
-      default: {
-        const types = `\n - ${Object.values(projects.types).join('\n - ')}`;
-        throw new TypeError(red(`\nInvalid project type!\nAvailable types:${types}`));
-      }
-    }
-  }).catch(e => e);
+    )
+    .catch(e => e);
 };
