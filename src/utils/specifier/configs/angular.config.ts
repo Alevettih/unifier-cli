@@ -50,7 +50,7 @@ export default {
         dist: join(name, '.editorconfig')
       },
       {
-        src: join(__dirname, '../../../specification/files/.stylelintrc'),
+        src: join(__dirname, '../../../specification/files/angular/.stylelintrc'),
         dist: join(name, '.stylelintrc')
       }
     ];
