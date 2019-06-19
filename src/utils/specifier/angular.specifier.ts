@@ -7,7 +7,6 @@ import config from '@utils/specifier/configs/angular.config';
 
 export class AngularSpecifier extends Specifier {
   async specify(): Promise<void> {
-    await this.initGit();
     await this.npmInstall(config.modules);
     await Promise.all([
       this.copyConfigs(...config.getConfigsPaths(this.name)),
@@ -23,7 +22,7 @@ export class AngularSpecifier extends Specifier {
         {projects: {[this.name]: angularJsonAdditions}}
       )
     ]);
-    await this.initialCommit();
+    await this.initialCommit(true);
   }
 
   copyConfigs(...configPaths: ConfigPaths[]): Promise<void> {

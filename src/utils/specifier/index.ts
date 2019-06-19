@@ -108,10 +108,10 @@ export class Specifier {
     );
   }
 
-  initialCommit(props?: string) {
+  initialCommit(amend?: boolean) {
     return childProcessPromise(
       spawn(
-        `git add .; git commit -m "Initial commit" -n${props ? ` ${props}` : ''}`,
+        `git add .; git commit -m "Initial commit" -n${amend ? ` --amend` : ''}`,
         Object.assign({shell: true}, this.childProcessOptions)
       )
     ).then(

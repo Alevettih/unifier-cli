@@ -40,8 +40,8 @@ describe('Plain JS specifier should', () => {
       expect(specifier.initGit).toBeCalled();
     });
 
-    test('Do init commit', async (): Promise<void> => {
-      expect(specifier.initialCommit).toBeCalled();
+    test('Do init commit without amend', async (): Promise<void> => {
+      expect(specifier.initialCommit).toBeCalledWith();
     });
   });
 });

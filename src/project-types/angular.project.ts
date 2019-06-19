@@ -7,7 +7,7 @@ export const angularProject = ({ title } = { title: '' } as Answer): Promise<voi
   return childProcessPromise(
     spawn(
       'npx',
-      ['@angular/cli@7', 'new', title, `--style=scss`, `--skipGit=true`, '--routing=true'],
+      ['@angular/cli@7', 'new', title, `--style=scss`, '--routing=true'],
       {stdio: 'inherit'}
     )
   ).then(

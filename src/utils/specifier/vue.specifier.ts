@@ -16,7 +16,7 @@ export class VueSpecifier extends Specifier {
         config.packageJson
       )
     ]);
-    await this.initialCommit('--amend');
+    await this.initialCommit(true);
   }
 
   copyConfigs(...configsPaths: ConfigPaths[]): Promise < void > {

@@ -62,12 +62,8 @@ describe('Angular specifier should', () => {
       expect(specifier.npmInstall).toBeCalledWith(config.modules);
     });
 
-    test('init Git repo', async (): Promise<void> => {
-      expect(specifier.initGit).toBeCalled();
-    });
-
-    test('Do init commit', async (): Promise<void> => {
-      expect(specifier.initialCommit).toBeCalled();
+    test('Do init commit with amend', async (): Promise<void> => {
+      expect(specifier.initialCommit).toBeCalledWith(true);
     });
   });
 });

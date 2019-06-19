@@ -18,7 +18,7 @@ export class ReactSpecifier extends Specifier {
         config.packageJson
       )
     ]);
-    await this.initialCommit('--amend');
+    await this.initialCommit(true);
   }
 
   cssToScss(): Promise<void> {
