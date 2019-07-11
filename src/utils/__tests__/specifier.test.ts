@@ -1,6 +1,6 @@
 import { Specifier } from '../specifier';
 import * as fs from 'fs-extra';
-import * as child_process from 'child_process';
+import * as execa from 'execa';
 import { join } from 'path';
 
 jest.mock('fs-extra');
@@ -22,12 +22,38 @@ describe('Specifier should', () => {
     expect(specifier.childProcessOptions).toBeInstanceOf(Object);
   });
 
-  test('execute "npm i" with passed modules', async (): Promise<void> => {
-    await specifier.npmInstall();
-    expect(child_process.spawn).toBeCalledWith('npm', ['i'], specifier.childProcessOptions);
+  describe('install dependencies', () => {
+    describe('by yarn', () => {
+      test.each([[null, true], ['yarn', true]])(
+        'if usedPackageManager is %s and isYarnAvailable is %s',
+        async (usedPackageManager, isYarnAvailable): Promise<void> => {
+          Object.defineProperty(specifier, 'usedPackageManager', { value: jest.fn(async () => usedPackageManager) });
+          Object.defineProperty(specifier, 'isYarnAvailable', { value: jest.fn(async () => isYarnAvailable) });
 
-    await specifier.npmInstall(['test']);
-    expect(child_process.spawn).toBeCalledWith('npm', ['i', 'test'], specifier.childProcessOptions);
+          await specifier.installPackages();
+          expect(execa.command).toBeCalledWith('yarn install', specifier.childProcessOptions);
+
+          await specifier.installPackages(['test']);
+          expect(execa.command).toBeCalledWith('yarn add test --dev', specifier.childProcessOptions);
+        }
+      );
+    });
+
+    describe('by npm', () => {
+      test.each([[null, false], ['npm', false], ['npm', true], ['yarn', false]])(
+        'if usedPackageManager is %s and isYarnAvailable is %s',
+        async (usedPackageManager, isYarnAvailable): Promise<void> => {
+          Object.defineProperty(specifier, 'usedPackageManager', { value: jest.fn(async () => usedPackageManager) });
+          Object.defineProperty(specifier, 'isYarnAvailable', { value: jest.fn(async () => isYarnAvailable) });
+
+          await specifier.installPackages();
+          expect(execa.command).toBeCalledWith('yarn install', specifier.childProcessOptions);
+
+          await specifier.installPackages(['test']);
+          expect(execa.command).toBeCalledWith('yarn add test --dev', specifier.childProcessOptions);
+        }
+      );
+    });
   });
 
   test('merge object with .json file', async (): Promise<void> => {
@@ -64,16 +90,13 @@ describe('Specifier should', () => {
   test('remove default Git', async (): Promise<void> => {
     await specifier.removeDefaultGit();
 
-    expect(child_process.spawn).toBeCalledWith('rm', ['-rf', '.git'], specifier.childProcessOptions);
+    expect(execa.command).toBeCalledWith('rm -rf .git', specifier.childProcessOptions);
   });
 
   test('init Git repo', async (): Promise<void> => {
     await specifier.initGit();
 
-    expect(child_process.spawn).toBeCalledWith(
-      'git init',
-      Object.assign({ shell: true }, specifier.childProcessOptions)
-    );
+    expect(execa.command).toBeCalledWith('git init', specifier.childProcessOptions);
   });
 
   test('add config.js', async (): Promise<void> => {
@@ -98,9 +121,21 @@ describe('Specifier should', () => {
   test('Do initial commit', async (): Promise<void> => {
     await specifier.initialCommit();
 
-    expect(child_process.spawn).toBeCalledWith(
-      'git add .; git commit -m "Initial commit" -n',
-      Object.assign({ shell: true }, specifier.childProcessOptions)
-    );
+    expect(execa.command).toBeCalledWith('git add .; git commit -m "Initial commit" -n', specifier.childProcessOptions);
+  });
+
+  test('should check yarn availability', async (): Promise<void> => {
+    await specifier.isYarnAvailable();
+
+    expect(execa.command).toBeCalledWith('npm list -g --depth=0 | grep yarn', specifier.childProcessOptions);
+  });
+
+  test('should handle currently used package manager', async (): Promise<void> => {
+    await specifier.usedPackageManager();
+
+    const options = Object.assign({ reject: false }, specifier.childProcessOptions);
+
+    expect(execa.command).toBeCalledWith('ls -la | grep package-lock.json', options);
+    expect(execa.command).toBeCalledWith('ls -la | grep yarn.lock', options);
   });
 });

@@ -1,6 +1,6 @@
 import { PlainJSSpecifier } from '@utils/specifier/plain-js.specifier';
 import { Specifier } from '@utils/specifier';
-import { mockClassMethods } from '@utils/helpers';
+import { mockClassMethods } from '../../helpers';
 import * as child_process from 'child_process';
 
 jest.mock('child_process');
@@ -30,8 +30,8 @@ describe('Plain JS specifier should', () => {
       expect(specifier.copyConfigs).toBeCalled();
     });
 
-    test('execute "npm i"', async (): Promise<void> => {
-      expect(specifier.npmInstall).toBeCalledWith();
+    test('install dependencies', async (): Promise<void> => {
+      expect(specifier.installPackages).toBeCalledWith();
     });
 
     test('remove default Git repo', async (): Promise<void> => {

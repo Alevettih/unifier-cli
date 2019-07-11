@@ -6,7 +6,7 @@ import config from '@utils/specifier/configs/react.config';
 
 export class ReactSpecifier extends Specifier {
   async specify(): Promise<void> {
-    await this.npmInstall(config.modules);
+    await this.installPackages(config.modules);
     await Promise.all([
       this.copyConfigs(...config.getConfigsPaths(this.name)),
       this.addConfigJs(),

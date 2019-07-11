@@ -8,7 +8,7 @@ export class PlainJSSpecifier extends Specifier {
     await Promise.all([
       this.copyConfigs(...config.getConfigsPaths(this.name)),
       this.updateGitignoreRules(),
-      this.npmInstall()
+      this.installPackages()
     ]);
     await this.initialCommit();
   }
