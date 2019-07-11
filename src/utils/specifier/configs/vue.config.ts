@@ -12,11 +12,12 @@ export default {
     'stylelint-no-unsupported-browser-features',
     'stylelint-scss',
     'stylelint-z-index-value-constraint',
-    'stylelint-processor-arbitrary-tags'
+    '@mapbox/stylelint-processor-arbitrary-tags'
   ],
   packageJson: {
     scripts: {
-      'lint:scss': 'stylelint "./src/**/*.vue"',
+      'lint:scss': 'stylelint "./src/**/*.vue" --fix',
+      'lint:scss:watch': 'onchange "src/**/*.scss" -- stylelint {{changed}}',
       'lint:all': 'npm run lint && npm run lint:scss'
     },
     gitHooks: {

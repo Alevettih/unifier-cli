@@ -27,8 +27,10 @@ export default {
   ],
   packageJson: {
     scripts: {
-      'lint:scss': 'stylelint "./src/**/*.scss"',
-      'lint:es': 'eslint "./src/**/*.js"',
+      'lint:scss': 'stylelint "./src/**/*.scss" --fix',
+      'lint:scss:watch': 'onchange "src/**/*.scss" -- stylelint {{changed}}',
+      'lint:es': 'eslint "./src/**/*.js" --fix',
+      'lint:es:watch': 'onchange "src/**/*.js" -- eslint {{changed}}',
       'lint:all': 'npm run lint:es && npm run lint:scss'
     },
     browserslist: undefined,
