@@ -7,7 +7,7 @@ import config from '@utils/specifier/configs/angular.config';
 
 export class AngularSpecifier extends Specifier {
   async specify(): Promise<void> {
-    await this.npmInstall(config.modules);
+    await this.installPackages(config.modules);
     await Promise.all([
       this.copyConfigs(...config.getConfigsPaths(this.name)),
       this.copyBaseStructure(),

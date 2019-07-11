@@ -1,6 +1,6 @@
 import { ReactSpecifier } from '@utils/specifier/react.specifier';
 import { Specifier } from '@utils/specifier';
-import { mockClassMethods } from '@utils/helpers';
+import { mockClassMethods } from '../../helpers';
 import * as fs from 'fs-extra';
 import * as child_process from 'child_process';
 import config from '@utils/specifier/configs/react.config';
@@ -48,8 +48,8 @@ describe('react specifier should', () => {
       expect(specifier.copyConfigs).toBeCalled();
     });
 
-    test('execute "npm i"', async (): Promise<void> => {
-      expect(specifier.npmInstall).toBeCalledWith(config.modules);
+    test('install dependencies', async (): Promise<void> => {
+      expect(specifier.installPackages).toBeCalledWith(config.modules);
     });
 
     test('Do init commit with amend', async (): Promise<void> => {

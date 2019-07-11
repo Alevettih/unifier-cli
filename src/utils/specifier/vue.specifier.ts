@@ -5,7 +5,7 @@ import config from '@utils/specifier/configs/vue.config';
 
 export class VueSpecifier extends Specifier {
   async specify() {
-    await this.npmInstall(config.modules);
+    await this.installPackages(config.modules);
     await Promise.all([
       this.copyConfigs(...config.getConfigsPaths(this.name)),
       this.addConfigJs(),

@@ -1,15 +1,15 @@
 import { Answer } from '@src/main';
-import { spawn } from 'child_process';
+import { command } from 'execa';
 import { ReactSpecifier } from '@specifier/react.specifier';
-import { childProcessPromise } from '@utils/helpers';
+import { red } from 'colors/safe';
 
-export const reactProject = ({ title } = { title: '' } as Answer): Promise<void> => {
-  return childProcessPromise(spawn('npx', ['create-react-app', title], { stdio: 'inherit' })).then(
-    async () => {
-      await new ReactSpecifier(title).specify();
-    },
-    e => {
-      throw new Error(`create-react-app CLI was fell: ${e}`);
-    }
-  );
+export const reactProject = async ({ title } = { title: '' } as Answer): Promise<void> => {
+  const process = command(`npx create-react-app ${title}`, { stdio: 'inherit' });
+
+  try {
+    await process;
+    await new ReactSpecifier(title).specify();
+  } catch ({ message }) {
+    throw new Error(red(`create-react-app CLI was fell: ${message}`));
+  }
 };
