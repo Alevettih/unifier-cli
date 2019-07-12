@@ -95,7 +95,7 @@ describe('User answers', () => {
       await main();
 
       expect(isDirectoryExistsAndNotEmpty).toBeCalled();
-      expect(fs.removeSync).toBeCalled();
+      expect(fs.remove).toBeCalled();
     });
   });
 });

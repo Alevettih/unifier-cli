@@ -26,8 +26,8 @@ export const questions: Questions = [
     type: 'input',
     name: 'title',
     prefix:
-      yellow('Directory with that name is already exists and contain files.\n') +
-      yellow('Change the name or proceed with that value for erasing the directory.\n '),
+      yellow('  Directory with that name is already exists and contain files.\n') +
+      yellow('  Change the name or proceed with that value for erasing the directory.\n '),
     message: 'Project name:',
     default: answers => answers.title,
     when: answers => isDirectoryExistsAndNotEmpty(answers.title)

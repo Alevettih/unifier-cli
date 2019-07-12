@@ -1,15 +1,17 @@
 import { Answer } from '@src/main';
 import { command } from 'execa';
 import { ReactSpecifier } from '@specifier/react.specifier';
-import { red } from 'colors/safe';
+import * as Listr from 'listr';
 
-export const reactProject = async ({ title } = { title: '' } as Answer): Promise<void> => {
-  const process = command(`npx create-react-app ${title}`, { stdio: 'inherit' });
-
-  try {
-    await process;
-    await new ReactSpecifier(title).specify();
-  } catch ({ message }) {
-    throw new Error(red(`create-react-app CLI was fell: ${message}`));
-  }
+export const reactProject = ({ title }: Answer = { title: '' } as Answer): Listr => {
+  return new Listr([
+    {
+      title: 'Install React Project',
+      task: () => command(`npx create-react-app ${title}`)
+    },
+    {
+      title: 'Specify it...',
+      task: () => new ReactSpecifier(title).specify()
+    }
+  ]);
 };

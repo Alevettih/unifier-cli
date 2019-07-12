@@ -1,9 +1,11 @@
 import { copy, outputFile, readFileSync, readJsonSync, writeJson } from 'fs-extra';
 import { join } from 'path';
-import { green, red, yellow } from 'colors/safe';
+import { blue, red } from 'colors/safe';
 import { command, ExecaReturnValue, Options } from 'execa';
 import { newlineSeparatedValue, arrayMerge } from '@utils/helpers';
 import * as deepMerge from 'deepmerge';
+import * as Listr from 'listr';
+import { ListrTask } from 'listr';
 
 export interface ConfigPaths {
   src: string;
@@ -22,21 +24,25 @@ export class Specifier {
     }
 
     this.project = project;
-    this.childProcessOptions = { shell: true, cwd: join(project), stdio: 'inherit' };
+    this.childProcessOptions = { shell: true, cwd: join(project) };
   }
 
   get name(): string {
     return this.project;
   }
 
-  copyConfigs(...paths: ConfigPaths[]): Promise<void> {
-    return Promise.all(paths.map((path: ConfigPaths): Promise<void> => copy(path.src, path.dist))).then(
-      () => {
-        console.log(green('Configs successfully copied!'));
-      },
-      err => {
-        throw new Error(red(`Config copying failed: ${err}`));
-      }
+  copyConfigs(...paths: ConfigPaths[]): Listr {
+    return new Listr(
+      paths.map(
+        (path: ConfigPaths): ListrTask => {
+          const pathArray = path.src.split('/');
+          const file = pathArray[pathArray.length - 1];
+          return {
+            title: `Copy ${blue(file)} file`,
+            task: () => copy(path.src, path.dist)
+          };
+        }
+      )
     );
   }
 
@@ -51,9 +57,7 @@ export class Specifier {
       }),
       { spaces: 2 }
     ).then(
-      () => {
-        console.log(green('JSON successfully updated!'));
-      },
+      () => {},
       err => {
         throw new Error(red(`JSON update failed: ${err}`));
       }
@@ -72,7 +76,7 @@ export class Specifier {
       'utf-8'
     ).then(
       () => {
-        console.log(green('.gitignore successfully updated!'));
+        // console.log(green('.gitignore successfully updated!'));
       },
       err => {
         throw new Error(red(`.gitignore update failed: ${err}`));
@@ -85,14 +89,14 @@ export class Specifier {
     const modulesString = modules && modules.length ? modules.join(' ') : '';
 
     if ((await this.usedPackageManager()) !== 'npm' && (await this.isYarnAvailable())) {
-      console.log(yellow('Use yarn'));
+      // console.log(yellow('Use yarn'));
 
       process = command(
         `yarn ${modulesString.length ? `add ${modulesString} --dev` : 'install'}`,
         this.childProcessOptions
       );
     } else {
-      console.log(yellow('Use npm'));
+      // console.log(yellow('Use npm'));
 
       process = command(
         `npm ${modulesString.length ? `i ${modulesString} --save-dev` : 'i'}`,
@@ -102,7 +106,7 @@ export class Specifier {
 
     try {
       await process;
-      console.log(green('Modules successfully installed!'));
+      // console.log(green('Modules successfully installed!'));
     } catch ({ message }) {
       throw new Error(red(`Modules installation failed: ${message}`));
     }
@@ -113,7 +117,7 @@ export class Specifier {
 
     try {
       await process;
-      console.log(green('Default Git removed'));
+      // console.log(green('Default Git removed'));
     } catch ({ message }) {
       throw new Error(red(`Default Git removing error: ${message}`));
     }
@@ -124,7 +128,7 @@ export class Specifier {
 
     try {
       await process;
-      console.log(green('Git repository successfully initiated!'));
+      // console.log(green('Git repository successfully initiated!'));
     } catch ({ message }) {
       throw new Error(red(`Git init error: ${message}`));
     }
@@ -138,7 +142,7 @@ export class Specifier {
 
     try {
       await process;
-      console.log(green('initial commit was successfully done!'));
+      // console.log(green('initial commit was successfully done!'));
     } catch ({ message }) {
       throw new Error(red(`Initial commit error: ${message}`));
     }
@@ -151,7 +155,7 @@ export class Specifier {
       'utf-8'
     ).then(
       () => {
-        console.log(green('config.js successfully created!'));
+        // console.log(green('config.js successfully created!'));
       },
       err => {
         throw new Error(red(`config.js creation failed: ${err}`));
@@ -168,7 +172,7 @@ export class Specifier {
       'utf-8'
     ).then(
       () => {
-        console.log(green('index.html successfully updated!'));
+        // console.log(green('index.html successfully updated!'));
       },
       err => {
         throw new Error(red(`index.html update failed: ${err}`));
@@ -181,10 +185,10 @@ export class Specifier {
 
     try {
       await process;
-      console.log(yellow(`yarn found.`));
+      // console.log(yellow(`yarn found.`));
       return true;
     } catch ({ message }) {
-      console.log(yellow(`yarn is not found.`));
+      // console.log(yellow(`yarn is not found.`));
       return false;
     }
   }
@@ -204,7 +208,7 @@ export class Specifier {
       result = cmd.includes('yarn.lock') ? 'yarn' : 'npm';
     });
 
-    console.log(yellow(`Currently used package manager is ${result}`));
+    // console.log(yellow(`Currently used package manager is ${result}`));
     return result;
   }
 }
