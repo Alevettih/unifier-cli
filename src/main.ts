@@ -1,13 +1,15 @@
 import 'module-alias/register';
 import * as inquirer from 'inquirer';
-import * as projects from '@src/project-types';
 import { questions } from '@utils/questions';
 import { isDirectoryExistsAndNotEmpty } from '@utils/helpers';
-import { removeSync } from 'fs-extra';
+import { remove } from 'fs-extra';
 import { join } from 'path';
 import * as minimist from 'minimist';
 import { ParsedArgs } from 'minimist';
-import { green, red } from 'colors/safe';
+import { red } from 'colors/safe';
+import * as Listr from 'listr';
+import { selectProjectType } from '@src/project-types';
+import { ListrOptions } from 'listr';
 
 export type ProjectType = 'email' | 'plain-js' | 'angular' | 'react' | 'vue';
 
@@ -29,40 +31,31 @@ export default (): Promise<void | TypeError> => {
   return inquirer
     .prompt(questions)
     .then(
-      (answers: Answer): Promise<void | TypeError> => {
+      (answers: Answer): Promise<void> => {
         answers = Object.assign(answers, args);
 
         if (!answers.title) {
           throw new Error(red('Title is required!'));
         }
 
-        if (isDirectoryExistsAndNotEmpty(answers.title)) {
-          console.log(`Erasing directory "${join(answers.title)}"...`);
-          removeSync(join(answers.title));
-          console.log(green(`Directory "${join(answers.title)}" has been erased!`));
-        }
+        const task = new Listr(
+          [
+            {
+              title: 'Erase existing project directory',
+              skip: () => !isDirectoryExistsAndNotEmpty(answers.title),
+              task: () => remove(join(answers.title))
+            },
+            {
+              title: 'Generate Project',
+              task: () => selectProjectType(answers)
+            }
+          ],
+          { collapse: false } as ListrOptions
+        );
 
-        switch (answers && answers.type) {
-          case projects.types.EMAIL: {
-            return projects.emailProject(answers);
-          }
-          case projects.types.PLAIN: {
-            return projects.plainProject(answers);
-          }
-          case projects.types.ANGULAR: {
-            return projects.angularProject(answers);
-          }
-          case projects.types.REACT: {
-            return projects.reactProject(answers);
-          }
-          case projects.types.VUE: {
-            return projects.vueProject(answers);
-          }
-          default: {
-            const types = `\n - ${Object.values(projects.types).join('\n - ')}`;
-            throw new TypeError(red(`\nInvalid project type!\nAvailable types:${types}`));
-          }
-        }
+        return task.run().catch(error => {
+          throw new Error(`Project creation failed: ${error}`);
+        });
       }
     )
     .catch(e => e);

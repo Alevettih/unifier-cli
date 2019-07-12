@@ -23,7 +23,7 @@ describe('Vue specifier should', () => {
   test('remove .eslintrc.js before copy configs from specification', async (): Promise<void> => {
     await specifier.copyConfigs(...config.getConfigsPaths(specifier.name));
 
-    expect(fs.remove).toBeCalled();
+    expect(fs.removeSync).toBeCalled();
     expect(fs.copy).toBeCalledTimes(config.getConfigsPaths(specifier.name).length);
   });
 
