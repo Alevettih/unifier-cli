@@ -1,15 +1,17 @@
 import { Answer } from '@src/main';
-import { spawn } from 'child_process';
+import { command } from 'execa';
 import { ReactSpecifier } from '@specifier/react.specifier';
-import { childProcessPromise } from '@utils/helpers';
+import * as Listr from 'listr';
 
-export const reactProject = ({ title } = { title: '' } as Answer): Promise<void> => {
-  return childProcessPromise(spawn('npx', ['create-react-app', title], { stdio: 'inherit' })).then(
-    async () => {
-      await new ReactSpecifier(title).specify();
+export const reactProject = ({ title }: Answer = { title: '' } as Answer): Listr => {
+  return new Listr([
+    {
+      title: 'Install React Project',
+      task: () => command(`npx create-react-app ${title}`)
     },
-    e => {
-      throw new Error(`create-react-app CLI was fell: ${e}`);
+    {
+      title: 'Specify it...',
+      task: () => new ReactSpecifier(title).specify()
     }
-  );
+  ]);
 };

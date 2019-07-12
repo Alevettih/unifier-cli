@@ -5,7 +5,8 @@ interface FsExtra {
   __setMockFiles: (newMockFiles: any) => void;
   readdirSync: (directoryPath: any) => void;
   copy: (from: string, to: string) => Promise<void>;
-  remove: (from: string, to: string) => Promise<void>;
+  remove: (from: string) => Promise<void>;
+  removeSync: (from: string) => void;
   writeJson: (to: string, json: string, opts: object) => Promise<void>;
   outputFile: (to: string, json: string, opts: object) => Promise<void>;
 }
@@ -40,6 +41,7 @@ fs.__setMockFiles = __setMockFiles;
 fs.readdirSync = readdirSync;
 fs.copy = jest.fn(async () => {});
 fs.remove = jest.fn(async () => {});
+fs.removeSync = jest.fn(() => {});
 fs.writeJson = jest.fn(async () => {});
 fs.outputFile = jest.fn(async () => {});
 

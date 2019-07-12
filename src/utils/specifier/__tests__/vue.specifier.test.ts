@@ -1,6 +1,6 @@
 import { VueSpecifier } from '@utils/specifier/vue.specifier';
 import { Specifier } from '@utils/specifier';
-import { mockClassMethods } from '@utils/helpers';
+import { mockClassMethods } from '../../helpers';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import config from '@utils/specifier/configs/vue.config';
@@ -23,7 +23,7 @@ describe('Vue specifier should', () => {
   test('remove .eslintrc.js before copy configs from specification', async (): Promise<void> => {
     await specifier.copyConfigs(...config.getConfigsPaths(specifier.name));
 
-    expect(fs.remove).toBeCalled();
+    expect(fs.removeSync).toBeCalled();
     expect(fs.copy).toBeCalledTimes(config.getConfigsPaths(specifier.name).length);
   });
 
@@ -45,8 +45,8 @@ describe('Vue specifier should', () => {
       expect(specifier.addLinkToConfigJsInHtml).toBeCalled();
     });
 
-    test('execute "npm i"', async (): Promise<void> => {
-      expect(specifier.npmInstall).toBeCalledWith(config.modules);
+    test('install dependencies', async (): Promise<void> => {
+      expect(specifier.installPackages).toBeCalledWith(config.modules);
     });
 
     test('Do init commit with amend', async (): Promise<void> => {

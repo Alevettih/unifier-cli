@@ -2,7 +2,7 @@ import main from '@src/main';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
 import * as projects from '@src/project-types';
-import { isDirectoryExistsAndNotEmpty } from '@utils/helpers';
+import { isDirectoryExistsAndNotEmpty } from '../utils/helpers';
 
 jest.mock('inquirer');
 jest.mock('fs-extra');
@@ -95,7 +95,7 @@ describe('User answers', () => {
       await main();
 
       expect(isDirectoryExistsAndNotEmpty).toBeCalled();
-      expect(fs.removeSync).toBeCalled();
+      expect(fs.remove).toBeCalled();
     });
   });
 });

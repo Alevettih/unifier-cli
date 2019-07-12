@@ -1,20 +1,18 @@
 import { Answer } from '@src/main';
+import * as Listr from 'listr';
 import { PlainJSSpecifier } from '@specifier/plain-js.specifier';
-import { spawn } from 'child_process';
 import { join } from 'path';
-import { childProcessPromise } from '@utils/helpers';
+import { command } from 'execa';
 
-export const plainProject = ({ title } = { title: '' } as Answer): Promise<void> => {
-  return childProcessPromise(
-    spawn('git', ['clone', 'git@gitlab.requestum.com:front-end-tools/project-template-gulp.git', join(title)], {
-      stdio: 'inherit'
-    })
-  ).then(
-    async () => {
-      await new PlainJSSpecifier(title).specify();
+export const plainProject = ({ title }: Answer = { title: '' } as Answer): Listr => {
+  return new Listr([
+    {
+      title: 'Install Plain JS project',
+      task: () => command(`git clone git@gitlab.requestum.com:front-end-tools/project-template-gulp.git ${join(title)}`)
     },
-    e => {
-      throw new Error(`Cloning of Plain JS project was fell ${e}`);
+    {
+      title: 'Specify it...',
+      task: () => new PlainJSSpecifier(title).specify()
     }
-  );
+  ]);
 };

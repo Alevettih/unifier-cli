@@ -1,10 +1,33 @@
 import { Specifier } from '@specifier/index';
-import config from '@specifier/configs/plain-js.config';
+import * as Listr from 'listr';
+import { blue } from 'colors/safe';
 
 export class EmailSpecifier extends Specifier {
-  async specify(): Promise<void> {
-    await this.removeDefaultGit();
-    await Promise.all([this.initGit(), this.updateGitignoreRules(), this.npmInstall()]);
-    await this.initialCommit();
+  specify(): Listr {
+    return new Listr([
+      {
+        title: 'Git',
+        task: () =>
+          new Listr([
+            { title: 'Remove default', task: () => this.removeDefaultGit() },
+            { title: 'Init new repository', task: () => this.initGit() }
+          ])
+      },
+      {
+        title: 'Do some magic...',
+        task: () =>
+          new Listr(
+            [
+              { title: `Update ${blue('.gitignore')} rules`, task: () => this.updateGitignoreRules() },
+              { title: 'Install dependencies', task: () => this.installPackages() }
+            ],
+            { concurrent: true }
+          )
+      },
+      {
+        title: 'Do initial commit',
+        task: () => this.initialCommit()
+      }
+    ]);
   }
 }

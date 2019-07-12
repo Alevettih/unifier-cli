@@ -1,18 +1,22 @@
 import { copy, outputFile, readFileSync, readJsonSync, writeJson } from 'fs-extra';
 import { join } from 'path';
-import { spawn } from 'child_process';
-import { green, red } from 'colors/safe';
-import { childProcessPromise, newlineSeparatedValue, arrayMerge } from '@utils/helpers';
+import { blue, red } from 'colors/safe';
+import { command, ExecaReturnValue, Options } from 'execa';
+import { newlineSeparatedValue, arrayMerge } from '@utils/helpers';
 import * as deepMerge from 'deepmerge';
+import * as Listr from 'listr';
+import { ListrTask } from 'listr';
 
 export interface ConfigPaths {
   src: string;
   dist: string;
 }
 
+export type PackageManager = 'npm' | 'yarn' | null;
+
 export class Specifier {
   readonly project: string;
-  readonly childProcessOptions: object;
+  readonly childProcessOptions: Options;
 
   constructor(project: string) {
     if (!project) {
@@ -20,21 +24,25 @@ export class Specifier {
     }
 
     this.project = project;
-    this.childProcessOptions = { cwd: join(project), stdio: 'inherit' };
+    this.childProcessOptions = { shell: true, cwd: join(project) };
   }
 
   get name(): string {
     return this.project;
   }
 
-  copyConfigs(...paths: ConfigPaths[]): Promise<void> {
-    return Promise.all(paths.map((path: ConfigPaths): Promise<void> => copy(path.src, path.dist))).then(
-      () => {
-        console.log(green('Configs successfully copied!'));
-      },
-      err => {
-        throw new Error(red(`Config copying failed: ${err}`));
-      }
+  copyConfigs(...paths: ConfigPaths[]): Listr {
+    return new Listr(
+      paths.map(
+        (path: ConfigPaths): ListrTask => {
+          const pathArray = path.src.split('/');
+          const file = pathArray[pathArray.length - 1];
+          return {
+            title: `Copy ${blue(file)} file`,
+            task: () => copy(path.src, path.dist)
+          };
+        }
+      )
     );
   }
 
@@ -49,9 +57,7 @@ export class Specifier {
       }),
       { spaces: 2 }
     ).then(
-      () => {
-        console.log(green('JSON successfully updated!'));
-      },
+      () => {},
       err => {
         throw new Error(red(`JSON update failed: ${err}`));
       }
@@ -70,7 +76,7 @@ export class Specifier {
       'utf-8'
     ).then(
       () => {
-        console.log(green('.gitignore successfully updated!'));
+        // console.log(green('.gitignore successfully updated!'));
       },
       err => {
         throw new Error(red(`.gitignore update failed: ${err}`));
@@ -78,53 +84,68 @@ export class Specifier {
     );
   }
 
-  npmInstall(modules = [] as string[]) {
-    return childProcessPromise(spawn('npm', ['i', ...modules], this.childProcessOptions)).then(
-      () => {
-        console.log(green('Modules successfully installed!'));
-      },
-      err => {
-        throw new Error(red(`Modules installation failed: ${err}`));
-      }
-    );
+  async installPackages(modules = [] as string[]) {
+    let process;
+    const modulesString = modules && modules.length ? modules.join(' ') : '';
+
+    if ((await this.usedPackageManager()) !== 'npm' && (await this.isYarnAvailable())) {
+      // console.log(yellow('Use yarn'));
+
+      process = command(
+        `yarn ${modulesString.length ? `add ${modulesString} --dev` : 'install'}`,
+        this.childProcessOptions
+      );
+    } else {
+      // console.log(yellow('Use npm'));
+
+      process = command(
+        `npm ${modulesString.length ? `i ${modulesString} --save-dev` : 'i'}`,
+        this.childProcessOptions
+      );
+    }
+
+    try {
+      await process;
+      // console.log(green('Modules successfully installed!'));
+    } catch ({ message }) {
+      throw new Error(red(`Modules installation failed: ${message}`));
+    }
   }
 
-  removeDefaultGit(): Promise<void> {
-    return childProcessPromise(spawn('rm', ['-rf', '.git'], this.childProcessOptions)).then(
-      () => {
-        console.log(green('Default Git removed'));
-      },
-      err => {
-        throw new Error(red(`Default Git removing error: ${err}`));
-      }
-    );
+  async removeDefaultGit(): Promise<void> {
+    const process = command('rm -rf .git', this.childProcessOptions);
+
+    try {
+      await process;
+      // console.log(green('Default Git removed'));
+    } catch ({ message }) {
+      throw new Error(red(`Default Git removing error: ${message}`));
+    }
   }
 
-  initGit() {
-    return childProcessPromise(spawn('git init', Object.assign({ shell: true }, this.childProcessOptions))).then(
-      () => {
-        console.log(green('Git repository successfully initiated!'));
-      },
-      err => {
-        throw new Error(red(`Git init error: ${err}`));
-      }
-    );
+  async initGit() {
+    const process = command('git init', Object.assign({ shell: true }, this.childProcessOptions));
+
+    try {
+      await process;
+      // console.log(green('Git repository successfully initiated!'));
+    } catch ({ message }) {
+      throw new Error(red(`Git init error: ${message}`));
+    }
   }
 
-  initialCommit(amend?: boolean) {
-    return childProcessPromise(
-      spawn(
-        `git add .; git commit -m "Initial commit" -n${amend ? ` --amend` : ''}`,
-        Object.assign({ shell: true }, this.childProcessOptions)
-      )
-    ).then(
-      () => {
-        console.log(green('initial commit was successfully done!'));
-      },
-      err => {
-        throw new Error(red(`Initial commit error: ${err}`));
-      }
+  async initialCommit(amend?: boolean) {
+    const process = command(
+      `git add .; git commit -m "Initial commit" -n${amend ? ` --amend` : ''}`,
+      this.childProcessOptions
     );
+
+    try {
+      await process;
+      // console.log(green('initial commit was successfully done!'));
+    } catch ({ message }) {
+      throw new Error(red(`Initial commit error: ${message}`));
+    }
   }
 
   addConfigJs(): Promise<void> {
@@ -134,7 +155,7 @@ export class Specifier {
       'utf-8'
     ).then(
       () => {
-        console.log(green('config.js successfully created!'));
+        // console.log(green('config.js successfully created!'));
       },
       err => {
         throw new Error(red(`config.js creation failed: ${err}`));
@@ -151,11 +172,43 @@ export class Specifier {
       'utf-8'
     ).then(
       () => {
-        console.log(green('index.html successfully updated!'));
+        // console.log(green('index.html successfully updated!'));
       },
       err => {
         throw new Error(red(`index.html update failed: ${err}`));
       }
     );
+  }
+
+  async isYarnAvailable(): Promise<boolean> {
+    const process = command(`npm list -g --depth=0 | grep yarn`, this.childProcessOptions);
+
+    try {
+      await process;
+      // console.log(yellow(`yarn found.`));
+      return true;
+    } catch ({ message }) {
+      // console.log(yellow(`yarn is not found.`));
+      return false;
+    }
+  }
+
+  async usedPackageManager(): Promise<PackageManager> {
+    const options = Object.assign({ reject: false }, this.childProcessOptions);
+    const yarn = command(`ls -la | grep yarn.lock`, options);
+    const npm = command(`ls -la | grep package-lock.json`, options);
+    const promiseResult = await Promise.all([npm, yarn]);
+    let result: PackageManager = null;
+
+    promiseResult.forEach(({ exitCode, command: cmd }: ExecaReturnValue) => {
+      if (exitCode) {
+        return;
+      }
+
+      result = cmd.includes('yarn.lock') ? 'yarn' : 'npm';
+    });
+
+    // console.log(yellow(`Currently used package manager is ${result}`));
+    return result;
   }
 }

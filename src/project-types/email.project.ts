@@ -1,20 +1,19 @@
 import { Answer } from '@src/main';
-import { spawn } from 'child_process';
 import { join } from 'path';
-import { childProcessPromise } from '@utils/helpers';
 import { EmailSpecifier } from '@specifier/email.specifier';
+import { command } from 'execa';
+import * as Listr from 'listr';
 
-export const emailProject = ({ title } = { title: '' } as Answer): Promise<void> => {
-  return childProcessPromise(
-    spawn('git', ['clone', 'git@gitlab.requestum.com:front-end-tools/email-template-compiler.git', join(title)], {
-      stdio: 'inherit'
-    })
-  ).then(
-    async () => {
-      await new EmailSpecifier(title).specify();
+export const emailProject = ({ title }: Answer = { title: '' } as Answer): Listr => {
+  return new Listr([
+    {
+      title: 'Install Email project',
+      task: () =>
+        command(`git clone git@gitlab.requestum.com:front-end-tools/email-template-compiler.git ${join(title)}`)
     },
-    e => {
-      throw new Error(`Cloning of Plain JS project was fell ${e}`);
+    {
+      title: 'Specify it...',
+      task: () => new EmailSpecifier(title).specify()
     }
-  );
+  ]);
 };
