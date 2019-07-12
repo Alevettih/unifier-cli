@@ -56,12 +56,9 @@ export class Specifier {
         }
       }),
       { spaces: 2 }
-    ).then(
-      () => {},
-      err => {
-        throw new Error(red(`JSON update failed: ${err}`));
-      }
-    );
+    ).catch(err => {
+      throw new Error(red(`JSON update failed: ${err}`));
+    });
   }
 
   updateGitignoreRules(): Promise<void> {
@@ -74,14 +71,9 @@ export class Specifier {
       join(this.name, '.gitignore'),
       newlineSeparatedValue.stringify(deepMerge(projectGitignore, specificationGitignore, { arrayMerge })),
       'utf-8'
-    ).then(
-      () => {
-        // console.log(green('.gitignore successfully updated!'));
-      },
-      err => {
-        throw new Error(red(`.gitignore update failed: ${err}`));
-      }
-    );
+    ).catch(err => {
+      throw new Error(red(`.gitignore update failed: ${err}`));
+    });
   }
 
   async installPackages(modules = [] as string[]) {
@@ -89,15 +81,11 @@ export class Specifier {
     const modulesString = modules && modules.length ? modules.join(' ') : '';
 
     if ((await this.usedPackageManager()) !== 'npm' && (await this.isYarnAvailable())) {
-      // console.log(yellow('Use yarn'));
-
       process = command(
         `yarn ${modulesString.length ? `add ${modulesString} --dev` : 'install'}`,
         this.childProcessOptions
       );
     } else {
-      // console.log(yellow('Use npm'));
-
       process = command(
         `npm ${modulesString.length ? `i ${modulesString} --save-dev` : 'i'}`,
         this.childProcessOptions
@@ -106,7 +94,6 @@ export class Specifier {
 
     try {
       await process;
-      // console.log(green('Modules successfully installed!'));
     } catch ({ message }) {
       throw new Error(red(`Modules installation failed: ${message}`));
     }
@@ -117,7 +104,6 @@ export class Specifier {
 
     try {
       await process;
-      // console.log(green('Default Git removed'));
     } catch ({ message }) {
       throw new Error(red(`Default Git removing error: ${message}`));
     }
@@ -128,7 +114,6 @@ export class Specifier {
 
     try {
       await process;
-      // console.log(green('Git repository successfully initiated!'));
     } catch ({ message }) {
       throw new Error(red(`Git init error: ${message}`));
     }
@@ -142,7 +127,6 @@ export class Specifier {
 
     try {
       await process;
-      // console.log(green('initial commit was successfully done!'));
     } catch ({ message }) {
       throw new Error(red(`Initial commit error: ${message}`));
     }
@@ -153,14 +137,9 @@ export class Specifier {
       join(this.name, 'public/config.js'),
       '// eslint-disable-next-line no-underscore-dangle\n(window || global).__ENV__ = Object.freeze({\n\n});',
       'utf-8'
-    ).then(
-      () => {
-        // console.log(green('config.js successfully created!'));
-      },
-      err => {
-        throw new Error(red(`config.js creation failed: ${err}`));
-      }
-    );
+    ).catch(err => {
+      throw new Error(red(`config.js creation failed: ${err}`));
+    });
   }
 
   addLinkToConfigJsInHtml(): Promise<void> {
@@ -170,14 +149,9 @@ export class Specifier {
       join(this.name, 'public/index.html'),
       html.replace('</title>', '</title>\n    <script src="./config.js"></script>'),
       'utf-8'
-    ).then(
-      () => {
-        // console.log(green('index.html successfully updated!'));
-      },
-      err => {
-        throw new Error(red(`index.html update failed: ${err}`));
-      }
-    );
+    ).catch(err => {
+      throw new Error(red(`index.html update failed: ${err}`));
+    });
   }
 
   async isYarnAvailable(): Promise<boolean> {
@@ -185,10 +159,8 @@ export class Specifier {
 
     try {
       await process;
-      // console.log(yellow(`yarn found.`));
       return true;
     } catch ({ message }) {
-      // console.log(yellow(`yarn is not found.`));
       return false;
     }
   }
@@ -208,7 +180,6 @@ export class Specifier {
       result = cmd.includes('yarn.lock') ? 'yarn' : 'npm';
     });
 
-    // console.log(yellow(`Currently used package manager is ${result}`));
     return result;
   }
 }

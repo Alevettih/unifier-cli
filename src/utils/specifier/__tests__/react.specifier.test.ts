@@ -21,12 +21,12 @@ describe('react specifier should', () => {
   });
 
   test('change css to scss', async (): Promise<void> => {
-    Object.defineProperty(fs, 'readFile', { value: jest.fn(async () => 'App.css index.css') });
+    Object.defineProperty(fs, 'readFileSync', { value: jest.fn(() => 'App.css index.css') });
 
     await specifier.cssToScss();
 
     expect(fs.rename).toBeCalledTimes(2);
-    expect(fs.readFile).toBeCalledTimes(2);
+    expect(fs.readFileSync).toBeCalledTimes(2);
     expect(fs.writeFile).toBeCalledTimes(2);
   });
 
