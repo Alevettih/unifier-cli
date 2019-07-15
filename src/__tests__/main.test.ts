@@ -73,7 +73,7 @@ describe('User answers', () => {
       await main();
 
       expect(inquirer.prompt).toHaveBeenCalled();
-      expect(main()).resolves.toThrow(TypeError);
+      expect(main()).resolves.toThrow(Error);
     });
 
     test('should throw Error without project name', async () => {

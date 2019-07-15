@@ -21,7 +21,7 @@ describe('Vue specifier should', () => {
   });
 
   test('remove .eslintrc.js before copy configs from specification', async (): Promise<void> => {
-    await specifier.copyConfigs(...config.getConfigsPaths(specifier.name));
+    await specifier.copyConfigs(...config.getConfigsPaths(specifier.name)).run();
 
     expect(fs.removeSync).toBeCalled();
     expect(fs.copy).toBeCalledTimes(config.getConfigsPaths(specifier.name).length);
@@ -32,7 +32,7 @@ describe('Vue specifier should', () => {
       async (): Promise<void> => {
         mockClassMethods(specifier, [Specifier, VueSpecifier], ['specify']);
 
-        await specifier.specify();
+        await specifier.specify().run();
       }
     );
 
