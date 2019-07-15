@@ -1,23 +1,23 @@
-import { PlainJSSpecifier } from '@utils/specifier/plain-js.specifier';
 import { Specifier } from '@utils/specifier';
 import { mockClassMethods } from '../../helpers';
 import * as child_process from 'child_process';
+import { EmailSpecifier } from '../email.specifier';
 
 jest.mock('child_process');
 
-describe('Plain JS specifier should', () => {
+describe('Email specifier should', () => {
   const testDir = 'target-tmp';
-  let specifier: PlainJSSpecifier;
+  let specifier: EmailSpecifier;
 
   beforeEach(() => {
-    specifier = new PlainJSSpecifier(testDir);
+    specifier = new EmailSpecifier(testDir);
   });
 
   test('extends from Specifier', () => {
     expect(specifier).toBeInstanceOf(Specifier);
   });
 
-  describe('specify Plain JS project', () => {
+  describe('specify Email project', () => {
     beforeEach(
       async (): Promise<void> => {
         mockClassMethods(specifier, [Specifier], ['specify']);
@@ -26,9 +26,9 @@ describe('Plain JS specifier should', () => {
       }
     );
 
-    test('copy configs', async (): Promise<void> => {
-      expect(specifier.copyConfigs).toBeCalled();
-    });
+    // test('copy configs', async (): Promise<void> => {
+    //   expect(specifier.copyConfigs).toBeCalled();
+    // });
 
     test('install dependencies', async (): Promise<void> => {
       expect(specifier.installPackages).toBeCalledWith();
@@ -36,6 +36,10 @@ describe('Plain JS specifier should', () => {
 
     test('remove default Git repo', async (): Promise<void> => {
       expect(specifier.removeDefaultGit).toBeCalled();
+    });
+
+    test('update .gitignore rules', async (): Promise<void> => {
+      expect(specifier.updateGitignoreRules).toBeCalled();
     });
 
     test('init Git repo', async (): Promise<void> => {

@@ -6,7 +6,7 @@ import * as Listr from 'listr';
 import { blue } from 'colors/safe';
 
 export class VueSpecifier extends Specifier {
-  async specify() {
+  specify() {
     return new Listr([
       { title: 'Install dependencies', task: () => this.installPackages(config.modules) },
       {

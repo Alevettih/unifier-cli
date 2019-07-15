@@ -1,6 +1,6 @@
 import { Specifier } from '@specifier/index';
 import { join } from 'path';
-import { readFile, writeFile, rename } from 'fs-extra';
+import { readFileSync, writeFile, rename } from 'fs-extra';
 import config from '@utils/specifier/configs/react.config';
 import * as Listr from 'listr';
 import { blue } from 'colors/safe';
@@ -37,25 +37,43 @@ export class ReactSpecifier extends Specifier {
     ]);
   }
 
-  cssToScss(): Promise<void> {
+  cssToScss(): Listr {
     const files: string[] = ['App', 'index'];
 
-    const renames$: Promise<void>[] = files.map(key =>
-      rename(join(this.name, `src/${key}.css`), join(this.name, `src/${key}.scss`))
+    return new Listr(
+      [
+        {
+          title: 'Edit mentions',
+          task: () => this.editCSSMentions(files)
+        },
+        {
+          title: 'Change extensions',
+          task: () => this.changeCSSExtension(files)
+        }
+      ],
+      { concurrent: true }
     );
+  }
 
-    const contentChanges$: Promise<void>[] = files.map(async (name: string) => {
-      const file = await readFile(join(this.name, `src/${name}.js`), 'utf-8');
-      return writeFile(join(this.name, `src/${name}.js`), file.replace(`${name}.css`, `${name}.scss`), 'utf-8');
-    });
+  private editCSSMentions(files: string[]): Listr {
+    return new Listr(
+      files.map((name: string) => ({
+        title: `In ${blue(`${name}.js`)}`,
+        task: () => {
+          const file = readFileSync(join(this.name, `src/${name}.js`), 'utf-8');
 
-    return Promise.all([...renames$, ...contentChanges$]).then(
-      () => {
-        // console.log(green('.css successfully replaced by .scss'));
-      },
-      err => {
-        throw new Error(`.css replacing failed: ${err}`);
-      }
+          return writeFile(join(this.name, `src/${name}.js`), file.replace(`${name}.css`, `${name}.scss`), 'utf-8');
+        }
+      }))
+    );
+  }
+
+  private changeCSSExtension(files: string[]): Listr {
+    return new Listr(
+      files.map(key => ({
+        title: `Rename ${blue(`${key}.css`)} to ${blue(`${key}.scss`)}`,
+        task: () => rename(join(this.name, `src/${key}.css`), join(this.name, `src/${key}.scss`))
+      }))
     );
   }
 }

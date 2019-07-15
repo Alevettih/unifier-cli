@@ -21,7 +21,7 @@ export interface Answer {
 
 export const args: ParsedArgs = minimist(process.argv.slice(2));
 
-export default (): Promise<void | TypeError> => {
+export default (): Promise<void> => {
   if (args && args._ && args._[0]) {
     args.title = args._[0];
   }
@@ -42,7 +42,7 @@ export default (): Promise<void | TypeError> => {
           [
             {
               title: 'Erase existing project directory',
-              skip: () => !isDirectoryExistsAndNotEmpty(answers.title),
+              enabled: () => isDirectoryExistsAndNotEmpty(answers.title),
               task: () => remove(join(answers.title))
             },
             {
