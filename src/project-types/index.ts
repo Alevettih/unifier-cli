@@ -39,7 +39,7 @@ export function selectProjectType(answers: Answer): Listr {
     }
     default: {
       const availableTypes = `\n - ${Object.values(types).join('\n - ')}`;
-      throw new TypeError(red(`\nInvalid project type!\nAvailable types:${availableTypes}`));
+      throw new Error(red(`\nInvalid project type!\nAvailable types:${availableTypes}`));
     }
   }
 }

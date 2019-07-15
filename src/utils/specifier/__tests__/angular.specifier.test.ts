@@ -21,7 +21,7 @@ describe('Angular specifier should', () => {
   });
 
   test('remove default .browserslistrc before copy configs from specification', async (): Promise<void> => {
-    await specifier.copyConfigs(...config.getConfigsPaths(specifier.name));
+    await specifier.copyConfigs(...config.getConfigsPaths(specifier.name)).run();
 
     expect(fs.removeSync).toBeCalled();
     expect(fs.copy).toBeCalledTimes(config.getConfigsPaths(specifier.name).length);
@@ -31,6 +31,9 @@ describe('Angular specifier should', () => {
     await specifier.copyBaseStructure();
 
     expect(fs.copy).toBeCalled();
+
+    Object.defineProperty(fs, 'copy', { value: jest.fn().mockRejectedValueOnce({}) });
+    expect(specifier.copyBaseStructure()).rejects.toThrow();
   });
 
   test('add config.json to assets', async (): Promise<void> => {
@@ -38,9 +41,8 @@ describe('Angular specifier should', () => {
 
     expect(fs.outputFile).toBeCalled();
 
-    Object.defineProperty(fs, 'outputFile', { value: jest.fn(() => Promise.reject()) });
-
-    expect(specifier.addConfigJsonToAssets).toThrowError();
+    Object.defineProperty(fs, 'outputFile', { value: jest.fn().mockRejectedValueOnce({}) });
+    expect(specifier.addConfigJsonToAssets()).rejects.toThrow();
   });
 
   describe('specify Angular project', () => {
@@ -48,7 +50,7 @@ describe('Angular specifier should', () => {
       async (): Promise<void> => {
         mockClassMethods(specifier, [Specifier, AngularSpecifier], ['specify']);
 
-        await specifier.specify();
+        await specifier.specify().run();
       }
     );
 

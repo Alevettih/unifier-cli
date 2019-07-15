@@ -1,4 +1,4 @@
-import { copy, outputFile, readFileSync, readJsonSync, writeJson } from 'fs-extra';
+import { existsSync, copy, outputFile, readFileSync, readJsonSync, writeJson } from 'fs-extra';
 import { join } from 'path';
 import { blue, red } from 'colors/safe';
 import { command, ExecaReturnValue, Options } from 'execa';
@@ -6,13 +6,10 @@ import { newlineSeparatedValue, arrayMerge } from '@utils/helpers';
 import * as deepMerge from 'deepmerge';
 import * as Listr from 'listr';
 import { ListrTask } from 'listr';
-
 export interface ConfigPaths {
   src: string;
   dist: string;
 }
-
-export type PackageManager = 'npm' | 'yarn' | null;
 
 export class Specifier {
   readonly project: string;
@@ -51,9 +48,7 @@ export class Specifier {
     return writeJson(
       pathToJson,
       deepMerge(json, objToMerge, {
-        arrayMerge(target: any[], source: any[]): any[] {
-          return source;
-        }
+        arrayMerge: (target: any[], source: any[]): any[] => source
       }),
       { spaces: 2 }
     ).catch(err => {
@@ -76,60 +71,52 @@ export class Specifier {
     });
   }
 
-  async installPackages(modules = [] as string[]) {
-    let process;
+  installPackages(modules = [] as string[]): Listr {
     const modulesString = modules && modules.length ? modules.join(' ') : '';
-
-    if ((await this.usedPackageManager()) !== 'npm' && (await this.isYarnAvailable())) {
-      process = command(
-        `yarn ${modulesString.length ? `add ${modulesString} --dev` : 'install'}`,
-        this.childProcessOptions
-      );
-    } else {
-      process = command(
-        `npm ${modulesString.length ? `i ${modulesString} --save-dev` : 'i'}`,
-        this.childProcessOptions
-      );
-    }
-
-    try {
-      await process;
-    } catch ({ message }) {
-      throw new Error(red(`Modules installation failed: ${message}`));
-    }
+    return new Listr([
+      {
+        title: 'Check currently used package manager',
+        task: ctx => this.usedPackageManager(ctx)
+      },
+      {
+        title: 'Check yarn availability',
+        skip: ctx => ctx.usedPackageManager === 'npm',
+        task: ctx => this.isYarnAvailable(ctx)
+      },
+      {
+        title: 'Install dependencies by yarn',
+        enabled: ctx => ctx.usedPackageManager !== 'npm' && ctx.yarn,
+        task: () =>
+          command(`yarn ${modulesString.length ? `add ${modulesString} --dev` : 'install'}`, this.childProcessOptions)
+      },
+      {
+        title: 'Install dependencies by npm',
+        enabled: ctx => ctx.npm || !ctx.yarn,
+        task: () =>
+          command(`npm ${modulesString.length ? `i ${modulesString} --save-dev` : 'i'}`, this.childProcessOptions)
+      }
+    ]);
   }
 
-  async removeDefaultGit(): Promise<void> {
-    const process = command('rm -rf .git', this.childProcessOptions);
-
-    try {
-      await process;
-    } catch ({ message }) {
+  async removeDefaultGit(): Promise<ExecaReturnValue> {
+    return command('rm -rf .git', this.childProcessOptions).catch(({ message }) => {
       throw new Error(red(`Default Git removing error: ${message}`));
-    }
+    });
   }
 
-  async initGit() {
-    const process = command('git init', Object.assign({ shell: true }, this.childProcessOptions));
-
-    try {
-      await process;
-    } catch ({ message }) {
+  async initGit(): Promise<ExecaReturnValue> {
+    return command('git init', Object.assign({ shell: true }, this.childProcessOptions)).catch(({ message }) => {
       throw new Error(red(`Git init error: ${message}`));
-    }
+    });
   }
 
-  async initialCommit(amend?: boolean) {
-    const process = command(
+  async initialCommit(amend?: boolean): Promise<ExecaReturnValue> {
+    return command(
       `git add .; git commit -m "Initial commit" -n${amend ? ` --amend` : ''}`,
       this.childProcessOptions
-    );
-
-    try {
-      await process;
-    } catch ({ message }) {
+    ).catch(({ message }) => {
       throw new Error(red(`Initial commit error: ${message}`));
-    }
+    });
   }
 
   addConfigJs(): Promise<void> {
@@ -154,32 +141,26 @@ export class Specifier {
     });
   }
 
-  async isYarnAvailable(): Promise<boolean> {
-    const process = command(`npm list -g --depth=0 | grep yarn`, this.childProcessOptions);
-
-    try {
-      await process;
-      return true;
-    } catch ({ message }) {
-      return false;
-    }
+  isYarnAvailable(ctx): Promise<void> {
+    return command(`npm list -g --depth=0 | grep yarn`, this.childProcessOptions).then(
+      () => {
+        ctx.yarn = true;
+      },
+      () => {
+        ctx.yarn = false;
+      }
+    );
   }
 
-  async usedPackageManager(): Promise<PackageManager> {
-    const options = Object.assign({ reject: false }, this.childProcessOptions);
-    const yarn = command(`ls -la | grep yarn.lock`, options);
-    const npm = command(`ls -la | grep package-lock.json`, options);
-    const promiseResult = await Promise.all([npm, yarn]);
-    let result: PackageManager = null;
+  usedPackageManager(ctx): void {
+    ctx.usedPackageManager = null;
 
-    promiseResult.forEach(({ exitCode, command: cmd }: ExecaReturnValue) => {
-      if (exitCode) {
-        return;
-      }
+    if (existsSync(join(this.name, 'package-lock.json'))) {
+      ctx.usedPackageManager = 'npm';
+    }
 
-      result = cmd.includes('yarn.lock') ? 'yarn' : 'npm';
-    });
-
-    return result;
+    if (existsSync(join(this.name, 'yarn.lock'))) {
+      ctx.usedPackageManager = 'yarn';
+    }
   }
 }
