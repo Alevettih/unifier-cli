@@ -164,7 +164,16 @@ export class Specifier {
     }
   }
 
-  lintersTask() {
+  runPrettier(): Promise<ExecaReturnValue<string>> {
+    return command(
+      'prettier "./src/**/*.{js,jsx,ts,tsx,html,vue}" --write',
+      Object.assign({ preferLocal: true }, this.childProcessOptions)
+    ).catch(({ message }) => {
+      throw new Error(red(`Prettier execution failed: ${message}`));
+    });
+  }
+
+  lintersTask(): Listr {
     return new Listr(
       [
         { title: 'Get Available linters', task: ctx => this.getLinters(ctx) },
@@ -178,19 +187,19 @@ export class Specifier {
     );
   }
 
-  getLinters(ctx) {
+  getLinters(ctx): void {
     const json = readJsonSync(join(this.name, 'package.json'));
     ctx.lintersKeys = Object.keys(json.scripts).filter(
       (key: string): boolean => key.includes('lint') && !/:(all|watch)/g.test(key)
     );
   }
 
-  runLinters(ctx) {
+  runLinters(ctx): Listr {
     return new Listr(
       ctx.lintersKeys.map(linter => ({
         title: `Run ${linter}`,
         task: () =>
-          command(`npm run ${linter}`, this.childProcessOptions).catch(err => {
+          command(`npm run ${linter}`, this.childProcessOptions).catch(() => {
             throw new Error(red('Linting failed, please fix linting problems manually'));
           })
       }))

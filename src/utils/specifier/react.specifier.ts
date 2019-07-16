@@ -31,6 +31,10 @@ export class ReactSpecifier extends Specifier {
           )
       },
       {
+        title: 'Run Prettier',
+        task: () => this.runPrettier()
+      },
+      {
         title: 'Linters',
         task: () => this.lintersTask()
       },
