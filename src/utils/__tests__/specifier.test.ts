@@ -73,16 +73,16 @@ describe('Specifier should', () => {
 
   test('merge object with .json file', async (): Promise<void> => {
     const fakePath = join(specifier.name, 'fake/path/to.json');
-    Object.defineProperty(fs, 'readJsonSync', { value: jest.fn(() => ({ a: 1 })) });
+    Object.defineProperty(fs, 'readJsonSync', { value: jest.fn(() => ({ a: 1, c: [1, 2] })) });
     Object.defineProperty(fs, 'writeJson', {
       value: jest
         .fn()
         .mockRejectedValueOnce({})
         .mockResolvedValue({})
     });
-    await expect(specifier.mergeWithJson(fakePath, { b: 2 })).rejects.toThrow();
+    await expect(specifier.mergeWithJson(fakePath, { b: 2, c: [3, 4] })).rejects.toThrow();
 
-    expect(fs.writeJson).toBeCalledWith(fakePath, { a: 1, b: 2 }, { spaces: 2 });
+    expect(fs.writeJson).toBeCalledWith(fakePath, { a: 1, b: 2, c: [3, 4] }, { spaces: 2 });
   });
 
   test('update .gitignore rules', async (): Promise<void> => {
@@ -167,6 +167,99 @@ describe('Specifier should', () => {
     );
   });
 
+  test('Run prettier', async (): Promise<void> => {
+    Object.defineProperty(execa, 'command', {
+      value: jest
+        .fn()
+        .mockRejectedValueOnce({})
+        .mockResolvedValue({})
+    });
+    await expect(specifier.runPrettier()).rejects.toThrow();
+
+    expect(execa.command).toBeCalledWith(
+      'prettier "./src/**/*.{js,jsx,ts,tsx,html,vue}" --write',
+      Object.assign({ preferLocal: true }, specifier.childProcessOptions)
+    );
+  });
+
+  describe('Execute Linters task', async (): Promise<void> => {
+    test('Get', async (): Promise<void> => {
+      Object.defineProperty(specifier, 'getLinters', {
+        value: jest.fn(async context => {
+          Object.assign(context, { lintersKeys: [] });
+        })
+      });
+
+      await specifier.lintersTask().run();
+
+      expect(specifier.getLinters).toBeCalled();
+    });
+
+    describe('Run', () => {
+      beforeEach(() => {
+        Object.defineProperty(specifier, 'runLinters', { value: jest.fn(async context => {}) });
+      });
+
+      test('Run if lint tasks is available', async (): Promise<void> => {
+        Object.defineProperty(specifier, 'getLinters', {
+          value: jest.fn(async context => {
+            Object.assign(context, { lintersKeys: ['lint:scss'] });
+          })
+        });
+
+        await specifier.lintersTask().run();
+
+        expect(specifier.runLinters).toBeCalled();
+      });
+
+      test('Skip if lint tasks is unavailable', async (): Promise<void> => {
+        Object.defineProperty(specifier, 'getLinters', {
+          value: jest.fn(async context => {
+            Object.assign(context, { lintersKeys: [] });
+          })
+        });
+
+        await specifier.lintersTask().run();
+
+        expect(specifier.runLinters).not.toBeCalled();
+      });
+    });
+  });
+
+  test('Get linters tasks names', async (): Promise<void> => {
+    const ctx = {};
+    Object.defineProperty(fs, 'readJsonSync', {
+      value: jest.fn().mockReturnValue({
+        scripts: {
+          'lint:scss': 'test',
+          'lint:es': 'test',
+          'lint:all': 'test',
+          'lint:watch': 'test'
+        }
+      })
+    });
+
+    await specifier.getLinters(ctx);
+
+    expect(ctx).toMatchObject({ lintersKeys: ['lint:scss', 'lint:es'] });
+  });
+
+  test('Run linters', async (): Promise<void> => {
+    const ctx = { lintersKeys: ['lint:scss', 'lint:es'] };
+    Object.defineProperty(execa, 'command', {
+      value: jest.fn().mockRejectedValueOnce({})
+    });
+    await expect(specifier.runLinters(ctx).run()).rejects.toThrow();
+
+    Object.defineProperty(execa, 'command', {
+      value: jest.fn(async () => {})
+    });
+
+    await specifier.runLinters(ctx).run();
+
+    expect(execa.command).toBeCalledTimes(ctx.lintersKeys.length);
+  });
+
   test('Do initial commit', async (): Promise<void> => {
     Object.defineProperty(execa, 'command', {
       value: jest
@@ -177,6 +270,13 @@ describe('Specifier should', () => {
     await expect(specifier.initialCommit()).rejects.toThrow();
 
     expect(execa.command).toBeCalledWith('git add .; git commit -m "Initial commit" -n', specifier.childProcessOptions);
+
+    await specifier.initialCommit(true);
+
+    expect(execa.command).toBeCalledWith(
+      'git add .; git commit -m "Initial commit" -n --amend',
+      specifier.childProcessOptions
+    );
   });
 
   test('should check yarn availability', async (): Promise<void> => {

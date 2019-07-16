@@ -6,6 +6,8 @@ export default {
     'prettier',
     'pretty-quick',
 
+    'eslint-plugin-compat',
+
     'stylelint',
     'stylelint-config-standard',
     'stylelint-declaration-strict-value',
@@ -16,6 +18,7 @@ export default {
   ],
   packageJson: {
     scripts: {
+      lint: 'vue-cli-service lint --fix',
       'lint:scss': 'stylelint "./src/**/*.vue" --fix',
       'lint:scss:watch': 'onchange "src/**/*.scss" -- stylelint {{changed}}',
       'lint:all': 'npm run lint && npm run lint:scss'
@@ -32,6 +35,10 @@ export default {
       {
         src: join(__dirname, '../../../specification/files/.prettierrc'),
         dist: join(name, '.prettierrc')
+      },
+      {
+        src: join(__dirname, '../../../specification/files/.prettierignore'),
+        dist: join(name, '.prettierignore')
       },
       {
         src: join(__dirname, '../../../specification/files/.editorconfig'),

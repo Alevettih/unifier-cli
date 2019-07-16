@@ -66,6 +66,14 @@ describe('Angular specifier should', () => {
       expect(specifier.installPackages).toBeCalledWith(config.modules);
     });
 
+    test('Run Prettier', async (): Promise<void> => {
+      expect(specifier.runPrettier).toBeCalled();
+    });
+
+    test('Run Linters', async (): Promise<void> => {
+      expect(specifier.lintersTask).toBeCalled();
+    });
+
     test('Do init commit with amend', async (): Promise<void> => {
       expect(specifier.initialCommit).toBeCalledWith(true);
     });

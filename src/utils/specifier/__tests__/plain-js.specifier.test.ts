@@ -42,6 +42,14 @@ describe('Plain JS specifier should', () => {
       expect(specifier.initGit).toBeCalled();
     });
 
+    test('Run Prettier', async (): Promise<void> => {
+      expect(specifier.runPrettier).toBeCalled();
+    });
+
+    test('Run Linters', async (): Promise<void> => {
+      expect(specifier.lintersTask).toBeCalled();
+    });
+
     test('Do init commit without amend', async (): Promise<void> => {
       expect(specifier.initialCommit).toBeCalledWith();
       expect(specifier.initialCommit).not.toBeCalledWith(true);

@@ -7,6 +7,7 @@ export default {
 
     'prettier',
     'pretty-quick',
+    'onchange',
 
     'stylelint',
     'stylelint-config-standard',
@@ -34,6 +35,10 @@ export default {
       {
         src: join(__dirname, '../../../specification/files/.prettierrc'),
         dist: join(name, '.prettierrc')
+      },
+      {
+        src: join(__dirname, '../../../specification/files/.prettierignore'),
+        dist: join(name, '.prettierignore')
       },
       {
         src: join(__dirname, '../../../specification/files/angular/.htaccess'),

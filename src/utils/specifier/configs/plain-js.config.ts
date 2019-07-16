@@ -9,6 +9,10 @@ export default {
         dist: join(name, '.prettierrc')
       },
       {
+        src: join(__dirname, '../../../specification/files/.prettierignore'),
+        dist: join(name, '.prettierignore')
+      },
+      {
         src: join(__dirname, '../../../specification/files/.editorconfig'),
         dist: join(name, '.editorconfig')
       },
