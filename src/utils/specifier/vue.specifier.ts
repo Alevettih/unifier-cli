@@ -30,6 +30,14 @@ export class VueSpecifier extends Specifier {
           )
       },
       {
+        title: 'Run Prettier',
+        task: () => this.runPrettier()
+      },
+      {
+        title: 'Linters',
+        task: () => this.lintersTask()
+      },
+      {
         title: 'Do initial commit',
         task: () => this.initialCommit(true)
       }
