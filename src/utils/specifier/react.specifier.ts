@@ -31,6 +31,10 @@ export class ReactSpecifier extends Specifier {
           )
       },
       {
+        title: 'Linters',
+        task: () => this.lintersTask()
+      },
+      {
         title: 'Do initial commit',
         task: () => this.initialCommit(true)
       }

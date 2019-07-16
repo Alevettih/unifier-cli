@@ -163,4 +163,37 @@ export class Specifier {
       ctx.usedPackageManager = 'yarn';
     }
   }
+
+  lintersTask() {
+    return new Listr(
+      [
+        { title: 'Get Available linters', task: ctx => this.getLinters(ctx) },
+        {
+          title: 'Fix linting errors, if possible',
+          skip: ctx => !ctx.lintersKeys.length,
+          task: ctx => this.runLinters(ctx)
+        }
+      ],
+      { exitOnError: false }
+    );
+  }
+
+  getLinters(ctx) {
+    const json = readJsonSync(join(this.name, 'package.json'));
+    ctx.lintersKeys = Object.keys(json.scripts).filter(
+      (key: string): boolean => key.includes('lint') && !/:(all|watch)/g.test(key)
+    );
+  }
+
+  runLinters(ctx) {
+    return new Listr(
+      ctx.lintersKeys.map(linter => ({
+        title: `Run ${linter}`,
+        task: () =>
+          command(`npm run ${linter}`, this.childProcessOptions).catch(err => {
+            throw new Error(red('Linting failed, please fix linting problems manually'));
+          })
+      }))
+    );
+  }
 }

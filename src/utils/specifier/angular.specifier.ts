@@ -1,4 +1,4 @@
-import { copy, outputFile, remove, removeSync } from 'fs-extra';
+import { copy, outputFile, removeSync } from 'fs-extra';
 import { join } from 'path';
 import * as angularJsonAdditions from '@specification/files/angular/angular.json';
 import { ConfigPaths, Specifier } from '@utils/specifier';
@@ -33,6 +33,10 @@ export class AngularSpecifier extends Specifier {
             ],
             { concurrent: true }
           )
+      },
+      {
+        title: 'Linters',
+        task: () => this.lintersTask()
       },
       {
         title: 'Do initial commit',
