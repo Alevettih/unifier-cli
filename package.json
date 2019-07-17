@@ -17,7 +17,7 @@
     "url": "git+https://github.com/Alevettih/unifier-cli.git"
   },
   "author": "Alex Tykhonenko <alevettih@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "bin": {
     "unifier-cli": "bin/cli"
   },
