@@ -28,6 +28,12 @@ You can use it with `npm`:
 npm i -g unifier-cli
 ```
 
+Or use it with `npx` without installing:
+
+```bash
+npx unifier-cli
+```
+
 ### Using
 
 For creating a new project:
