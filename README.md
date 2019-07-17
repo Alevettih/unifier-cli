@@ -1,4 +1,4 @@
-# Afflux CLI
+# Unifier CLI
 
 `afflux-cli` is a front-end tool, that created for unifying all configs, structure, and share base codebase within different [Requestum](https://requestum.com/) projects.
 
@@ -25,7 +25,7 @@ For use this package you need to pre-install the [NodeJS](https://nodejs.org/uk/
 You can use it with `npm`:
 
 ```bash
-npm i -g afflux-cli
+npm i -g unifier-cli
 ```
 
 ### Using
@@ -33,7 +33,7 @@ npm i -g afflux-cli
 For creating a new project:
 
 ```bash
-afflux
+unifier-cli
 ```
 
 Then the command line prompt should ask some questions about your project, and generate it in the current directory after you answer on questions.
@@ -41,7 +41,7 @@ Then the command line prompt should ask some questions about your project, and g
 You also can use command line arguments, like:
 
 ```
-afflux <project name>
+unifier-cli <project name>
 ```
 
 Also you can use additional arguments:
