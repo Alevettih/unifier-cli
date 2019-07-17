@@ -2,12 +2,13 @@
 
 `afflux-cli` is a front-end tool, that created for unifying all configs, structure, and share base codebase within different [Requestum](https://requestum.com/) projects.
 
-With this tool you can create **four** types of project:
+With this tool you can create **five** types of project:
 
 - Angular
 - React
 - Vue
 - Plain JS
+- Email Template
 
 ## Getting Started
 
@@ -45,7 +46,7 @@ afflux <project name>
 
 Also you can use additional arguments:
 
-- `--type` - tells to CLI that it should create project with that type. Get `angular`, `react`, `vue` or `plain-js` value.
+- `--type` - tells to CLI that it should create project with that type. Get `angular`, `react`, `vue`, `plain-js` or `email` value.
 
 ## Development
 

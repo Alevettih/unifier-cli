@@ -182,7 +182,7 @@ describe('Specifier should', () => {
     );
   });
 
-  describe('Execute Linters task', async (): Promise<void> => {
+  describe('Execute Linters task', () => {
     test('Get', async (): Promise<void> => {
       Object.defineProperty(specifier, 'getLinters', {
         value: jest.fn(async context => {
