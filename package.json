@@ -1,5 +1,5 @@
 {
-  "name": "afflux-cli",
+  "name": "unifier-cli",
   "version": "0.2.8",
   "description": "",
   "main": "dist/main.js",
@@ -13,17 +13,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Alevettih/afflux-cli.git"
+    "url": "git+https://github.com/Alevettih/unifier-cli.git"
   },
   "author": "Alex Tykhonenko <alevettih@gmail.com>",
   "license": "ISC",
   "bin": {
-    "afflux": "bin/cli"
+    "unifier-cli": "bin/cli"
   },
   "bugs": {
-    "url": "https://github.com/Alevettih/afflux-cli/issues"
+    "url": "https://github.com/Alevettih/unifier-cli/issues"
   },
-  "homepage": "https://github.com/Alevettih/afflux-cli#readme",
+  "homepage": "https://github.com/Alevettih/unifier-cli#readme",
   "husky": {
     "hooks": {
       "pre-commit": "pretty-quick --staged; onerror \"npm run lint\" --title=\"Linters error:\" && onerror \"jest\" --title=\"Tests error:\""
