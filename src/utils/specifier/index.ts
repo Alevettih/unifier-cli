@@ -60,7 +60,7 @@ export class Specifier {
   updateGitignoreRules(): Promise<void> {
     const projectGitignore: object = newlineSeparatedValue.parse(readFileSync(join(this.name, '.gitignore'), 'utf-8'));
     const specificationGitignore: object = newlineSeparatedValue.parse(
-      readFileSync(join(__dirname, '../../specification/files/.gitignore'), 'utf-8')
+      readFileSync(join(__dirname, '../../specification/files/.gitignore.example'), 'utf-8')
     );
 
     return outputFile(
