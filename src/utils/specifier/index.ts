@@ -6,6 +6,7 @@ import { newlineSeparatedValue, arrayMerge } from '@utils/helpers';
 import * as deepMerge from 'deepmerge';
 import * as Listr from 'listr';
 import { ListrTask } from 'listr';
+
 export interface ConfigPaths {
   src: string;
   dist: string;
