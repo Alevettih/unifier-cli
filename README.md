@@ -1,6 +1,6 @@
 # Unifier CLI
 
-`afflux-cli` is a front-end tool, that created for unifying all configs, structure, and share base codebase within different [Requestum](https://requestum.com/) projects.
+`unifier-cli` is a front-end tool, that created for unifying all configs, structure, and share base codebase within different [Requestum](https://requestum.com/) projects.
 
 With this tool you can create **five** types of project:
 
