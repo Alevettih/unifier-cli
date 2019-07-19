@@ -13,12 +13,6 @@
     "test:watch": "jest --watch",
     "coverage": "jest --coverage"
   },
-  "files": [
-    "dist/**/*",
-    "bin/**/*",
-    "README.md",
-    "LICENSE"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Alevettih/unifier-cli.git"
