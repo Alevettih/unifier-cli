@@ -1,10 +1,11 @@
 {
   "name": "unifier-cli",
   "version": "0.2.13",
-  "description": "",
+  "description": "unifier-cli is a front-end tool, that created for unifying all configs, structure, and share base codebase within different Requestum projects",
   "main": "dist/main.js",
   "scripts": {
-    "postinstall": "npm run build",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run lint && npm run test",
     "build": "rimraf dist && tsc && node bin/copy-modules",
     "lint": "tslint 'src/**/*.ts' --exclude 'src/codebase/**/*' --fix",
     "dev": "nodemon -e ts -w src -x npm run build",
@@ -12,10 +13,25 @@
     "test:watch": "jest --watch",
     "coverage": "jest --coverage"
   },
+  "files": [
+    "dist/**/*",
+    "bin/**/*"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Alevettih/unifier-cli.git"
   },
+  "keywords": [
+    "unifying",
+    "configs",
+    "project-template",
+    "project-generator",
+    "angular",
+    "react",
+    "vue",
+    "js",
+    "email"
+  ],
   "author": "Alex Tykhonenko <alevettih@gmail.com>",
   "license": "MIT",
   "bin": {
