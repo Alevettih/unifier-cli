@@ -15,7 +15,9 @@
   },
   "files": [
     "dist/**/*",
-    "bin/**/*"
+    "bin/**/*",
+    "README.md",
+    "LICENSE"
   ],
   "repository": {
     "type": "git",
