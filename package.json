@@ -4,8 +4,7 @@
   "description": "unifier-cli is a front-end tool, that created for unifying all configs, structure, and share base codebase within different Requestum projects",
   "main": "dist/main.js",
   "scripts": {
-    "prepare": "npm run build",
-    "prepublishOnly": "npm run lint && npm run test",
+    "prepublishOnly": "npm run lint && npm run test; npm run build",
     "build": "rimraf dist; node bin/copy-modules; tsc ",
     "lint": "tslint 'src/**/*.ts' --exclude 'src/codebase/**/*' --fix",
     "dev": "nodemon -e ts -w src -x npm run build",
