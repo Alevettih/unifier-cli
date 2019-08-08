@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Alevettih/unifier-cli.git"
+    "url": "git+https://github.com/requestum-team/unifier-cli.git"
   },
   "keywords": [
     "unifying",
@@ -34,9 +34,9 @@
     "unifier-cli": "bin/cli"
   },
   "bugs": {
-    "url": "https://github.com/Alevettih/unifier-cli/issues"
+    "url": "https://github.com/requestum-team/unifier-cli/issues"
   },
-  "homepage": "https://github.com/Alevettih/unifier-cli#readme",
+  "homepage": "https://github.com/requestum-team/unifier-cli#readme",
   "husky": {
     "hooks": {
       "pre-commit": "pretty-quick --staged; onerror \"npm run lint\" --title=\"Linters error:\" && onerror \"jest\" --title=\"Tests error:\""

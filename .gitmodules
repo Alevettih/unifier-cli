@@ -1,6 +1,3 @@
 [submodule "specification"]
 	path = src/specification
-	url = https://github.com/Alevettih/front-end-specification.git
-[submodule "angular-codebase"]
-	path = src/codebase/angular
-	url = https://github.com/Alevettih/angular-codebase.git
+	url = https://github.com/requestum-team/front-end-specification.git
