@@ -50,7 +50,7 @@ export class AngularSpecifier extends Specifier {
   }
 
   copyConfigs(...configPaths: ConfigPaths[]): Listr {
-    removeSync(join(this.name, 'src/browserslist'));
+    removeSync(join(this.name, '/browserslist'));
     return super.copyConfigs(...configPaths);
   }
 

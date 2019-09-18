@@ -10,6 +10,7 @@ import { red } from 'colors/safe';
 import * as Listr from 'listr';
 import { selectProjectType } from '@src/project-types';
 import { ListrOptions } from 'listr';
+import { title } from '@utils/validators';
 
 export type ProjectType = 'email' | 'plain-js' | 'angular' | 'react' | 'vue';
 
@@ -27,6 +28,14 @@ export default (): Promise<void> => {
   }
 
   delete args._;
+
+  const titleValidationResult: boolean | string = title(args.title);
+  const isTitleAvailableAndValid: boolean = args.title && titleValidationResult !== 'boolean';
+
+  if (isTitleAvailableAndValid) {
+    args.title = null;
+    console.error(red(`>> ${titleValidationResult}`));
+  }
 
   return inquirer
     .prompt(questions)
