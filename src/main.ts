@@ -30,7 +30,7 @@ export default (): Promise<void> => {
   delete args._;
 
   const titleValidationResult: boolean | string = title(args.title);
-  const isTitleAvailableAndValid: boolean = args.title && titleValidationResult !== 'boolean';
+  const isTitleAvailableAndValid: boolean = args.title && typeof titleValidationResult !== 'boolean';
 
   if (isTitleAvailableAndValid) {
     args.title = null;
