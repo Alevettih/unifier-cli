@@ -8,7 +8,7 @@ export class IsPipe implements PipeTransform {
     let res;
 
     if (type.includes('object')) {
-      res = item && typeof item === 'object' && Array.isArray(item);
+      res = item && typeof item === 'object' && !Array.isArray(item);
     } else if (type.includes('null')) {
       res = !item && typeof item === 'object' && !(item instanceof Object);
     } else if (type.includes('array')) {
