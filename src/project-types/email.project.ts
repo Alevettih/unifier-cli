@@ -8,8 +8,7 @@ export const emailProject = ({ title }: Answer = { title: '' } as Answer): Listr
   return new Listr([
     {
       title: 'Install Email project',
-      task: () =>
-        command(`git clone git@gitlab.requestum.com:front-end-tools/email-template-compiler.git ${join(title)}`)
+      task: () => command(`git clone https://github.com/oksanamuz/email-templates-compiler.git ${join(title)}`)
     },
     {
       title: 'Specify it...',
