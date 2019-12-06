@@ -6,7 +6,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class ImagePreloadDirective implements OnChanges {
   @Input() default: string;
-  @Input() src: string;
+  @Input() src: string | ArrayBuffer;
   @HostBinding('src') url;
   @HostListener('error') updateUrl() {
     this.url = this.default;
@@ -15,6 +15,10 @@ export class ImagePreloadDirective implements OnChanges {
   constructor(private sanitizer: DomSanitizer) {}
 
   ngOnChanges({ src }: SimpleChanges): void {
-    this.url = this.sanitizer.bypassSecurityTrustResourceUrl(src.currentValue);
+    if (src && src.currentValue) {
+      this.url = this.sanitizer.bypassSecurityTrustResourceUrl(src.currentValue);
+    } else {
+      this.url = '';
+    }
   }
 }

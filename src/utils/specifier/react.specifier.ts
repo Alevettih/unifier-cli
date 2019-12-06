@@ -15,12 +15,12 @@ export class ReactSpecifier extends Specifier {
           new Listr(
             [
               { title: 'Copy configs...', task: () => this.copyConfigs(...config.getConfigsPaths(this.name)) },
+              { title: `Update ${blue('.gitignore')} rules`, task: () => this.updateGitignoreRules() },
               { title: `Add ${blue('config.js')} file`, task: () => this.addConfigJs() },
               {
                 title: `Add link to ${blue('config.js')} in ${blue('index.html')}`,
                 task: () => this.addLinkToConfigJsInHtml()
               },
-              { title: `Update ${blue('.gitignore')} rules`, task: () => this.updateGitignoreRules() },
               { title: `Switch ${blue('*.css')} with ${blue('*.scss')}`, task: () => this.cssToScss() },
               {
                 title: `Update ${blue('package.json')}`,

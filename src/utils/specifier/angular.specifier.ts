@@ -17,8 +17,11 @@ export class AngularSpecifier extends Specifier {
             [
               { title: 'Copy configs...', task: () => this.copyConfigs(...config.getConfigsPaths(this.name)) },
               { title: 'Copy the base structure of project', task: () => this.copyBaseStructure() },
-              { title: `Add ${blue('config.json')} to assets directory`, task: () => this.addConfigJsonToAssets() },
               { title: `Update ${blue('.gitignore')} rules`, task: () => this.updateGitignoreRules() },
+              {
+                title: `Add ${blue('config.json')} to assets directory. (Should be in ${blue('.gitignore')})`,
+                task: () => this.addConfigJsonToAssets()
+              },
               {
                 title: `Edit ${blue('package.json')}`,
                 task: () => this.mergeWithJson(join(this.name, 'package.json'), config.packageJson)
