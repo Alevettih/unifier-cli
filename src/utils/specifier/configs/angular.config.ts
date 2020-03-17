@@ -3,11 +3,17 @@ import { ConfigPaths } from '@utils/specifier';
 
 export default {
   modules: [
+    '@angular/flex-layout',
+
+    'class-transformer',
+
     'husky',
 
     'prettier',
     'pretty-quick',
     'onchange',
+
+    'reset-css',
 
     'stylelint',
     'stylelint-config-standard',
@@ -19,7 +25,7 @@ export default {
   packageJson: {
     scripts: {
       lint: 'ng lint --fix',
-      'build:prod': 'ng build --prod',
+      build: 'ng build --prod',
       'lint:scss': 'stylelint "./src/**/*.scss" --fix',
       'lint:scss:watch': 'onchange "src/**/*.scss" -- stylelint {{changed}}',
       'lint:all': 'npm run lint && npm run lint:scss'

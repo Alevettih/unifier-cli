@@ -1,0 +1,24 @@
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()" class="auth-form__form">
+  <base-form-input
+    [inputType]="InputType.email"
+    [control]="form.email"
+    placeholder="Email"
+    [required]="true"
+  ></base-form-input>
+
+  <base-form-input
+    [inputType]="InputType.password"
+    [control]="form.password"
+    placeholder="Password"
+    [required]="true"
+  ></base-form-input>
+
+  <div class="auth-form__wrap">
+    <base-checkbox [control]="form.shouldRemember" placeholder="Remember me"></base-checkbox>
+    <a mat-button routerLink="/auth/forgot-password">Forgot password</a>
+  </div>
+
+  <button mat-flat-button color="accent">Login</button>
+
+  <mat-error class="auth-form__error" *ngIf="error">{{ error }}</mat-error>
+</form>

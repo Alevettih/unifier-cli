@@ -1,0 +1,13 @@
+<div class="dialog_header">
+  <h3 mat-dialog-title>{{ data?.title }}</h3>
+  <button class="btn_close" mat-icon-button aria-label="Close modal" [mat-dialog-close]="false">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+<div mat-dialog-content *ngIf="data.message">
+  <p>{{ data.message }}</p>
+</div>
+<div mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="false">Cancel</button>
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial color="primary">Ok</button>
+</div>

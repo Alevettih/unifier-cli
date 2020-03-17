@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NormalizePipe } from '@pipes/normalize.pipe';
-import { IsPipe } from '@pipes/is.pipe';
-import { PathParsePipe } from '@pipes/path-parse.pipe';
+import { TypeofPipe } from '@pipes/typeof/typeof.pipe';
+import { PathParsePipe } from '@pipes/path-parse/path-parse.pipe';
+import { PathToNamePipe } from '@pipes/path-to-name/path-to-name.pipe';
 
 @NgModule({
-  declarations: [NormalizePipe, IsPipe, PathParsePipe],
-  exports: [NormalizePipe, IsPipe, PathParsePipe],
+  declarations: [TypeofPipe, PathParsePipe, PathToNamePipe],
+  exports: [TypeofPipe, PathParsePipe, PathToNamePipe],
   imports: [CommonModule],
-  providers: [PathParsePipe, IsPipe]
+  providers: [PathParsePipe, TypeofPipe, PathToNamePipe]
 })
 export class PipesModule {}

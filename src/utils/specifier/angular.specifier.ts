@@ -5,11 +5,13 @@ import { ConfigPaths, Specifier } from '@utils/specifier';
 import { blue, red } from 'colors/safe';
 import config from '@utils/specifier/configs/angular.config';
 import * as Listr from 'listr';
+import { command, ExecaReturnValue } from 'execa';
 
 export class AngularSpecifier extends Specifier {
   specify(): Listr {
     return new Listr([
       { title: 'Install dependencies', task: () => this.installPackages(config.modules) },
+      { title: 'Add Material', task: () => this.installMaterial() },
       {
         title: 'Do some magic...',
         task: () =>
@@ -50,6 +52,14 @@ export class AngularSpecifier extends Specifier {
         task: () => this.initialCommit(true)
       }
     ]);
+  }
+
+  installMaterial(): Promise<ExecaReturnValue> {
+    return command(`node node_modules/@angular/cli/bin/ng add @angular/material`, this.childProcessOptions).catch(
+      ({ message }) => {
+        throw new Error(red(`Material installing error: ${message}`));
+      }
+    );
   }
 
   copyConfigs(...configPaths: ConfigPaths[]): Listr {

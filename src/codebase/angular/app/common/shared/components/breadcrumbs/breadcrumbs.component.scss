@@ -1,0 +1,25 @@
+@import "variables";
+
+.breadcrumbs {
+  display: flex;
+  height: 40px;
+
+  &__item {
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+  }
+
+  &__icon {
+    color: $color-grey;
+  }
+
+  &__link {
+    color: $color-dark-grey;
+    text-decoration: none;
+  }
+
+  &__label {
+    color: $color-dark-grey;
+  }
+}
