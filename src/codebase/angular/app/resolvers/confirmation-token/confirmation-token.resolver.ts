@@ -15,10 +15,10 @@ export class ConfirmationTokenResolver implements Resolve<Observable<string> | v
   resolve({ queryParamMap }: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<string> | void {
     return this.auth.getTemporaryToken().pipe(
       first(),
-      switchMap(() =>
+      switchMap((): Observable<string> =>
         this.userApi
           .confirmEmail(queryParamMap.get('token'))
-          .pipe(catchError(({ error }: HttpErrorResponse) => of(error.message)))
+          .pipe(catchError(({ error }: HttpErrorResponse): Observable<string> => of(error.message)))
       )
     );
   }

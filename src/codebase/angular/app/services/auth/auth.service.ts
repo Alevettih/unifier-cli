@@ -3,7 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { HttpRequest } from '@angular/common/http';
 import { first, map, switchMap, withLatestFrom } from 'rxjs/operators';
-import { Tokens } from '@models/tokens.model';
+import { ApiTokens, Tokens } from '@models/tokens.model';
 import { APP_CONFIG, STORAGE_KEYS, AppConfig } from '@misc/constants';
 import { Role, User } from '@models/user.model';
 import { HttpService, ServicesConfig } from '@services/http/http.service';
@@ -39,12 +39,12 @@ export class AuthService {
   sendAuthCode({ username, password }: LoginParams): Observable<object> {
     return this.getTemporaryToken().pipe(
       first(),
-      switchMap(() => this.http.post(`${this.config.apiUrl}/api/auth/code`, { username, password }))
+      switchMap((): Observable<object> => this.http.post(`${this.config.apiUrl}/api/auth/code`, { username, password }))
     );
   }
 
   getTemporaryToken(services?: ServicesConfig): Observable<Tokens> {
-    const { apiUrl, client_id, client_secret } = this.config;
+    const { apiUrl, client_id, client_secret }: AppConfig = this.config;
     return this.http
       .post(`${apiUrl}/oauth/v2/token`, { client_id, client_secret, grant_type: 'client_credentials' }, {}, services)
       .pipe(map(this.onTokenResponse.bind(this)));
@@ -55,7 +55,7 @@ export class AuthService {
     shouldRemember: boolean,
     services?: ServicesConfig
   ): Observable<User> {
-    const { apiUrl, client_id, client_secret } = this.config;
+    const { apiUrl, client_id, client_secret }: AppConfig = this.config;
     this.storage.shouldUseLocalstorage = shouldRemember;
     return this.http
       .post(
@@ -68,7 +68,7 @@ export class AuthService {
   }
 
   refreshToken(): Observable<any> {
-    const { apiUrl, client_id, client_secret } = this.config;
+    const { apiUrl, client_id, client_secret }: AppConfig = this.config;
 
     return this.http
       .post(`${apiUrl}/oauth/v2/token`, {
@@ -138,7 +138,7 @@ export class AuthService {
     );
   }
 
-  private onTokenResponse(res): Tokens {
+  private onTokenResponse(res: ApiTokens): Tokens {
     let tokens: Tokens;
 
     if (res.access_token) {

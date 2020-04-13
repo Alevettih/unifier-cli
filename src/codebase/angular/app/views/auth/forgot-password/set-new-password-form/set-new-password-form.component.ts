@@ -7,6 +7,11 @@ import { Router } from '@angular/router';
 import { CustomValidators } from '@misc/custom-validators';
 import { UserApiService } from '@services/api/user-api/user-api.service';
 
+interface SetNewPasswordRaw {
+  password: string;
+  repeatPassword: string;
+}
+
 @Component({
   selector: 'set-new-password-form',
   templateUrl: './set-new-password-form.component.html',
@@ -15,12 +20,7 @@ import { UserApiService } from '@services/api/user-api/user-api.service';
 export class SetNewPasswordFormComponent extends BaseForm implements OnInit {
   @Input() token: string;
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private auth: AuthService,
-    private userApi: UserApiService,
-    private router: Router
-  ) {
+  constructor(private formBuilder: FormBuilder, private auth: AuthService, private userApi: UserApiService, private router: Router) {
     super();
   }
 
@@ -39,7 +39,7 @@ export class SetNewPasswordFormComponent extends BaseForm implements OnInit {
       return;
     }
 
-    const { password: newPassword, repeatPassword: newPasswordConfirmation } = this.formGroup.getRawValue();
+    const { password: newPassword, repeatPassword: newPasswordConfirmation }: SetNewPasswordRaw = this.formGroup.getRawValue();
 
     this.userApi.setNewPassword(this.token, { newPassword, newPasswordConfirmation }).subscribe({
       next: this.onSubscribeNext.bind(this),

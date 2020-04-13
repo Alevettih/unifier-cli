@@ -1,5 +1,5 @@
 import { Directive, Input, HostBinding, HostListener, OnChanges, SimpleChanges } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Directive({
   selector: 'img[default]'
@@ -7,8 +7,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class ImagePreloadDirective implements OnChanges {
   @Input() default: string;
   @Input() src: string | ArrayBuffer;
-  @HostBinding('src') url;
-  @HostListener('error') updateUrl() {
+  @HostBinding('src') url: string | SafeResourceUrl;
+  @HostListener('error') updateUrl(): void {
     this.url = this.default;
   }
 

@@ -10,13 +10,13 @@ if (environment.production) {
 }
 
 fetch('/assets/config.json')
-  .then((response: Response) => response.json())
-  .then((config: AppConfig) => {
+  .then((response: Response): Promise<AppConfig> => response.json())
+  .then((config: AppConfig): void => {
     if (environment.production) {
       enableProdMode();
     }
 
     platformBrowserDynamic([{ provide: APP_CONFIG, useValue: config }])
       .bootstrapModule(AppModule)
-      .catch(err => console.error(err));
+      .catch((err: Error): void => console.error(err));
   });

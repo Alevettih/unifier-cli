@@ -27,6 +27,6 @@ export class SignUpComponent extends BaseForm implements OnInit {
       return;
     }
 
-    this.userApi.createItem(this.formGroup.getRawValue()).subscribe(() => this.router.navigate(['']));
+    this.userApi.createItem(this.formGroup.getRawValue()).subscribe((): Promise<boolean> => this.router.navigate(['']));
   }
 }

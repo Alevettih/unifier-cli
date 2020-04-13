@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHandler } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
+import { NotificationService, NotificationType } from '@services/notification/notification.service';
 import { catchError, finalize, tap } from 'rxjs/operators';
 import { LoaderService } from '@services/loader/loader.service';
-import { TitleCasePipe } from '@angular/common';
+import { ErrorDescription, HttpServiceError } from '@services/http/http-service-error.class';
 
 export interface ServicesConfig {
+  skipErrorNotification?: boolean;
   skipLoaderStart?: boolean;
   skipLoaderEnd?: boolean;
 }
@@ -14,50 +16,8 @@ export interface ServicesConfig {
   providedIn: 'root'
 })
 export class HttpService extends HttpClient {
-  private toTitleCase: (value: string) => string = new TitleCasePipe().transform;
-
-  constructor(handler: HttpHandler, private loader: LoaderService) {
+  constructor(handler: HttpHandler, private notification: NotificationService, private loader: LoaderService) {
     super(handler);
-  }
-
-  private isFormError(error: HttpErrorResponse): boolean {
-    return Boolean(error.error.fields);
-  }
-
-  private getErrorMessage(error: HttpErrorResponse): string[] {
-    return this.isFormError(error) ? this.getFormFieldsErrorMessages(error) : [this.getSimpleErrorMessage(error)];
-  }
-
-  private getSimpleErrorMessage(error: HttpErrorResponse): string {
-    let message = `${error.status}: ${error.statusText}`;
-
-    if (error.error) {
-      if (error.error.error_description) {
-        message = error.error.error_description;
-      }
-
-      if (error.error.message) {
-        message = error.error.message;
-      }
-    }
-
-    return message;
-  }
-
-  private getFormFieldsErrorMessages(error: HttpErrorResponse): string[] {
-    const { fields } = error.error;
-    const messages: string[] = [];
-
-    if (fields) {
-      Object.keys(fields).forEach((key: string) => {
-        const { errors } = fields[key];
-
-        const itemErrorsList: string[] = errors.map(({ description }) => description);
-        messages.push(`${this.toTitleCase(key)} field is invalid: ${itemErrorsList.join(', ')}`);
-      });
-    }
-
-    return messages;
   }
 
   get(url: string, options?: any, services?: ServicesConfig | null): Observable<any> {
@@ -120,23 +80,31 @@ export class HttpService extends HttpClient {
       );
   }
 
-  private onSuccess(config: ServicesConfig) {}
+  private onSuccess(config: ServicesConfig): void {}
 
-  private onError(config: ServicesConfig, error: HttpErrorResponse) {
-    return throwError(error);
+  private onError(config: ServicesConfig, error: HttpErrorResponse): Observable<HttpServiceError> {
+    const customError: HttpServiceError = new HttpServiceError(error);
+
+    if (!config || !config.skipErrorNotification) {
+      customError.descriptions.forEach(({ key, message }: ErrorDescription): void =>
+        this.notification.addToQueue(key || message, NotificationType.error)
+      );
+    }
+
+    return throwError(customError);
   }
 
-  private onEveryCase(config: ServicesConfig) {
+  private onEveryCase(config: ServicesConfig): void {
     this.endLoader(config);
   }
 
-  private startLoader(config: ServicesConfig) {
+  private startLoader(config: ServicesConfig): void {
     if (!config || (config && !config.skipLoaderStart)) {
       this.loader.on();
     }
   }
 
-  private endLoader(config: ServicesConfig) {
+  private endLoader(config: ServicesConfig): void {
     if (!config || (config && !config.skipLoaderEnd)) {
       this.loader.off();
     }

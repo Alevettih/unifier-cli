@@ -8,7 +8,7 @@ export class ConfirmationEmailGuard implements CanActivate {
   constructor(private router: Router) {}
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    const hasToken = next.queryParamMap.has('token');
+    const hasToken: boolean = next.queryParamMap.has('token');
 
     if (!hasToken) {
       this.router.navigate(['', 'auth', 'log-in']);

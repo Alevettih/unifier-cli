@@ -13,10 +13,10 @@ export class StorageService {
   }
 
   get current(): Storage {
-    const alreadyUsedStorage = [sessionStorage, localStorage].find((storage: Storage) =>
+    const alreadyUsedStorage: Storage = [sessionStorage, localStorage].find((storage: Storage): string =>
       storage.getItem(STORAGE_KEYS.TOKENS)
     );
-    const newStorage = this.shouldUseLocalstorage$.value ? localStorage : sessionStorage;
+    const newStorage: Storage = this.shouldUseLocalstorage$.value ? localStorage : sessionStorage;
 
     return alreadyUsedStorage || newStorage;
   }

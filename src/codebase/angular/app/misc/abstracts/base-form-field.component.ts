@@ -10,11 +10,11 @@ export abstract class BaseFormFieldComponent implements OnChanges, OnDestroy {
   private destroy: Subject<void> = new Subject<void>();
   @Input() icon: string;
   @Input() placeholder: string;
-  @Input() required = false;
-  @Input() disabled = false;
-  @Input() readonly = false;
+  @Input() required: boolean = false;
+  @Input() disabled: boolean = false;
+  @Input() readonly: boolean = false;
   @Input() appearance: 'legacy' | 'standard' | 'fill' | 'outline' = 'outline';
-  @Input() value = '';
+  @Input() value: any = null;
   @Input() control: AbstractControl = new FormControl();
 
   constructor(private cdr: ChangeDetectorRef) {}
@@ -29,7 +29,7 @@ export abstract class BaseFormFieldComponent implements OnChanges, OnDestroy {
     }
 
     if (control?.currentValue instanceof AbstractControl) {
-      control.currentValue.valueChanges.pipe(takeUntil(this.destroy)).subscribe(() => this.cdr.detectChanges());
+      control.currentValue.valueChanges.pipe(takeUntil(this.destroy)).subscribe((): void => this.cdr.detectChanges());
     }
 
     this.cdr.detectChanges();

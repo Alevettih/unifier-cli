@@ -1,5 +1,7 @@
 import { Directive, Input, Output, EventEmitter, HostListener } from '@angular/core';
 
+type Listener = (e: ClipboardEvent) => void;
+
 @Directive({ selector: '[copy-to-clipboard]' })
 export class CopyToClipboardDirective {
   @Input('copy-to-clipboard') public payload: string;
@@ -13,8 +15,8 @@ export class CopyToClipboardDirective {
       return;
     }
 
-    const listener = (e: ClipboardEvent) => {
-      const clipboard = e.clipboardData;
+    const listener: Listener = (e: ClipboardEvent): void => {
+      const clipboard: DataTransfer = e.clipboardData;
       clipboard.setData('text', this.payload.toString());
       e.preventDefault();
 

@@ -8,14 +8,14 @@ import { APP_CONFIG, AppConfig } from '@misc/constants';
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
-  private isRefreshingToken = false;
+  private isRefreshingToken: boolean = false;
   private tokenSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(@Inject(APP_CONFIG) private config: AppConfig, private auth: AuthService, private router: Router) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<any> {
     return next.handle(this.auth.addTokenToRequest(req)).pipe(
-      catchError(error => {
+      catchError((error: HttpErrorResponse): Observable<HttpEvent<any>> => {
         if (error instanceof HttpErrorResponse) {
           if (this.shouldHandleUnauthorized(error)) {
             return this.handleUnauthorized(req, next);
@@ -27,10 +27,10 @@ export class JwtInterceptor implements HttpInterceptor {
     );
   }
 
-  shouldHandleUnauthorized(error) {
-    const ignorePage = ['log-in', 'sign-up'];
-    const isUnauthorizedResponse = (error as HttpErrorResponse).status === 401;
-    const isNotIgnoredPage = ignorePage.every(page => !this.router.url.includes(page));
+  shouldHandleUnauthorized(error: HttpErrorResponse): boolean {
+    const ignorePage: string[] = ['log-in', 'sign-up'];
+    const isUnauthorizedResponse: boolean = (error as HttpErrorResponse).status === 401;
+    const isNotIgnoredPage: boolean = ignorePage.every((page: string): boolean => !this.router.url.includes(page));
 
     return isUnauthorizedResponse && isNotIgnoredPage;
   }
@@ -41,23 +41,23 @@ export class JwtInterceptor implements HttpInterceptor {
       this.tokenSubject.next(false);
 
       return this.auth.refreshToken().pipe(
-        switchMap(() => {
+        switchMap((): Observable<HttpEvent<any>> => {
           this.tokenSubject.next(true);
           return next.handle(this.auth.addTokenToRequest(req));
         }),
-        catchError(error => {
+        catchError((error: HttpErrorResponse): never => {
           this.router.navigate(['', 'auth', 'log-in']);
           throw error;
         }),
-        finalize(() => {
+        finalize((): void => {
           this.isRefreshingToken = false;
         })
       );
     } else {
       return this.tokenSubject.pipe(
-        skipWhile(token => !token),
+        skipWhile((token: boolean): boolean => !token),
         first(),
-        switchMap(() => next.handle(this.auth.addTokenToRequest(req)))
+        switchMap((): Observable<HttpEvent<any>> => next.handle(this.auth.addTokenToRequest(req)))
       );
     }
   }

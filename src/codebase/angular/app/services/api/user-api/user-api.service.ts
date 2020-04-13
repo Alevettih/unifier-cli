@@ -17,9 +17,9 @@ export enum SendTokenType {
   providedIn: 'root'
 })
 export class UserApiService extends ApiBaseService<User> {
-  protected URLPath = '/api/users';
+  protected URLPath: string = '/api/users';
 
-  getMe(servicesConfig: ServicesConfig) {
+  getMe(servicesConfig: ServicesConfig): Observable<User> {
     return this.http
       .get(`${this.config.apiUrl}/api/users/me`, {}, servicesConfig)
       .pipe(map((user: Entity): User => plainToClass(User, user)));
@@ -29,7 +29,7 @@ export class UserApiService extends ApiBaseService<User> {
     return this.http.post(`${this.config.apiUrl}/api/users/${email}/update-token`, { type }, {}, services);
   }
 
-  setNewPassword(token, params: Params, services?: ServicesConfig): Observable<any> {
+  setNewPassword(token: string, params: Params, services?: ServicesConfig): Observable<any> {
     return this.http.patch(
       `${this.config.apiUrl}/api/users/${token}/reset-password`,
       { plainPassword: params },
@@ -38,7 +38,7 @@ export class UserApiService extends ApiBaseService<User> {
     );
   }
 
-  confirmEmail(token, services?: ServicesConfig): Observable<any> {
+  confirmEmail(token: string, services?: ServicesConfig): Observable<any> {
     return this.http.patch(`${this.config.apiUrl}/api/users/${token}/confirm-email`, null, {}, services);
   }
 }

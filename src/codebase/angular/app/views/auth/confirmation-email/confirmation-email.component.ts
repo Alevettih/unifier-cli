@@ -7,12 +7,12 @@ import { ActivatedRoute, Params } from '@angular/router';
   styleUrls: ['./confirmation-email.component.scss']
 })
 export class ConfirmationEmailComponent implements OnInit {
-  heading = 'Your email address has been successfully confirmed!';
+  heading: string = 'Your email address has been successfully confirmed!';
   isError: boolean;
 
   constructor(private activatedRoute: ActivatedRoute) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ emailConfirmationErrorMessage }: Params): void => {
       this.isError = !!emailConfirmationErrorMessage;
 

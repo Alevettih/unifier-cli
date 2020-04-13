@@ -9,7 +9,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 })
 export class ForgotPasswordComponent implements OnInit, OnDestroy {
   token: string;
-  withToken = false;
+  withToken: boolean = false;
 
   constructor(private auth: AuthService, private activatedRoute: ActivatedRoute) {
     this.activatedRoute.queryParams.subscribe(({ token }: Params): void => {

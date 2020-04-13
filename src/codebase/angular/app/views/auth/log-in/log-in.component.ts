@@ -7,20 +7,26 @@ import { BaseForm } from '@misc/abstracts/base-form';
 import { VALIDATORS_SET } from '@misc/constants';
 import { InputType } from '@forms/base-input/base-input.component';
 
+interface AuthFormRaw {
+  email: string;
+  password: string;
+  shouldRemember: boolean;
+}
+
 @Component({
   selector: 'log-in',
   templateUrl: './log-in.component.html',
   styleUrls: ['./log-in.component.scss']
 })
 export class LogInComponent extends BaseForm implements OnInit {
+  readonly InputType: typeof InputType = InputType;
   error: string;
-  InputType = InputType;
 
   constructor(private formBuilder: FormBuilder, private router: Router, private auth: AuthService) {
     super();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.formGroup = this.formBuilder.group({
       email: new FormControl('', [Validators.required, VALIDATORS_SET.EMAIL]),
       password: new FormControl('', [Validators.required]),
@@ -35,7 +41,7 @@ export class LogInComponent extends BaseForm implements OnInit {
       return;
     }
 
-    const { email: username, password, shouldRemember } = this.formGroup.getRawValue();
+    const { email: username, password, shouldRemember }: AuthFormRaw = this.formGroup.getRawValue();
 
     this.auth.login({ username, password }, shouldRemember).subscribe(
       (): void => {

@@ -5,13 +5,13 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class PathParsePipe implements PipeTransform {
   transform(object: { [key: string]: any }, pathString: string): any {
-    const itemsPaths = pathString.split('+');
-    const result = [];
+    const itemsPaths: string[] = pathString.split('+');
+    const result: { [key: string]: any }[] = [];
     for (let itemPath of itemsPaths) {
       itemPath = itemPath.replace(/\[(\w+)]/g, '.$1');
       itemPath = itemPath.replace(/^\./, '');
-      const keys = itemPath.split('.');
-      let value = object;
+      const keys: string[] = itemPath.split('.');
+      let value: { [key: string]: any } = object;
 
       for (const key of keys) {
         if (key in value) {

@@ -5,7 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class TypeofPipe implements PipeTransform {
   transform(item: any, type: string): boolean {
-    let res;
+    let res: boolean;
 
     if (type.includes('object')) {
       res = item && typeof item === 'object' && !Array.isArray(item);

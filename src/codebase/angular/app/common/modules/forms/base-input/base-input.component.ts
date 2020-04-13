@@ -14,7 +14,7 @@ export enum InputType {
   styleUrls: ['./base-input.component.scss']
 })
 export class BaseInputComponent extends BaseFormFieldComponent {
-  private revealPassword = false;
+  private revealPassword: boolean = false;
   @Input() inputType: InputType;
 
   get isButtonShown(): boolean {
@@ -34,7 +34,7 @@ export class BaseInputComponent extends BaseFormFieldComponent {
     }
   }
 
-  togglePassword() {
+  togglePassword(): void {
     this.revealPassword = !this.revealPassword;
   }
 }

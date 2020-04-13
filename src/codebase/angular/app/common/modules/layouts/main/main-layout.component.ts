@@ -8,7 +8,7 @@ import { AuthService } from '@services/auth/auth.service';
   styleUrls: ['./main-layout.component.scss']
 })
 export class MainLayoutComponent {
-  toggleSidebar = false;
+  toggleSidebar: boolean = false;
 
   constructor(private auth: AuthService) {}
 

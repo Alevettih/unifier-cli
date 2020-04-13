@@ -10,7 +10,8 @@ const routes: Routes = [
     children: [
       {
         matcher: roleMatcher,
-        loadChildren: () => import('@views/main/admin/admin.module').then(m => m.AdminModule),
+        loadChildren: (): Promise<AdminModule> =>
+          import('@views/main/admin/admin.module').then((m: { AdminModule: AdminModule }): AdminModule => m.AdminModule),
         data: { roles: [Role.admin] }
       }
     ]

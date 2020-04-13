@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
   styleUrls: ['./loader.component.scss']
 })
 export class LoaderComponent {
-  @Input() isInner = false;
+  @Input() isInner: boolean = false;
 
   constructor(private loaderService: LoaderService) {}
 

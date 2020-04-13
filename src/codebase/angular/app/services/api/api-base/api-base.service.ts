@@ -9,8 +9,8 @@ import { APP_CONFIG, AppConfig } from '@misc/constants';
   providedIn: 'root'
 })
 export abstract class ApiBaseService<T> {
-  protected abstract URLPath = '/';
-  protected URLParams = [];
+  protected abstract URLPath: string = '/';
+  protected URLParams: string[] = [];
 
   protected constructor(@Inject(APP_CONFIG) protected config: AppConfig, protected http: HttpService) {}
 
@@ -30,13 +30,13 @@ export abstract class ApiBaseService<T> {
     return this.http.get(id ? `${this.url}/${id}` : this.url, params, servicesConfig);
   }
 
-  createItem(data: T, servicesConfig?: ServicesConfig): Observable<T> {
-    const body = { ...data, id: undefined };
-    return this.http.post(this.url, body, servicesConfig);
+  createItem(data: Partial<T>, servicesConfig?: ServicesConfig): Observable<T> {
+    const body: Partial<T> & Entity = { ...data, id: undefined };
+    return this.http.post(this.url, body, {}, servicesConfig);
   }
 
-  updateItem(data: T & Entity, servicesConfig?: ServicesConfig): Observable<T> {
-    const body = { ...data, id: undefined };
+  updateItem(data: Partial<T> & Entity, servicesConfig?: ServicesConfig): Observable<T> {
+    const body: Partial<T> & Entity = { ...data, id: undefined };
     return this.http.patch(`${this.url}/${data.id}`, body, servicesConfig);
   }
 
@@ -45,11 +45,11 @@ export abstract class ApiBaseService<T> {
   }
 
   private composeUrlPath(): string {
-    let URLPath = this.URLPath;
+    let URLPath: string = this.URLPath;
 
     if (this.URLParams?.length) {
-      const params = URLPath.match(/:[a-z]+(?=\/)?/gi);
-      params.forEach((param, i) => {
+      const params: string[] = URLPath.match(/:[a-z]+(?=\/)?/gi);
+      params.forEach((param: string, i: number): void => {
         URLPath = URLPath.replace(param, this.URLParams[i]);
       });
     }
