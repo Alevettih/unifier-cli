@@ -113,7 +113,7 @@ export class Specifier {
 
   async initialCommit(amend?: boolean): Promise<ExecaReturnValue> {
     return command(
-      `git add .; git commit -m "Initial commit" -n${amend ? ` --amend` : ''}`,
+      `git add .&& git commit -m "Initial commit" -n${amend ? ` --amend` : ''}`,
       this.childProcessOptions
     ).catch(({ message }) => {
       throw new Error(red(`Initial commit error: ${message}`));
