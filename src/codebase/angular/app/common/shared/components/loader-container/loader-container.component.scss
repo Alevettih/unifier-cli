@@ -1,0 +1,44 @@
+@import "variables";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.loader-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+  &.is-loading {
+    ::ng-deep * {
+      pointer-events: none;
+      user-select: none;
+    }
+  }
+
+  &__loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1001;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  &.is-loading &__content {
+    opacity: 0.75;
+    filter: blur(3px);
+  }
+}

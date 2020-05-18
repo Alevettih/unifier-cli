@@ -8,7 +8,7 @@ export function roleMatcher(segments: UrlSegment[], group: UrlSegmentGroup, { da
   }
 
   if (storedRole) {
-    console.error(
+    console.warn(
       `Stored role hasn't match with any role in array. Stored role is "${storedRole}", but role(s) to pass is "${data.roles}"`
     );
   }

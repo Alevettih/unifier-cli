@@ -1,0 +1,61 @@
+@import "variables";
+
+:host {
+  height: 100%;
+  width: 100%;
+}
+
+.mat-icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  border: dashed 1px rgba(78, 85, 97, 0.26);
+  border-radius: 15px;
+}
+
+.mat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $color-white;
+  min-height: 80px;
+  min-width: 80px;
+  border-radius: 50%;
+  background-color: $color-grey;
+
+  &::before, &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: $color-white;
+  }
+
+  &::before {
+    width: 4px;
+    height: 28px;
+  }
+
+  &::after {
+    height: 4px;
+    width: 28px;
+  }
+
+  &.small-icon {
+    min-height: 35px;
+    min-width: 35px;
+
+    &::before {
+      width: 3px;
+      height: 14px;
+    }
+
+    &::after {
+      height: 3px;
+      width: 14px;
+    }
+  }
+}

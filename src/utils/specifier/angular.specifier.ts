@@ -10,6 +10,10 @@ import { command, ExecaReturnValue } from 'execa';
 export class AngularSpecifier extends Specifier {
   specify(): Listr {
     return new Listr([
+      {
+        title: `Update ${blue('package.json')}`,
+        task: () => this.mergeWithJson(join(this.name, 'package.json'), config.packageJson)
+      },
       { title: 'Install dependencies', task: () => this.installPackages(config.modules) },
       { title: 'Add Material', task: () => this.installMaterial() },
       {
@@ -23,10 +27,6 @@ export class AngularSpecifier extends Specifier {
               {
                 title: `Add ${blue('config.json')} to assets directory. (Should be in ${blue('.gitignore')})`,
                 task: () => this.addConfigJsonToAssets()
-              },
-              {
-                title: `Edit ${blue('package.json')}`,
-                task: () => this.mergeWithJson(join(this.name, 'package.json'), config.packageJson)
               },
               {
                 title: `Edit ${blue('angular.json')}`,

@@ -1,0 +1,8 @@
+<div class="loader-container" [class.is-loading]="isLoading">
+  <div class="loader-container__loader" *ngIf="isLoading">
+    <mat-spinner></mat-spinner>
+  </div>
+  <div class="loader-container__content">
+    <ng-content></ng-content>
+  </div>
+</div>

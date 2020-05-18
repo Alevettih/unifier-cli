@@ -28,7 +28,8 @@ export default {
       build: 'ng build --prod',
       'lint:scss': 'stylelint "./src/**/*.scss" --fix',
       'lint:scss:watch': 'onchange "src/**/*.scss" -- stylelint {{changed}}',
-      'lint:all': 'npm run lint && npm run lint:scss'
+      'lint:all': 'npm run lint && npm run lint:scss',
+      postinstall: 'ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points'
     },
     husky: {
       hooks: {
@@ -53,6 +54,10 @@ export default {
       {
         src: join(__dirname, '../../../specification/files/angular/tsconfig.json'),
         dist: join(name, 'tsconfig.json')
+      },
+      {
+        src: join(__dirname, '../../../specification/files/angular/tslint.json'),
+        dist: join(name, 'tslint.json')
       },
       {
         src: join(__dirname, '../../../specification/files/.browserslistrc'),
