@@ -1,0 +1,9 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~reset-css/sass/reset";
+
+@import "src/scss/base";
+@import "src/scss/variables";
+
+@import "material/material";
+
+@import "partials/partials";

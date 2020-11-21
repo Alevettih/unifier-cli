@@ -3,15 +3,18 @@ import { ConfigPaths } from '@utils/specifier';
 
 export default {
   modules: [
-    '@angular/flex-layout',
+    '@ngx-translate/core',
+    '@ngx-translate/http-loader',
+    'ngx-pagination',
 
     'class-transformer',
 
     'husky',
 
+    'npm-run-all',
+
     'prettier',
     'pretty-quick',
-    'onchange',
 
     'reset-css',
 
@@ -20,19 +23,24 @@ export default {
     'stylelint-declaration-strict-value',
     'stylelint-no-unsupported-browser-features',
     'stylelint-scss',
-    'stylelint-z-index-value-constraint'
+    'stylelint-z-index-value-constraint',
+
+    'tslint-config-prettier'
   ],
   packageJson: {
     scripts: {
+      'config:to-base64': 'node ./bin/to-base64.js',
+      'config:from-base64': 'node ./bin/from-base64.js',
       lint: 'ng lint --fix',
       build: 'ng build --prod',
       'lint:scss': 'stylelint "./src/**/*.scss" --fix',
-      'lint:scss:watch': 'onchange "src/**/*.scss" -- stylelint {{changed}}',
-      'lint:all': 'npm run lint && npm run lint:scss'
+      'lint:all': 'npm run lint && npm run lint:scss',
+      prettier: 'prettier --write "src/**/*.*(ts|js|json|html)"',
+      'pretty-quick': 'pretty-quick --staged --pattern "src/**/*.*(ts|js|json|html)"'
     },
     husky: {
       hooks: {
-        'pre-commit': 'pretty-quick --staged; npm run lint:all'
+        'pre-commit': 'npm run pretty-quick && npm run lint:all'
       }
     }
   },
@@ -49,6 +57,14 @@ export default {
       {
         src: join(__dirname, '../../../specification/files/angular/.htaccess'),
         dist: join(name, 'src/.htaccess')
+      },
+      {
+        src: join(__dirname, '../../../specification/files/angular/default.conf'),
+        dist: join(name, 'src/default.conf')
+      },
+      {
+        src: join(__dirname, '../../../specification/files/angular/tslint.json'),
+        dist: join(name, 'tslint.json')
       },
       {
         src: join(__dirname, '../../../specification/files/angular/tsconfig.json'),

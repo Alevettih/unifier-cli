@@ -1,0 +1,19 @@
+<label>
+  <mat-form-field [appearance]="appearance" (click)="onLabelClicked()">
+    <mat-label>{{ placeholder }}</mat-label>
+    <input
+      matInput
+      (dateChange)="handleDateChange($event)"
+      [matDatepicker]="dp3"
+      [formControl]="formControl"
+      [required]="required"
+      [min]="minDate"
+      [max]="maxDate"
+    />
+    <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
+
+    <mat-datepicker #dp3 disabled="false" [startView]="startViewMode" [startAt]="startDate"></mat-datepicker>
+
+    <mat-error *ngIf="control?.invalid && errorMessage">{{ errorMessage }}</mat-error>
+  </mat-form-field>
+</label>

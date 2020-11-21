@@ -21,8 +21,8 @@ export class AngularSpecifier extends Specifier {
               { title: 'Copy the base structure of project', task: () => this.copyBaseStructure() },
               { title: `Update ${blue('.gitignore')} rules`, task: () => this.updateGitignoreRules() },
               {
-                title: `Add ${blue('config.json')} to assets directory. (Should be in ${blue('.gitignore')})`,
-                task: () => this.addConfigJsonToAssets()
+                title: `Add ${blue('token.json')} to assets directory. (Should be in ${blue('.gitignore')})`,
+                task: () => this.addTokenJsonToAssets()
               },
               {
                 title: `Edit ${blue('package.json')}`,
@@ -68,14 +68,14 @@ export class AngularSpecifier extends Specifier {
   }
 
   copyBaseStructure(): Promise<void> {
-    return copy(join(__dirname, '../../codebase/angular'), join(this.name, 'src')).catch(err => {
+    return copy(join(__dirname, '../../codebase/angular'), join(this.name)).catch(err => {
       throw new Error(red(`Base structure copying failed: ${err}`));
     });
   }
 
-  addConfigJsonToAssets(): Promise<void> {
-    return outputFile(join(this.name, 'src/assets/config.json'), '{}', 'utf-8').catch(err => {
-      throw new Error(red(`config.json creation failed: ${err}`));
+  addTokenJsonToAssets(): Promise<void> {
+    return outputFile(join(this.name, 'src/assets/token.json'), '"=03e"', 'utf-8').catch(err => {
+      throw new Error(red(`token.json creation failed: ${err}`));
     });
   }
 }

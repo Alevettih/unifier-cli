@@ -1,0 +1,33 @@
+@import "variables";
+
+* {
+  $mozilla-scrollbar-colors: rgba($color-dark-grey, 0.3) transparent;
+  scrollbar-color: $mozilla-scrollbar-colors;
+  scrollbar-width: thin;
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    background-color: transparent;
+    border-radius: 6px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 6px;
+    background-color: rgba($color-dark-grey, 0.3);
+
+    &:hover {
+      background-color: rgba($color-dark-grey, 0.5);
+    }
+  }
+
+  ::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+
+  ::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+}

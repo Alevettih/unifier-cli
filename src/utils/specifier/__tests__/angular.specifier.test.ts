@@ -37,12 +37,12 @@ describe('Angular specifier should', () => {
   });
 
   test('add config.json to assets', async (): Promise<void> => {
-    await specifier.addConfigJsonToAssets();
+    await specifier.addTokenJsonToAssets();
 
     expect(fs.outputFile).toBeCalled();
 
     Object.defineProperty(fs, 'outputFile', { value: jest.fn().mockRejectedValueOnce({}) });
-    expect(specifier.addConfigJsonToAssets()).rejects.toThrow();
+    expect(specifier.addTokenJsonToAssets()).rejects.toThrow();
   });
 
   describe('specify Angular project', () => {
