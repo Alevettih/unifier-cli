@@ -1,0 +1,19 @@
+<label class="base-input">
+  <mat-form-field [appearance]="appearance" class="base-input__field">
+    <mat-label *ngIf="placeholder">{{ placeholder }}</mat-label>
+    <mat-icon matPrefix *ngIf="icon">{{ icon }}</mat-icon>
+    <input
+      matInput
+      [type]="type"
+      [formControl]="formControl"
+      [placeholder]="placeholder"
+      [required]="required"
+      [readonly]="readonly"
+      [autocomplete]="autocomplete"
+    />
+    <button *ngIf="isButtonShown" [disabled]="disabled" mat-icon-button matSuffix tabindex="-1" type="button" (click)="togglePassword()">
+      <mat-icon class="base-input__right-icon">{{ buttonIcon }}</mat-icon>
+    </button>
+    <mat-error *ngIf="control?.invalid && errorMessage">{{ errorMessage }}</mat-error>
+  </mat-form-field>
+</label>

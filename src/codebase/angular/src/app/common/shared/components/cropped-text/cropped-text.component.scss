@@ -1,0 +1,11 @@
+:host {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cropped-text {
+  white-space: nowrap;
+  cursor: pointer;
+}

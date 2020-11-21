@@ -1,0 +1,44 @@
+{
+  "INPUT_NAME": {
+    "EMAIL": "Email",
+    "PASSWORD": "Password",
+    "NEW_PASSWORD": "New password",
+    "CONFIRM_PASSWORD": "Confirm password",
+    "REMEMBER_ME": "Remember me"
+  },
+  "BUTTON_NAME": {
+    "FORGOT_PASSWORD": "Forgot password",
+    "LOGIN": "Login",
+    "SUBMIT": "Submit",
+    "ACCEPT": "Accept",
+    "CLOSE": "Close"
+  },
+  "MESSAGE": {
+    "EMPTY_LIST": "No search results"
+  },
+  "ERROR_MESSAGE": {
+    "REQUIRED": "This field is required.",
+    "MUST_MATCH": "Passwords do not match. Please try again.",
+    "MIN": "The value must be higher than or equal to {{value}}.",
+    "MIN_LENGTH": "The value must contain at least {{value}} characters.",
+    "MAX": "The value must be less than or equal to {{value}}.",
+    "MAX_LENGTH": "The value must not contain more than {{value}} characters.",
+    "EMAIL": "Incorrect format of an email address.",
+    "PHONE": "Incorrect format of phone number.",
+    "LETTERS_NUMBERS": "The value must contain letters and numbers only.",
+    "URL": "Invalid url format.",
+    "PASSWORD": "The password must consist of letters (uppercase and lowercase), numbers and symbols.",
+    "VALID_NAME": "The field should not start with a space and should not contain two or more spaces in a row.",
+    "NOT_UNIQUE_VALUE": "This email is already used."
+  },
+  "BACKEND_ERRORS": {
+    "INVALID_GRANT": "Invalid email or password",
+    "NOT_FOUND": "Not found",
+    "USER_NOT_ALLOWED_BY_CLIENT": "This user is not allowed by the client",
+    "ERROR": {
+      "CONSTRAINT": {
+        "USER_NOT_FOUND": "User is not found"
+      }
+    }
+  }
+}

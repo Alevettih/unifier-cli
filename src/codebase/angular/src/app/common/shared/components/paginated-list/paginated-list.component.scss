@@ -1,0 +1,65 @@
+@import "variables";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.paginated-list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+  &__content {
+    display: grid;
+    align-items: stretch;
+    min-height: 37rem;
+  }
+
+  &__no-content {
+    position: absolute;
+    color: $color-dark-grey;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0.4;
+  }
+
+  &__no-content-icon {
+    height: auto;
+    width: auto;
+
+    &:not(:last-child) {
+      margin-bottom: 2em;
+    }
+
+    ::ng-deep {
+      svg {
+        height: 80px;
+      }
+    }
+  }
+
+  &__no-content-heading {
+    font-weight: bold;
+    font-size: 20px;
+  }
+
+  &__paginator {
+    margin-top: $s-10;
+  }
+
+  &__pagination-wrap {
+    margin-top: $s-11;
+    display: flex;
+    justify-content: center;
+  }
+}

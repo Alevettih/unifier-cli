@@ -1,0 +1,27 @@
+<div class="base-boolean-field">
+  <ng-container [ngSwitch]="type">
+    <mat-checkbox
+      class="base-boolean-field__field base-boolean-field__field_checkbox"
+      color="primary"
+      *ngSwitchCase="BooleanFieldType.checkbox"
+      [formControl]="formControl"
+      (click)="clickCheckbox($event)"
+      (focusout)="focusOut()"
+    >
+      <ng-container *ngTemplateOutlet="contentTemplate"></ng-container>
+    </mat-checkbox>
+    <mat-slide-toggle
+      class="base-boolean-field__field base-boolean-field__field_toggle"
+      color="primary"
+      *ngSwitchCase="BooleanFieldType.toggle"
+      [formControl]="formControl"
+    >
+      <ng-container *ngTemplateOutlet="contentTemplate"></ng-container>
+    </mat-slide-toggle>
+  </ng-container>
+  <mat-error class="base-boolean-field__error" *ngIf="control?.invalid && control?.touched && errorMessage">{{ errorMessage }}</mat-error>
+</div>
+
+<ng-template #contentTemplate>
+  <ng-content></ng-content>
+</ng-template>

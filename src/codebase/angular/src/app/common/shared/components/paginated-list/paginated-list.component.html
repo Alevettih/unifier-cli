@@ -1,0 +1,20 @@
+<div class="paginated-list">
+  <loader-container [isLoading]="isLoading" class="paginated-list__loader">
+    <div *ngIf="isEmpty" class="paginated-list__no-content">
+      <mat-icon [svgIcon]="emptyIcon" class="paginated-list__no-content-icon"></mat-icon>
+      <h3 class="paginated-list__no-content-heading" *ngIf="emptyMessage">{{ emptyMessage }}</h3>
+    </div>
+    <div class="paginated-list__content" [style.grid-template-columns]="gridTemplateColumnsValue" [style.grid-gap]="gridGap">
+      <ng-container *ngFor="let item of entities | paginate: paginatePipeArgs">
+        <ng-container *ngTemplateOutlet="itemTemplate ? itemTemplate : defaultItemTemplate; context: { $implicit: item }"></ng-container>
+      </ng-container>
+    </div>
+  </loader-container>
+  <div class="paginated-list__pagination-wrap" *ngIf="shouldShowPagination">
+    <paginator class="paginated-list__pagination" [(paginatePipeArgs)]="paginatePipeArgs"></paginator>
+  </div>
+</div>
+
+<ng-template #defaultItemTemplate let-item>
+  <span>{{ item | json }}</span>
+</ng-template>

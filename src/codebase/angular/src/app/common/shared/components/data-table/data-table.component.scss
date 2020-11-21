@@ -1,0 +1,37 @@
+@import "variables";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.data-table {
+  &__table-wrap {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: $s-20;
+    min-height: 50rem;
+    overflow: auto;
+  }
+
+  &__pagination {
+    margin: 0 auto;
+  }
+
+  &__empty-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    font-size: 2rem;
+    color: $color-dark-grey;
+  }
+
+  &__empty-icon {
+    height: 4.5em;
+    width: 4.5em;
+    margin-bottom: 0.5em;
+  }
+}
