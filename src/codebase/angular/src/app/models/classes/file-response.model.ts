@@ -6,7 +6,7 @@ import { ApiFile } from '@models/classes/file.model';
 @Exclude()
 export class FileResponse {
   @Expose() failed: Params[];
-  @Transform(({ value }: TransformFnParams): Date => new Date(value))
+  @Transform(({ value }: TransformFnParams): ApiFile[] => convertToModelsArray(value, ApiFile))
   @Expose()
   uploaded: ApiFile[];
 }
