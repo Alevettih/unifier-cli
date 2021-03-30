@@ -13,7 +13,6 @@ export default {
     'stylelint-declaration-strict-value',
     'stylelint-no-unsupported-browser-features',
     'stylelint-scss',
-    'stylelint-z-index-value-constraint',
     '@mapbox/stylelint-processor-arbitrary-tags'
   ],
   packageJson: {

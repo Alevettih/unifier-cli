@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { ApiBaseAbstractService } from '@misc/abstracts/api-base.abstract.service';
-import { ClassType } from 'class-transformer/ClassTransformer';
+import { ClassType } from 'class-transformer/esm2015';
 import { FileResponse } from '@models/classes/file-response.model';
 import { Observable, BehaviorSubject, zip } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';

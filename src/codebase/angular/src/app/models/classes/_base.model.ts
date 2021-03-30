@@ -1,4 +1,4 @@
-import { ClassType } from 'class-transformer/ClassTransformer';
+import { ClassType } from 'class-transformer/esm2015';
 import { convertToModelsArray } from '@misc/helpers/model-conversion/convert-to-models-array';
 
 export class List<T = any> {

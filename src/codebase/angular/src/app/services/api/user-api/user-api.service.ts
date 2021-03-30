@@ -4,7 +4,7 @@ import { User } from '@models/classes/user.model';
 import { IServicesConfig } from '@services/http/http.service';
 import { Observable } from 'rxjs';
 import { Params } from '@angular/router';
-import { ClassType } from 'class-transformer/ClassTransformer';
+import { ClassType } from 'class-transformer/esm2015';
 import { UserTokenAction } from '@models/enums/user-token-action.enum';
 
 @Injectable({

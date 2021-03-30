@@ -6,7 +6,7 @@ import { IEntity } from '@models/interfaces/entity.interface';
 import { List } from '@models/classes/_base.model';
 import { APP_CONFIG, IAppConfig } from '@misc/constants/app-config.constant';
 import { PathParsePipe } from '@pipes/path-parse/path-parse.pipe';
-import { ClassType } from 'class-transformer/ClassTransformer';
+import { ClassType } from 'class-transformer/esm2015';
 import { toModelsList } from '@misc/rxjs-operators/to-models-list.operator';
 import { toModel } from '@misc/rxjs-operators/to-model.operator';
 import { CustomHTTPParamsEncoder } from '@misc/custom-http-params-encoder';

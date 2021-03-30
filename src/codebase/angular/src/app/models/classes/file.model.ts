@@ -1,4 +1,4 @@
-import { Exclude, Expose, Transform } from 'class-transformer';
+import { Exclude, Expose, Transform, TransformFnParams } from 'class-transformer';
 
 @Exclude()
 export class ApiFile {
@@ -9,6 +9,6 @@ export class ApiFile {
   @Expose() size: number;
   @Expose() private: boolean;
   @Expose()
-  @Transform((value: Date): Date => new Date(value))
+  @Transform(({ value }: TransformFnParams): Date => new Date(value))
   createdAt: Date;
 }

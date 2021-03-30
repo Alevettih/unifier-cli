@@ -1,6 +1,6 @@
 import { Observable, OperatorFunction } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ClassType } from 'class-transformer/ClassTransformer';
+import { ClassType } from 'class-transformer/esm2015';
 import { List } from '@models/classes/_base.model';
 
 export function toModelsList<T>(Model: ClassType<T>): OperatorFunction<List<T>, List<T>> {
