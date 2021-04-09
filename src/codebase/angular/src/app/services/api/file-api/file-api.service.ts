@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { ApiBaseAbstractService } from '@misc/abstracts/api-base.abstract.service';
-import { ClassType } from 'class-transformer/esm2015';
+import { ClassConstructor } from 'class-transformer';
 import { FileResponse } from '@models/classes/file-response.model';
 import { Observable, BehaviorSubject, zip } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
@@ -14,7 +14,7 @@ import { PathParsePipe } from '@pipes/path-parse/path-parse.pipe';
 })
 export class FileApiService extends ApiBaseAbstractService<FileResponse> {
   protected readonly downloadedImages: Map<string, BehaviorSubject<File>> = new Map<string, BehaviorSubject<File>>();
-  protected model: ClassType<FileResponse> = FileResponse;
+  protected model: ClassConstructor<FileResponse> = FileResponse;
   protected URLPath: string = '/api/file';
 
   constructor(@Inject(APP_CONFIG) protected config: IAppConfig, protected http: HttpService, protected pathParsePipe: PathParsePipe) {

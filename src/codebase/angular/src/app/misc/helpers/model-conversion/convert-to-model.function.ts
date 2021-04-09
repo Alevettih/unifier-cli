@@ -1,7 +1,7 @@
 import { plainToClass } from 'class-transformer';
-import { ClassType } from 'class-transformer/esm2015';
+import { ClassConstructor } from 'class-transformer';
 
-export function convertToModel<T>(value: any, ModelClass: ClassType<T>): T {
+export function convertToModel<T>(value: any, ModelClass: ClassConstructor<T>): T {
   if (value && typeof value === 'object') {
     return plainToClass(ModelClass, value) as unknown as T;
   } else {

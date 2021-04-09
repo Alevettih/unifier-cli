@@ -4,7 +4,7 @@ import { User } from '@models/classes/user.model';
 import { IServicesConfig } from '@services/http/http.service';
 import { Observable } from 'rxjs';
 import { Params } from '@angular/router';
-import { ClassType } from 'class-transformer/esm2015';
+import { ClassConstructor } from 'class-transformer';
 import { UserTokenAction } from '@models/enums/user-token-action.enum';
 
 @Injectable({
@@ -12,7 +12,7 @@ import { UserTokenAction } from '@models/enums/user-token-action.enum';
 })
 export class UserApiService extends ApiBaseAbstractService<User> {
   protected readonly URLPath: string = '/api/users';
-  protected readonly model: ClassType<User> = User;
+  protected readonly model: ClassConstructor<User> = User;
 
   getMe(services?: IServicesConfig): Observable<User> {
     return this.getItem('me', { expand: 'profile.attachmentFiles' }, services);

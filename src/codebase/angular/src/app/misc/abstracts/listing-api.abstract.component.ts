@@ -1,10 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { List } from '@models/classes/_base.model';
-import { ISortingItem } from '@models/interfaces/sorting-item.interface';
-import { IFilteringItem } from '@models/interfaces/filtering-item.interface';
-import { Observable, Subject } from 'rxjs';
+import { merge, Observable, Subject } from 'rxjs';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { takeUntil, tap } from 'rxjs/operators';
+import { switchMap, takeUntil, tap } from 'rxjs/operators';
 import { runInAnyCase } from '@misc/rxjs-operators/run-in-any-case.operator';
 
 @Component({
@@ -13,14 +11,18 @@ import { runInAnyCase } from '@misc/rxjs-operators/run-in-any-case.operator';
 export abstract class ListingApiAbstractComponent<T = any> implements OnInit, OnDestroy {
   protected readonly destroyed$: Subject<void> = new Subject<void>();
   abstract list: List<T>;
-  abstract sorting: ISortingItem[];
-  abstract filtering: IFilteringItem[];
   isLoading: boolean = false;
 
   constructor(protected activatedRoute: ActivatedRoute, protected router: Router) {}
 
   ngOnInit(): void {
-    this.activatedRoute.queryParams.pipe(takeUntil(this.destroyed$)).subscribe(this.onNavigationEnd.bind(this));
+    merge(
+      this.activatedRoute.queryParams,
+      this.activatedRoute.params
+    ).pipe(
+      takeUntil(this.destroyed$),
+      switchMap((): Observable<List> => this.loadItems(this.params))
+    ).subscribe(this.onNavigationEnd.bind(this));
   }
 
   ngOnDestroy(): void {
@@ -34,18 +36,19 @@ export abstract class ListingApiAbstractComponent<T = any> implements OnInit, On
 
   abstract getItems(params: Params): Observable<List<T>>;
 
-  protected onNavigationEnd(): void {
+  protected loadItems(params: Params): Observable<List<T>> {
     this.isLoading = true;
-    this.getItems(this.params)
-      .pipe(
-        takeUntil(this.destroyed$),
-        runInAnyCase((): void => {
-          this.isLoading = false;
-        }),
-        tap((list: List<T>): void => {
-          this.list = list;
-        })
-      )
-      .subscribe();
+    return this.getItems(params).pipe(
+      takeUntil(this.destroyed$),
+      runInAnyCase((): void => {
+        this.isLoading = false;
+      }),
+      tap((list: List<T>): void => {
+        this.list = list;
+      })
+    );
   }
+
+  // tslint:disable-next-line:no-empty
+  protected onNavigationEnd(...params: any[]): void {}
 }
