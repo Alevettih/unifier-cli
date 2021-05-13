@@ -1,0 +1,47 @@
+<form [formGroup]="formGroup" class="dialog" (ngSubmit)="ngSubmit()">
+  <h3 mat-dialog-title class="dialog__title">{{ data?.title | translate }}</h3>
+  <div class="dialog__body">
+    <ng-container *ngFor="let input of inputs">
+      <ng-container [ngSwitch]="input.controlType">
+        <file-uploader
+          *ngSwitchCase="FormControlItemType.file"
+          [placeholder]="input.placeholder"
+          [control]="input.control"
+          [multiple]="false"
+          [readonly]="input.readonly"
+          [fileType]="input.fileType || [FileType.any]"
+        ></file-uploader>
+        <base-select
+          *ngSwitchCase="FormControlItemType.select"
+          [placeholder]="input.placeholder"
+          [control]="input.control"
+          [options]="input.options"
+          [readonly]="input.readonly"
+        ></base-select>
+        <base-form-input
+          *ngSwitchCase="FormControlItemType.input"
+          [placeholder]="input.placeholder"
+          [control]="input.control"
+          [inputType]="getRightType(input.inputType, input.controlType)"
+          [readonly]="input.readonly"
+        ></base-form-input>
+        <base-boolean-field
+          *ngSwitchCase="FormControlItemType.boolean"
+          [control]="input.control"
+          [type]="getRightType(input.inputType, input.controlType)"
+          [readonly]="input.readonly"
+        >
+          {{ input.placeholder }}
+        </base-boolean-field>
+      </ng-container>
+    </ng-container>
+  </div>
+  <div mat-dialog-actions class="dialog__actions">
+    <button mat-button class="dialog__button" type="button" [mat-dialog-close]="false" color="accent">
+      {{ declineName | translate }}
+    </button>
+    <button mat-button class="dialog__button" color="primary">
+      {{ approveName | translate }}
+    </button>
+  </div>
+</form>

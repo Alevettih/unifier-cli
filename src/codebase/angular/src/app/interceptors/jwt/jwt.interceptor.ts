@@ -15,15 +15,13 @@ export class JwtInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(this.auth.addTokenToRequest(req)).pipe(
-      catchError(
-        (error: HttpErrorResponse): Observable<HttpEvent<any>> => {
-          if (error instanceof HttpErrorResponse && this.shouldHandleUnauthorized(error)) {
-            return this.handleUnauthorized(req, next);
-          } else {
-            throw error;
-          }
+      catchError((error: HttpErrorResponse): Observable<HttpEvent<any>> => {
+        if (error instanceof HttpErrorResponse && this.shouldHandleUnauthorized(error)) {
+          return this.handleUnauthorized(req, next);
+        } else {
+          throw error;
         }
-      )
+      })
     );
   }
 
@@ -42,12 +40,10 @@ export class JwtInterceptor implements HttpInterceptor {
       this.tokenSubject.next(false);
 
       return observable$.pipe(
-        switchMap(
-          (): Observable<HttpEvent<any>> => {
-            this.tokenSubject.next(true);
-            return next.handle(this.auth.addTokenToRequest(req));
-          }
-        ),
+        switchMap((): Observable<HttpEvent<any>> => {
+          this.tokenSubject.next(true);
+          return next.handle(this.auth.addTokenToRequest(req));
+        }),
         catchError((error: HttpErrorResponse): never => {
           this.router.navigate(['', 'auth', 'log-in']);
           throw error;

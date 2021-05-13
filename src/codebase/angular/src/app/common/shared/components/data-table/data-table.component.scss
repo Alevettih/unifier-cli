@@ -1,5 +1,3 @@
-@import "variables";
-
 :host {
   display: flex;
   flex-direction: column;
@@ -7,16 +5,21 @@
 }
 
 .data-table {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
   &__table-wrap {
     display: flex;
     flex-direction: column;
-    margin-bottom: $s-20;
+    flex-grow: 1;
     min-height: 50rem;
     overflow: auto;
   }
 
   &__pagination {
     margin: 0 auto;
+    width: 100%;
   }
 
   &__empty-block {
@@ -26,12 +29,22 @@
     justify-content: center;
     flex-grow: 1;
     font-size: 2rem;
-    color: $color-dark-grey;
   }
 
   &__empty-icon {
     height: 4.5em;
     width: 4.5em;
     margin-bottom: 0.5em;
+  }
+
+  &::ng-deep {
+    .mat-column-createdAt,
+    .mat-column-lastUpdatedAt {
+      max-width: 14rem;
+
+      &:last-child {
+        max-width: calc(14rem + 24px);
+      }
+    }
   }
 }

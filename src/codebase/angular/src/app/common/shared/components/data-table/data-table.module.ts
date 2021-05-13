@@ -7,10 +7,11 @@ import { MaterialModule } from '@shared/material/material.module';
 import { PaginatorModule } from '@shared/components/paginator/paginator.module';
 import { LoaderContainerModule } from '@shared/components/loader-container/loader-container.module';
 import { CroppedTextModule } from '../cropped-text/cropped-text.module';
+import { TableActionsComponent } from './table-actions/table-actions.component';
 
 @NgModule({
-  declarations: [DataTableComponent],
+  declarations: [DataTableComponent, TableActionsComponent],
   imports: [CommonModule, PipesModule, TranslateModule, MaterialModule, PaginatorModule, LoaderContainerModule, CroppedTextModule],
-  exports: [DataTableComponent]
+  exports: [DataTableComponent, TableActionsComponent]
 })
 export class DataTableModule {}

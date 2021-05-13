@@ -3,6 +3,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { InputType } from '@models/enums/input-type.enum';
 import { IFormControlItem } from '@models/interfaces/forms/form-control-item.interface';
+import { FormControlItemType } from '@models/enums/form-control-item.type';
 
 export interface IFormControls {
   [key: string]: AbstractControl;
@@ -13,6 +14,7 @@ export interface IFormControls {
 })
 export abstract class BaseFormAbstractComponent implements OnDestroy {
   protected readonly destroyed$: Subject<void> = new Subject();
+  readonly FormControlItemType: typeof FormControlItemType = FormControlItemType;
   readonly InputType: typeof InputType = InputType;
   formGroup: FormGroup;
 

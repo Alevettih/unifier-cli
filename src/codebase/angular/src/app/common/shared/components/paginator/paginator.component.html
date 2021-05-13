@@ -1,8 +1,9 @@
-<pagination-controls
-  [id]="paginatePipeArgs.id"
-  [maxSize]="7"
-  [responsive]="true"
-  nextLabel=""
-  previousLabel=""
-  (pageChange)="paginate($event)"
-></pagination-controls>
+<mat-divider></mat-divider>
+<mat-paginator
+  [showFirstLastButtons]="true"
+  [hidePageSize]="true"
+  [pageIndex]="pageIndex"
+  [pageSize]="paginatePipeArgs.itemsPerPage"
+  [length]="paginatePipeArgs.totalItems"
+  (page)="paginate($event.pageIndex + 1)"
+></mat-paginator>

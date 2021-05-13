@@ -7,12 +7,10 @@ export function runInAnyCase<T>(func: () => void): OperatorFunction<T, T> {
       tap((): void => {
         func();
       }),
-      catchError(
-        (err: Error): Observable<never> => {
-          func();
-          return throwError(err);
-        }
-      ),
+      catchError((err: Error): Observable<never> => {
+        func();
+        return throwError(err);
+      }),
       finalize((): void => {
         func();
       })

@@ -12,7 +12,7 @@
       [autocomplete]="autocomplete"
     />
     <button *ngIf="isButtonShown" [disabled]="disabled" mat-icon-button matSuffix tabindex="-1" type="button" (click)="togglePassword()">
-      <mat-icon class="base-input__right-icon">{{ buttonIcon }}</mat-icon>
+      <mat-icon class="base-input__right-icon" fontSet="material-icons-outlined">{{ buttonIcon }}</mat-icon>
     </button>
     <mat-error *ngIf="control?.invalid && errorMessage">{{ errorMessage }}</mat-error>
   </mat-form-field>

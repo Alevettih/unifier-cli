@@ -1,5 +1,4 @@
 @import "~@angular/material/theming";
-@import "variables";
 
 *, *::after, *::before {
   box-sizing: border-box;
@@ -7,16 +6,17 @@
 
 :root {
   font-size: 10px;
-
-  @media screen and (max-width: $desktop-s) {
-    font-size: 8px;
-  }
 }
 
 body {
-  font-family: $main-font;
-  font-size: 1.6rem;
-  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--ff-main-font);
+  color: var(--color-russian-violet);
+  font-size: 1.4rem;
+  min-width: 375px;
+  min-height: 100vh;
+  background-color: var(--material-base-background-color);
   -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;

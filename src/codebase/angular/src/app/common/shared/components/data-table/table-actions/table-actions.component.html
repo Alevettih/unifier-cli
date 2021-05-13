@@ -1,0 +1,5 @@
+<button *ngFor="let action of actions" mat-icon-button (click)="actionClick.emit(action.value)" [matTooltip]="action.name">
+  <mat-icon [color]="action.color" fontSet="material-icons-outlined">
+    {{ action.icon }}
+  </mat-icon>
+</button>

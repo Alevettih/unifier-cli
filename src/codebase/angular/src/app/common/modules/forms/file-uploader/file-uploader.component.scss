@@ -1,0 +1,144 @@
+.file-uploader {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  margin: 0.25em 0;
+  padding-bottom: 1.34375em;
+
+  &__label {
+    font-size: 1.1rem;
+    padding: 0 0.5rem;
+    color: var(--color-black);
+    background-color: var(--color-black);
+    position: absolute;
+    top: 0;
+    left: 0.4rem;
+    transform: translateY(-50%);
+  }
+
+  &__link-panel {
+    margin-bottom: 3.5rem;
+    margin-top: 0.3rem;
+  }
+
+  &__link-download {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: var(--s-2);
+    width: 100%;
+
+    .mat-icon {
+      width: 19px;
+      margin-right: 0.5rem;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__panel {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border: 1px solid var(--color-black);
+    border-radius: 4px;
+    text-align: center;
+    padding: 1rem;
+    transition-duration: 0.5s;
+    transition-property: color, border-color;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: -1px;
+      left: -1px;
+      right: -1px;
+      bottom: -1px;
+      border: 2px solid var(--color-black);
+      border-radius: 4px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    &:hover {
+      &::before {
+        opacity: 1;
+      }
+    }
+
+    &.file-over {
+      color: var(--color-black);
+    }
+  }
+
+  &__input {
+    opacity: 0;
+    cursor: pointer;
+    position: absolute;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+  }
+
+  &__list {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  &__icon {
+    display: inline-block;
+    margin-bottom: var(--s-2);
+  }
+
+  &__text {
+    font-size: var(--s-3);
+    font-style: italic;
+    padding: 0 3rem;
+    margin: 0;
+  }
+
+  &__selected {
+    margin-bottom: 1rem;
+  }
+
+  &__error {
+    position: relative;
+    font-size: 75%;
+    margin-top: 0.6666666667em;
+    padding: 0 1em;
+    line-height: 1.4;
+  }
+
+  &__file-item {
+    position: relative;
+    margin-bottom: 1rem;
+    text-align: left;
+
+    &.error {
+      color: var(--color-red);
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__file-name {
+    padding-right: 4rem;
+  }
+
+  &__file-remove {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+  }
+}

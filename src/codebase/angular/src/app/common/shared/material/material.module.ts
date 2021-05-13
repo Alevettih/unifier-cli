@@ -33,6 +33,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { NoopScrollStrategy } from '@angular/cdk/overlay';
 import { MatStepperModule } from '@angular/material/stepper';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @NgModule({
   exports: [
@@ -67,7 +69,9 @@ import { MatStepperModule } from '@angular/material/stepper';
     MatToolbarModule,
     MatStepperModule,
     MatRippleModule,
-    ClipboardModule
+    MatBadgeModule,
+    ClipboardModule,
+    MatTabsModule
   ],
   providers: [
     {

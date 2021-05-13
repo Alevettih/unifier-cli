@@ -19,6 +19,6 @@ export class BaseSelectComponent extends BaseFormFieldAbstractComponent {
   @Input() getValue: (item: IOption) => any = item => (item as IOption).value;
 
   getTitle(item: IOption): string {
-    return `${item.label || item.value}`.toUpperCase();
+    return `${item.label || item.value}`;
   }
 }

@@ -1,25 +1,24 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'cropped-text',
   templateUrl: './cropped-text.component.html',
   styleUrls: ['./cropped-text.component.scss']
 })
-export class CroppedTextComponent implements AfterViewInit {
+export class CroppedTextComponent implements OnChanges {
   @ViewChild('viewedText') viewedText: ElementRef<HTMLSpanElement>;
+  @ViewChild('croppedText') croppedText: ElementRef<HTMLSpanElement>;
   @Input() text: string = '';
 
-  constructor(private elementRef: ElementRef, private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef) {}
 
-  ngAfterViewInit(): void {
-    this.cdr.detectChanges();
+  ngOnChanges({ text }: SimpleChanges): void {
+    if (text?.currentValue || text?.previousValue) {
+      this.cdr.detectChanges();
+    }
   }
 
   shouldShowTooltip(): boolean {
-    return (this.elementRef?.nativeElement?.offsetWidth ?? 0) < (this.viewedText?.nativeElement?.offsetWidth ?? 0);
-  }
-
-  tooltipText(): string {
-    return this.shouldShowTooltip() ? this.text : null;
+    return (this.croppedText?.nativeElement?.offsetWidth ?? 0) < (this.viewedText?.nativeElement?.offsetWidth ?? 0);
   }
 }

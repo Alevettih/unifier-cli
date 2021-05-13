@@ -1,23 +1,22 @@
-@import "variables";
-
 * {
-  $mozilla-scrollbar-colors: rgba($color-dark-grey, 0.3) transparent;
-  scrollbar-color: $mozilla-scrollbar-colors;
+  $scrollbar-color: rgb(192, 197, 209);
+  --mozilla-scrollbar-colors: rgba($scrollbar-color, 0.5) transparent;
+  scrollbar-color: var(--mozilla-scrollbar-colors);
   scrollbar-width: thin;
 
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
     background-color: transparent;
-    border-radius: 6px;
+    border-radius: 8px;
   }
 
   ::-webkit-scrollbar-thumb {
-    border-radius: 6px;
-    background-color: rgba($color-dark-grey, 0.3);
+    border-radius: 8px;
+    background-color: rgba($scrollbar-color, 0.5);
 
     &:hover {
-      background-color: rgba($color-dark-grey, 0.5);
+      background-color: rgba($scrollbar-color, 0.7);
     }
   }
 

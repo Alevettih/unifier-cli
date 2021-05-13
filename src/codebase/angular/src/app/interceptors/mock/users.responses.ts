@@ -1,5 +1,5 @@
 import { Observable, of } from 'rxjs';
-import { HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { User } from '@models/classes/user.model';
 import { UserRole } from '@models/enums/user-role.enum';
 import { Params } from '@angular/router';
@@ -11,10 +11,8 @@ export const entities: Partial<User>[] = [
   convertToModel(
     {
       id: 'vkvggvc9-33g3-vk0p-v90c-g9g9ggp8v453',
-      name: 'Admin',
-      email: 'admin@requestum.com',
-      role: UserRole.admin,
-      createdAt: '2020-07-31T15:38:27'
+      name: 'John Doe',
+      role: UserRole.admin
     },
     User
   )
@@ -37,10 +35,10 @@ for (let i: number = 0; i < 20; i++) {
 }
 
 export interface IUsersResponses {
-  list(): Observable<HttpResponse<List<Partial<User>>>>;
+  list(params: string[], body: HttpParams, headers: HttpHeaders): Observable<HttpResponse<List<Partial<User>>>>;
   oneById(routeParams: string[], body: Params, headers: HttpHeaders): Observable<HttpResponse<Partial<User>>>;
   create(routeParams: string[], body: Params, headers: HttpHeaders): Observable<HttpResponse<Partial<User>>>;
-  availableEmail(routeParams: string[], body: Params, headers: HttpHeaders): Observable<HttpResponse<void>>;
+  update(routeParams: string[], body: Params, headers: HttpHeaders): Observable<HttpResponse<Partial<User>>>;
   logout(): Observable<HttpResponse<void>>;
   confirmAccount(): Observable<HttpResponse<void>>;
   updatePassword(): Observable<HttpResponse<void>>;
@@ -48,19 +46,26 @@ export interface IUsersResponses {
 }
 
 export const usersResponses: IUsersResponses = {
-  list(): Observable<HttpResponse<List<Partial<User>>>> {
+  list(params: string[], body: HttpParams): Observable<HttpResponse<List<Partial<User>>>> {
+    let resEntities: Partial<User>[] = entities;
+
+    if (body.has('page')) {
+      const page: number = Number(body.get('page'));
+      const perPage: number = Number(body.get('per-page')) || 20;
+      resEntities = resEntities.slice((page - 1) * perPage, page * perPage);
+    }
+
     return of(
       new HttpResponse({
         status: 200,
-        body: { entities, total: entities.length }
+        body: { entities: resEntities, total: entities.length }
       })
     );
   },
   oneById([id]: string[], body: Params, headers: HttpHeaders): Observable<HttpResponse<Partial<User>>> {
     const token: string = headers.get('Authorization');
     const role: UserRole = token ? (atob(token.replace('Bearer ', '')) as UserRole) : null;
-
-    if (id !== 'me') {
+    if (id && id !== 'me') {
       return of(
         new HttpResponse({
           status: 200,
@@ -76,13 +81,6 @@ export const usersResponses: IUsersResponses = {
       );
     }
   },
-  availableEmail([email]: string[]): Observable<HttpResponse<void>> {
-    return of(
-      new HttpResponse({
-        status: entities.find((user: User): boolean => user.email === email) ? 200 : 409
-      })
-    );
-  },
   create(routeParams: string[], body: Partial<User>): Observable<HttpResponse<Partial<User>>> {
     body.id = getRandomIdentifier();
     this.entities.push(body);
@@ -91,6 +89,18 @@ export const usersResponses: IUsersResponses = {
       new HttpResponse({
         status: 200,
         body
+      })
+    );
+  },
+  update([id]: string[], body: Partial<User>): Observable<HttpResponse<Partial<User>>> {
+    const entityIndex: number = entities.findIndex((user: User): boolean => user?.id === id);
+
+    entities.splice(entityIndex, 1, { ...entities[entityIndex], ...body });
+
+    return of(
+      new HttpResponse({
+        status: 200,
+        body: entities[entityIndex]
       })
     );
   },

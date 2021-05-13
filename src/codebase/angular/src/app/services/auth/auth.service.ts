@@ -125,13 +125,11 @@ export class AuthService {
 
   getMe(services?: IServicesConfig): Observable<User> {
     return this.userApi.getMe({ skipErrorNotification: true, ...services }).pipe(
-      map(
-        (user: User): User => {
-          this.me$.next(user);
-          this.setRole(user.role);
-          return user;
-        }
-      )
+      map((user: User): User => {
+        this.me$.next(user);
+        this.setRole(user.role);
+        return user;
+      })
     );
   }
 

@@ -1,10 +1,6 @@
 <loader-container [isLoading]="isLoading" class="data-table">
   <div class="data-table__table-wrap">
-    <mat-table
-      [style.min-width]="minWidth"
-      [dataSource]="paginatePipeArgs ? (dataSource | paginate: paginatePipeArgs) : dataSource"
-      class="data-table__table"
-    >
+    <mat-table [style.min-width]="minWidth" [dataSource]="dataSource" class="data-table__table">
       <ng-container *ngFor="let columnItem of columns" matColumnDef="{{ columnItem.columnName }}">
         <mat-header-cell class="data-table__table-cell data-table__table-cell_header" *matHeaderCellDef>
           {{ columnItem.title | translate }}
@@ -27,10 +23,10 @@
       <mat-header-row *matHeaderRowDef="displayedColumns" class="data-table__table-header-row"></mat-header-row>
       <mat-row class="data-table__table-row" *matRowDef="let row; columns: displayedColumns"></mat-row>
     </mat-table>
-    <div class="data-table__empty-block" *ngIf="!dataSource.length">
+    <div class="data-table__empty-block" *ngIf="!dataSource.length && !isLoading">
       <mat-icon class="data-table__empty-icon" [svgIcon]="emptyIcon"></mat-icon>
       <h4 class="data-table__empty-message">{{ emptyMessage | translate }}</h4>
     </div>
   </div>
-  <paginator class="data-table__pagination" *ngIf="shouldShowPagination" [(paginatePipeArgs)]="paginatePipeArgs"></paginator>
+  <paginator class="data-table__pagination" [(paginatePipeArgs)]="paginatePipeArgs"></paginator>
 </loader-container>

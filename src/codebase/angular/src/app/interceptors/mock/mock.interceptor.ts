@@ -27,8 +27,7 @@ export class MockInterceptor implements HttpInterceptor {
   endpoints: IMockEndpoints = {
     GET: {
       [`${this.config.apiUrl}/api/users`]: { handler: usersResponses.list },
-      [`${this.config.apiUrl}/api/users/:id`]: { handler: usersResponses.oneById },
-      [`${this.config.apiUrl}/api/users/available/email/:email`]: { handler: usersResponses.availableEmail }
+      [`${this.config.apiUrl}/api/users/:id`]: { handler: usersResponses.oneById }
     },
     POST: {
       [`${this.config.apiUrl}/oauth/v2/token`]: { handler: tokensResponses.accessToken },
@@ -38,6 +37,7 @@ export class MockInterceptor implements HttpInterceptor {
     PATCH: {
       [`${this.config.apiUrl}/api/users/:token/confirm`]: { handler: usersResponses.confirmAccount },
       [`${this.config.apiUrl}/api/users/:token/password`]: { handler: usersResponses.updatePassword },
+      [`${this.config.apiUrl}/api/users/:id`]: { handler: usersResponses.update },
       [`${this.config.apiUrl}/api/users/logout`]: { handler: usersResponses.logout }
     }
   };

@@ -1,12 +1,8 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MaterialModule } from '@shared/material/material.module';
-import { AppFormsModule } from '@forms/forms.module';
-import { MessageModalComponent } from '@modals/message-modal/message-modal.component';
+import { MessageModalModule } from '@modals/message-modal/message-modal.module';
+import { FormModalModule } from '@modals/form-modal/form-modal.module';
 
 @NgModule({
-  declarations: [MessageModalComponent],
-  entryComponents: [MessageModalComponent],
-  imports: [CommonModule, MaterialModule, AppFormsModule]
+  exports: [MessageModalModule, FormModalModule]
 })
 export class ModalsModule {}

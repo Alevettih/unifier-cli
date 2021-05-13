@@ -31,18 +31,16 @@ export class BreadcrumbsService implements OnDestroy {
         map<ActivatedRouteSnapshot[], ActivatedRouteSnapshot[]>((bcData: ActivatedRouteSnapshot[]): ActivatedRouteSnapshot[] =>
           bcData.reverse()
         ),
-        map<ActivatedRouteSnapshot[], IBreadcrumbDataWithId>(
-          (bcData: ActivatedRouteSnapshot[]): IBreadcrumbDataWithId => {
-            const foundParams: string[] = bcData
-              .filter((data: ActivatedRouteSnapshot): string => data.params?.id)
-              .map((data: ActivatedRouteSnapshot): string => data.params.id);
+        map<ActivatedRouteSnapshot[], IBreadcrumbDataWithId>((bcData: ActivatedRouteSnapshot[]): IBreadcrumbDataWithId => {
+          const foundParams: string[] = bcData
+            .filter((data: ActivatedRouteSnapshot): string => data.params?.id)
+            .map((data: ActivatedRouteSnapshot): string => data.params.id);
 
-            return {
-              bcData,
-              id: foundParams[0]
-            };
-          }
-        )
+          return {
+            bcData,
+            id: foundParams[0]
+          };
+        })
       )
       .subscribe(({ bcData, id }: IBreadcrumbDataWithId): void => {
         const bcLoadedData: ActivatedRouteSnapshot[] = bcData.filter(({ data }: ActivatedRouteSnapshot): string => data.breadcrumb);
