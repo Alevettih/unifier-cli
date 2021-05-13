@@ -28,6 +28,7 @@ export default {
   ],
   packageJson: {
     scripts: {
+      'start:ssl': 'ng serve --ssl',
       'config:to-base64': 'node ./bin/to-base64.js',
       'config:from-base64': 'node ./bin/from-base64.js',
       lint: 'ng lint --fix',
@@ -35,7 +36,9 @@ export default {
       'lint:scss': 'stylelint "./src/**/*.scss" --fix',
       'lint:all': 'npm run lint && npm run lint:scss',
       prettier: 'prettier --write "src/**/*.*(ts|js|json|html)"',
-      'pretty-quick': 'pretty-quick --staged --pattern "src/**/*.*(ts|js|json|html)"'
+      'pretty-quick': 'pretty-quick --staged --pattern "src/**/*.*(ts|js|json|html)"',
+      'deploy:requestumdemo': 'run-s build update-env:requestumdemo',
+      'update-env:requestumdemo': 'bash bin/update-env/requestumdemo.sh .env.demo frontend/'
     },
     husky: {
       hooks: {
