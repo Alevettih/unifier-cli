@@ -10,11 +10,11 @@ export class CroppedTextComponent implements OnChanges {
   @ViewChild('croppedText') croppedText: ElementRef<HTMLSpanElement>;
   @Input() text: string = '';
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private _cdr: ChangeDetectorRef) {}
 
   ngOnChanges({ text }: SimpleChanges): void {
     if (text?.currentValue || text?.previousValue) {
-      this.cdr.detectChanges();
+      this._cdr.detectChanges();
     }
   }
 

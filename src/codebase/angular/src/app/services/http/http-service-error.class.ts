@@ -10,15 +10,15 @@ export class HttpServiceError extends HttpErrorResponse {
     super(e);
   }
 
-  private get isFormError(): boolean {
+  private get _isFormError(): boolean {
     return Boolean(this.error.fields || this.error.errors);
   }
 
   get descriptions(): IErrorDescription[] {
-    return this.isFormError ? this.getFormFieldsErrorDescriptions(this) : [this.getSimpleErrorMessage()];
+    return this._isFormError ? this._getFormFieldsErrorDescriptions(this) : [this._getSimpleErrorMessage()];
   }
 
-  private getSimpleErrorMessage(): IErrorDescription {
+  private _getSimpleErrorMessage(): IErrorDescription {
     let message: string = `${this.status}: ${this.statusText}`;
     let key: string;
 
@@ -41,7 +41,7 @@ export class HttpServiceError extends HttpErrorResponse {
     return { key: key ?? message.replace(/\s/gm, '_').replace(/\W/gm, ''), message };
   }
 
-  private getFormFieldsErrorDescriptions(error: HttpErrorResponse): IErrorDescription[] {
+  private _getFormFieldsErrorDescriptions(error: HttpErrorResponse): IErrorDescription[] {
     const { fields }: { fields: { errors: { error: string; description: string } } } = error.error;
     const { errors: mainErrors }: { errors: { error: string; description: string }[] } = error.error;
     const result: IErrorDescription[] = [];
@@ -49,7 +49,7 @@ export class HttpServiceError extends HttpErrorResponse {
     if (fields) {
       Object.keys(fields).forEach((fieldName: string): void => {
         const { errors }: { errors: { error: string; description: string }[] } = fields[fieldName];
-        const descriptions: IErrorDescription[] = this.getFormFieldsErrorDescriptions({
+        const descriptions: IErrorDescription[] = this._getFormFieldsErrorDescriptions({
           error: fields[fieldName]
         } as HttpErrorResponse);
 

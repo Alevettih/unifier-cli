@@ -7,6 +7,9 @@ export default {
     '@ngx-translate/http-loader',
     'ngx-pagination',
 
+    'eslint-plugin-prettier',
+    'eslint-config-prettier',
+
     'class-transformer',
 
     'husky',
@@ -65,8 +68,8 @@ export default {
         dist: join(name, 'src/default.conf')
       },
       {
-        src: join(__dirname, '../../../specification/files/angular/tslint.json'),
-        dist: join(name, 'tslint.json')
+        src: join(__dirname, '../../../specification/files/angular/.eslintrc.json'),
+        dist: join(name, '.eslintrc.json')
       },
       {
         src: join(__dirname, '../../../specification/files/angular/tsconfig.json'),

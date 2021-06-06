@@ -25,14 +25,16 @@ export class BaseRangeDatepickerComponent extends BaseFormFieldAbstractComponent
   }
 
   ngOnInit(): void {
-    this.range.valueChanges.pipe(
-      takeUntil(this.destroyed$),
-      filter(({ start, end }: Params): boolean => Boolean(start && end))
-    ).subscribe(({ start, end }: Params): void => {
-      if (this.control) {
-        this.control.setValue(`${start.toISOString()} <=> ${end.toISOString()}`);
-      }
-    });
+    this.range.valueChanges
+      .pipe(
+        takeUntil(this.destroyed$),
+        filter(({ start, end }: Params): boolean => Boolean(start && end))
+      )
+      .subscribe(({ start, end }: Params): void => {
+        if (this.control) {
+          this.control.setValue(`${start.toISOString()} <=> ${end.toISOString()}`);
+        }
+      });
   }
 
   handleDateChange(event: MatDatepickerInputEvent<unknown>): void {

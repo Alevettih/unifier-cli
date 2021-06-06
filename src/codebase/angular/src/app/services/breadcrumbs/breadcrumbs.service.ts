@@ -14,16 +14,16 @@ const isActivationEnd: CheckFunction = (ev: RouterEvent): boolean => ev instance
   providedIn: 'root'
 })
 export class BreadcrumbsService implements OnDestroy {
-  private routerEventsSubscription: Subscription;
-  private collection: IBreadcrumb[];
-  private readonly bcForDisplay$: BehaviorSubject<IBreadcrumb[]>;
-  private readonly ID_MASK: string = ':id';
+  private _routerEventsSubscription: Subscription;
+  private _collection: IBreadcrumb[];
+  private readonly _bcForDisplay$: BehaviorSubject<IBreadcrumb[]>;
+  private readonly _ID_MASK: string = ':id';
 
-  constructor(private router: Router) {
-    this.bcForDisplay$ = new BehaviorSubject([]);
-    const navigationEnd$: Observable<RouterEvent> = this.router.events.pipe(filter(isNavigationEnd));
+  constructor(private _router: Router) {
+    this._bcForDisplay$ = new BehaviorSubject([]);
+    const navigationEnd$: Observable<RouterEvent> = this._router.events.pipe(filter(isNavigationEnd));
 
-    this.routerEventsSubscription = this.router.events
+    this._routerEventsSubscription = this._router.events
       .pipe(
         filter<RouterEvent>(isActivationEnd),
         pluck<RouterEvent, ActivatedRouteSnapshot>('snapshot'),
@@ -44,10 +44,10 @@ export class BreadcrumbsService implements OnDestroy {
       )
       .subscribe(({ bcData, id }: IBreadcrumbDataWithId): void => {
         const bcLoadedData: ActivatedRouteSnapshot[] = bcData.filter(({ data }: ActivatedRouteSnapshot): string => data.breadcrumb);
-        this.collection = bcLoadedData.reduce((rootAcc: IBreadcrumb[], { data, pathFromRoot }: ActivatedRouteSnapshot): IBreadcrumb[] => {
+        this._collection = bcLoadedData.reduce((rootAcc: IBreadcrumb[], { data, pathFromRoot }: ActivatedRouteSnapshot): IBreadcrumb[] => {
           let breadcrumb: IBreadcrumb;
 
-          if (data.breadcrumb === this.ID_MASK && id !== undefined) {
+          if (data.breadcrumb === this._ID_MASK && id !== undefined) {
             data.breadcrumb = id;
           }
 
@@ -62,24 +62,24 @@ export class BreadcrumbsService implements OnDestroy {
           return breadcrumb ? [...rootAcc, breadcrumb] : [...rootAcc];
         }, []);
 
-        this.bcForDisplay$.next(this.collection);
+        this._bcForDisplay$.next(this._collection);
       });
   }
 
   add(breadcrumb: IBreadcrumb): void {
-    this.collection.push(breadcrumb);
-    this.bcForDisplay$.next(this.collection);
+    this._collection.push(breadcrumb);
+    this._bcForDisplay$.next(this._collection);
   }
 
   update(): void {
-    this.bcForDisplay$.next(this.collection);
+    this._bcForDisplay$.next(this._collection);
   }
 
   ngOnDestroy(): void {
-    this.routerEventsSubscription.unsubscribe();
+    this._routerEventsSubscription.unsubscribe();
   }
 
   get breadcrumbs$(): BehaviorSubject<IBreadcrumb[]> {
-    return this.bcForDisplay$;
+    return this._bcForDisplay$;
   }
 }

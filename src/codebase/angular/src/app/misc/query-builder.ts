@@ -11,14 +11,14 @@ export class QueryBuilder {
     PAGE: 'page',
     PER_PAGE: 'per-page'
   });
-  private params$: BehaviorSubject<Params>;
+  private _params$: BehaviorSubject<Params>;
 
   get params(): Params {
-    return this.params$.getValue();
+    return this._params$.getValue();
   }
 
   constructor(defaultQuery?: Params) {
-    this.params$ = new BehaviorSubject<Params>(defaultQuery ?? ({} as Params));
+    this._params$ = new BehaviorSubject<Params>(defaultQuery ?? ({} as Params));
   }
 
   static parseSorting(value: string): IParsedSorting {
@@ -41,7 +41,7 @@ export class QueryBuilder {
       [QueryBuilder.BASE_KEYS.PER_PAGE]: perPage ?? PER_PAGE_DEFAULT
     };
 
-    this.params$.next(params);
+    this._params$.next(params);
     return this;
   }
 
@@ -51,7 +51,7 @@ export class QueryBuilder {
     }
 
     if (direction) {
-      this.params$.next({ ...this.params, [QueryBuilder.BASE_KEYS.ORDER_BY]: `${field}|${direction}` });
+      this._params$.next({ ...this.params, [QueryBuilder.BASE_KEYS.ORDER_BY]: `${field}|${direction}` });
     } else {
       this.clearSort();
     }
@@ -60,17 +60,17 @@ export class QueryBuilder {
   }
 
   searchQuery(query: string | number, fieldName: string): QueryBuilder {
-    this.params$.next({ ...this.params, [fieldName]: query });
+    this._params$.next({ ...this.params, [fieldName]: query });
     return this;
   }
 
   addFilter(fieldName: string, value: any): QueryBuilder {
-    this.params$.next({ ...this.params, [fieldName]: value });
+    this._params$.next({ ...this.params, [fieldName]: value });
     return this;
   }
 
   clearPaginate(): QueryBuilder {
-    this.params$.next({
+    this._params$.next({
       ...this.params,
       [QueryBuilder.BASE_KEYS.PAGE]: 1,
       [QueryBuilder.BASE_KEYS.PER_PAGE]: PER_PAGE_DEFAULT
@@ -86,7 +86,7 @@ export class QueryBuilder {
   clearParams(...paramsNames: string[]): QueryBuilder {
     const params: Params = this.params;
     paramsNames.forEach((itemName: string): boolean => delete params[itemName]);
-    this.params$.next(params);
+    this._params$.next(params);
     return this;
   }
 }

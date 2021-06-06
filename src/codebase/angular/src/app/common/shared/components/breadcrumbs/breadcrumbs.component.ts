@@ -12,9 +12,9 @@ export class BreadcrumbsComponent implements OnInit {
   breadcrumbs$: BehaviorSubject<IBreadcrumb[]>;
   @Input() hidden: boolean;
 
-  constructor(private breadcrumbsService: BreadcrumbsService) {}
+  constructor(private _breadcrumbsService: BreadcrumbsService) {}
 
   ngOnInit(): void {
-    this.breadcrumbs$ = this.breadcrumbsService.breadcrumbs$;
+    this.breadcrumbs$ = this._breadcrumbsService.breadcrumbs$;
   }
 }

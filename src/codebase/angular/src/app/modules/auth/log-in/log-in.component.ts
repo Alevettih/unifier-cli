@@ -3,7 +3,7 @@ import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '@services/auth/auth.service';
 import { VALIDATORS_SET } from '@misc/constants/validators-set.constant';
-import { BooleanFieldType } from '@forms/base-boolean-field/base-boolean-field.component.ts';
+import { BooleanFieldType } from '@forms/base-boolean-field/base-boolean-field.component';
 import { TranslateService } from '@ngx-translate/core';
 import { UserApiService } from '@services/api/user-api/user-api.service';
 import { BaseFormAbstractComponent } from '@misc/abstracts/base-form.abstract.component';
@@ -15,30 +15,30 @@ import { BaseFormAbstractComponent } from '@misc/abstracts/base-form.abstract.co
 })
 export class LogInComponent extends BaseFormAbstractComponent implements OnInit {
   readonly BooleanFieldType: typeof BooleanFieldType = BooleanFieldType;
-  readonly pageKey: string = 'AUTH.';
+  readonly PAGE_KEY: string = 'AUTH.';
   token: string;
 
   constructor(
-    private translate: TranslateService,
-    private router: Router,
-    private formBuilder: FormBuilder,
-    private auth: AuthService,
-    private userApi: UserApiService,
-    private activatedRoute: ActivatedRoute
+    private _translate: TranslateService,
+    private _router: Router,
+    private _formBuilder: FormBuilder,
+    private _auth: AuthService,
+    private _userApi: UserApiService,
+    private _activatedRoute: ActivatedRoute
   ) {
     super();
   }
 
   ngOnInit(): void {
-    this.token = this.activatedRoute.snapshot.queryParams.token;
-    this.formGroup = this.formBuilder.group({
+    this.token = this._activatedRoute.snapshot.queryParams.token;
+    this.formGroup = this._formBuilder.group({
       email: new FormControl('', [Validators.required, VALIDATORS_SET.EMAIL]),
       password: new FormControl('', [Validators.required]),
       shouldRemember: new FormControl(false)
     });
     if (this.token) {
-      this.userApi.confirmAccount(this.token, { skipErrorNotification: true }).subscribe();
-      this.formGroup.addControl('terms', this.formBuilder.control(false, [Validators.requiredTrue]));
+      this._userApi.confirmAccount(this.token, { skipErrorNotification: true }).subscribe();
+      this.formGroup.addControl('terms', this._formBuilder.control(false, [Validators.requiredTrue]));
     }
   }
 
@@ -55,8 +55,8 @@ export class LogInComponent extends BaseFormAbstractComponent implements OnInit 
       shouldRemember
     }: { email: string; password: string; shouldRemember: boolean } = this.formGroup.getRawValue();
 
-    this.auth.login({ username, password }, shouldRemember, { skipErrorNotification: true }).subscribe((): void => {
-      this.router.navigate(['']);
+    this._auth.login({ username, password }, shouldRemember, { skipErrorNotification: true }).subscribe((): void => {
+      this._router.navigate(['']);
     });
   }
 }

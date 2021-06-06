@@ -19,14 +19,14 @@ export class FormModalComponent extends BaseFormAbstractComponent implements OnI
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: IFormModalData,
-    private fb: FormBuilder,
-    private dialog: MatDialogRef<FormModalComponent>
+    private _fb: FormBuilder,
+    private _dialog: MatDialogRef<FormModalComponent>
   ) {
     super();
   }
 
   ngOnInit(): void {
-    this.formGroup = this.fb.group({});
+    this.formGroup = this._fb.group({});
     this.setControlsArray(this.data.inputs);
   }
 
@@ -69,6 +69,6 @@ export class FormModalComponent extends BaseFormAbstractComponent implements OnI
       return;
     }
 
-    this.dialog.close(this.getFormValue());
+    this._dialog.close(this.getFormValue());
   }
 }

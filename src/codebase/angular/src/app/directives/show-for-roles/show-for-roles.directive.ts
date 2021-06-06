@@ -9,15 +9,15 @@ import { StorageKey } from '@models/enums/storage-key.enum';
 export class ShowForRolesDirective {
   @Input() set showForRoles(roles: UserRole[]) {
     if (roles.includes(this.currentRole)) {
-      this.viewContainer.createEmbeddedView(this.templateRef);
+      this._viewContainer.createEmbeddedView(this._templateRef);
     } else {
-      this.viewContainer.clear();
+      this._viewContainer.clear();
     }
   }
 
-  constructor(private templateRef: TemplateRef<any>, private viewContainer: ViewContainerRef, private storage: StorageService) {}
+  constructor(private _templateRef: TemplateRef<any>, private _viewContainer: ViewContainerRef, private _storage: StorageService) {}
 
   get currentRole(): UserRole {
-    return this.storage.get(StorageKey.role) as UserRole;
+    return this._storage.get(StorageKey.role) as UserRole;
   }
 }

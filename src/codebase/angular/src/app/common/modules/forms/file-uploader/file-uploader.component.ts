@@ -43,7 +43,7 @@ export class FileUploaderComponent extends BaseFormFieldAbstractComponent implem
     return this.control?.value;
   }
 
-  constructor(private uploadService: UploadService, protected cdr: ChangeDetectorRef, protected translate: TranslateService) {
+  constructor(private _uploadService: UploadService, protected cdr: ChangeDetectorRef, protected translate: TranslateService) {
     super(cdr, translate);
   }
 
@@ -67,14 +67,14 @@ export class FileUploaderComponent extends BaseFormFieldAbstractComponent implem
       this.selectFile.length = 0;
     }
 
-    this.selectFile.push(...((filteredFiles as any) as ApiFile[]));
+    this.selectFile.push(...(filteredFiles as any as ApiFile[]));
     this.fileUploadHandler(filteredFiles);
   }
 
   fileUploadHandler(files: File[]): void {
     if (files.length && this.fileValidation(files)) {
       const filesItem: File[] = Array.prototype.map.call(files, (file: File): File => file);
-      this.uploadService.upload(filesItem).subscribe((response: FileResponse): any => {
+      this._uploadService.upload(filesItem).subscribe((response: FileResponse): any => {
         if (this.multiple) {
           this.control.setValue(this.control.value ? [].concat(this.control.value, response?.uploaded) : response?.uploaded);
         } else {
@@ -111,8 +111,8 @@ export class FileUploaderComponent extends BaseFormFieldAbstractComponent implem
     this.control.setValue(
       this.control.value?.length ? this.control.value.filter((file: File, index: number): boolean => idx !== index) : null
     );
-    if (haveBeenErrored && this.fileValidation((this.selectFile as any) as File[])) {
-      this.fileUploadHandler((this.selectFile as any) as File[]);
+    if (haveBeenErrored && this.fileValidation(this.selectFile as any as File[])) {
+      this.fileUploadHandler(this.selectFile as any as File[]);
     }
   }
 

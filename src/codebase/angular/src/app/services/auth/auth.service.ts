@@ -20,30 +20,35 @@ import { GrantType } from '@models/enums/grant-type.enum';
   providedIn: 'root'
 })
 export class AuthService {
-  private tokens$: BehaviorSubject<Token> = new BehaviorSubject<Token>(JSON.parse(this.storage.get(StorageKey.tokens)) as Token);
-  private role$: BehaviorSubject<UserRole> = new BehaviorSubject<UserRole>(this.storage.get(StorageKey.role) as UserRole);
+  private _tokens$: BehaviorSubject<Token> = new BehaviorSubject<Token>(JSON.parse(this._storage.get(StorageKey.tokens)) as Token);
+  private _role$: BehaviorSubject<UserRole> = new BehaviorSubject<UserRole>(this._storage.get(StorageKey.role) as UserRole);
   me$: BehaviorSubject<User> = new BehaviorSubject<User>(null);
 
   constructor(
-    @Inject(APP_CONFIG) private config: IAppConfig,
-    private http: HttpService,
-    private router: Router,
-    private storage: StorageService,
-    private userApi: UserApiService
+    @Inject(APP_CONFIG) private _config: IAppConfig,
+    private _http: HttpService,
+    private _router: Router,
+    private _storage: StorageService,
+    private _userApi: UserApiService
   ) {}
 
   sendAuthCode({ username, password }: ILoginParams): Observable<object> {
     return this.getTemporaryToken().pipe(
       first(),
-      switchMap((): Observable<any> => this.http.post(`${this.config.apiUrl}/api/auth/code`, { username, password }))
+      switchMap((): Observable<any> => this._http.post(`${this._config.apiUrl}/api/auth/code`, { username, password }))
     );
   }
 
   getTemporaryToken(services?: IServicesConfig): Observable<Token> {
-    const { apiUrl, client_id, client_secret }: IAppConfig = this.config;
-    return this.http
-      .post(`${apiUrl}/oauth/v2/token`, { client_id, client_secret, grant_type: GrantType.clientCredentials }, {}, services)
-      .pipe(map(this.onTokenResponse.bind(this)));
+    const { apiUrl, client_id: clientId, client_secret: clientSecret }: IAppConfig = this._config;
+    return this._http
+      .post(
+        `${apiUrl}/oauth/v2/token`,
+        { client_id: clientId, client_secret: clientSecret, grant_type: GrantType.clientCredentials },
+        {},
+        services
+      )
+      .pipe(map(this._onTokenResponse.bind(this)));
   }
 
   login(
@@ -51,36 +56,41 @@ export class AuthService {
     shouldRemember: boolean,
     services?: IServicesConfig
   ): Observable<User> {
-    const { apiUrl, client_id, client_secret }: IAppConfig = this.config;
-    this.storage.shouldUseLocalstorage = shouldRemember;
-    return this.http
-      .post(`${apiUrl}/oauth/v2/token`, { username, password, client_id, client_secret, grant_type, code }, {}, services)
-      .pipe(map(this.onTokenResponse.bind(this)), switchMap(this.getMe.bind(this)));
+    const { apiUrl, client_id: clientId, client_secret: clientSecret }: IAppConfig = this._config;
+    this._storage.shouldUseLocalstorage = shouldRemember;
+    return this._http
+      .post(
+        `${apiUrl}/oauth/v2/token`,
+        { username, password, client_id: clientId, client_secret: clientSecret, grant_type, code },
+        {},
+        services
+      )
+      .pipe(map(this._onTokenResponse.bind(this)), switchMap(this.getMe.bind(this)));
   }
 
   refreshToken(): Observable<any> {
-    const { apiUrl, client_id, client_secret }: IAppConfig = this.config;
+    const { apiUrl, client_id: clientId, client_secret: clientSecret }: IAppConfig = this._config;
 
-    return this.http
+    return this._http
       .post(`${apiUrl}/oauth/v2/token`, {
-        client_id,
-        client_secret,
+        client_id: clientId,
+        client_secret: clientSecret,
         grant_type: GrantType.refreshToken,
         refresh_token: this.token.refresh
       })
-      .pipe(map(this.onTokenResponse.bind(this)), switchMap(this.getMe.bind(this)));
+      .pipe(map(this._onTokenResponse.bind(this)), switchMap(this.getMe.bind(this)));
   }
 
   logout(): void {
-    this.userApi.logout({ skipLoaderStart: true }).subscribe();
+    this._userApi.logout({ skipLoaderStart: true }).subscribe();
     this.clearTokens();
-    this.router.navigate(['']);
+    this._router.navigate(['']);
   }
 
   clearTokens(): void {
-    this.storage.clear();
-    this.tokens$.next(null);
-    this.role$.next(null);
+    this._storage.clear();
+    this._tokens$.next(null);
+    this._role$.next(null);
     this.me$.next(null);
   }
 
@@ -99,18 +109,18 @@ export class AuthService {
   }
 
   get isAuthenticated$(): Observable<boolean> {
-    return this.tokens$.pipe(
-      withLatestFrom(this.role$),
+    return this._tokens$.pipe(
+      withLatestFrom(this._role$),
       map(([tokens, role]: [Token, UserRole]): boolean => Boolean(role && tokens?.access && tokens?.refresh))
     );
   }
 
   get token(): Token {
-    return this.tokens$.value;
+    return this._tokens$.value;
   }
 
   get myRole(): UserRole {
-    return this.role$.value;
+    return this._role$.value;
   }
 
   get me(): User {
@@ -118,13 +128,13 @@ export class AuthService {
   }
 
   setRole(role: UserRole): UserRole {
-    this.role$.next(role);
-    this.storage.current.setItem(StorageKey.role, role);
+    this._role$.next(role);
+    this._storage.current.setItem(StorageKey.role, role);
     return role;
   }
 
   getMe(services?: IServicesConfig): Observable<User> {
-    return this.userApi.getMe({ skipErrorNotification: true, ...services }).pipe(
+    return this._userApi.getMe({ skipErrorNotification: true, ...services }).pipe(
       map((user: User): User => {
         this.me$.next(user);
         this.setRole(user.role);
@@ -133,13 +143,13 @@ export class AuthService {
     );
   }
 
-  private onTokenResponse(res: IApiTokens): Token {
+  private _onTokenResponse(res: IApiTokens): Token {
     let tokens: Token;
 
     if (res.access_token) {
       tokens = plainToClass(Token, res);
-      this.storage.current.setItem(StorageKey.tokens, JSON.stringify(tokens));
-      this.tokens$.next(tokens);
+      this._storage.current.setItem(StorageKey.tokens, JSON.stringify(tokens));
+      this._tokens$.next(tokens);
     }
 
     return tokens;

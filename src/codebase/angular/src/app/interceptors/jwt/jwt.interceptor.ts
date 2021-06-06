@@ -8,16 +8,16 @@ import { APP_CONFIG, IAppConfig } from '@misc/constants/app-config.constant';
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
-  private isRefreshingToken: boolean = false;
-  private tokenSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private _isRefreshingToken: boolean = false;
+  private _hasToken$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  constructor(@Inject(APP_CONFIG) private config: IAppConfig, private auth: AuthService, private router: Router) {}
+  constructor(@Inject(APP_CONFIG) private _config: IAppConfig, private _auth: AuthService, private _router: Router) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return next.handle(this.auth.addTokenToRequest(req)).pipe(
+    return next.handle(this._auth.addTokenToRequest(req)).pipe(
       catchError((error: HttpErrorResponse): Observable<HttpEvent<any>> => {
         if (error instanceof HttpErrorResponse && this.shouldHandleUnauthorized(error)) {
-          return this.handleUnauthorized(req, next);
+          return this._handleUnauthorized(req, next);
         } else {
           throw error;
         }
@@ -27,36 +27,36 @@ export class JwtInterceptor implements HttpInterceptor {
 
   shouldHandleUnauthorized(error: HttpErrorResponse): boolean {
     const isUnauthorizedResponse: boolean = (error as HttpErrorResponse).status === 401;
-    const isNotIgnoredPage: boolean = [].every((page: string): boolean => !this.router.url.includes(page));
+    const isNotIgnoredPage: boolean = [].every((page: string): boolean => !this._router.url.includes(page));
 
     return isUnauthorizedResponse && isNotIgnoredPage;
   }
 
-  private handleUnauthorized(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (!this.isRefreshingToken) {
-      const observable$: Observable<any> = this.auth.token?.refresh ? this.auth.refreshToken() : this.auth.getTemporaryToken();
+  private _handleUnauthorized(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    if (!this._isRefreshingToken) {
+      const observable$: Observable<any> = this._auth.token?.refresh ? this._auth.refreshToken() : this._auth.getTemporaryToken();
 
-      this.isRefreshingToken = true;
-      this.tokenSubject.next(false);
+      this._isRefreshingToken = true;
+      this._hasToken$.next(false);
 
       return observable$.pipe(
         switchMap((): Observable<HttpEvent<any>> => {
-          this.tokenSubject.next(true);
-          return next.handle(this.auth.addTokenToRequest(req));
+          this._hasToken$.next(true);
+          return next.handle(this._auth.addTokenToRequest(req));
         }),
         catchError((error: HttpErrorResponse): never => {
-          this.router.navigate(['', 'auth', 'log-in']);
+          this._router.navigate(['', 'auth', 'log-in']);
           throw error;
         }),
         finalize((): void => {
-          this.isRefreshingToken = false;
+          this._isRefreshingToken = false;
         })
       );
     } else {
-      return this.tokenSubject.pipe(
+      return this._hasToken$.pipe(
         skipWhile((token: boolean): boolean => !token),
         first(),
-        switchMap((): Observable<HttpEvent<any>> => next.handle(this.auth.addTokenToRequest(req)))
+        switchMap((): Observable<HttpEvent<any>> => next.handle(this._auth.addTokenToRequest(req)))
       );
     }
   }

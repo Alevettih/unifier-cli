@@ -5,7 +5,7 @@ import { IconsService } from '@services/icons/icons.service';
   template: ''
 })
 export abstract class AppAbstractComponent {
-  constructor(private icons: IconsService) {
-    this.icons.registerIcons();
+  constructor(private _icons: IconsService) {
+    this._icons.registerIcons();
   }
 }

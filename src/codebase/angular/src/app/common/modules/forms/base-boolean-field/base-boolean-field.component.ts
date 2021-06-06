@@ -15,12 +15,12 @@ export class BaseBooleanFieldComponent extends BaseFormFieldAbstractComponent {
   readonly BooleanFieldType: typeof BooleanFieldType = BooleanFieldType;
   @Input() type: BooleanFieldType;
   @Input() title: string;
-  @Input() stopPropagation: boolean;
+  @Input() shouldStopPropagation: boolean;
   @Output() controlChange: EventEmitter<string> = new EventEmitter();
   isLinkElement: boolean = false;
 
   stopCheckboxEvent(event: any): void {
-    if (this.stopPropagation) {
+    if (this.shouldStopPropagation) {
       event.stopPropagation();
     }
     if (event.type === 'input') {

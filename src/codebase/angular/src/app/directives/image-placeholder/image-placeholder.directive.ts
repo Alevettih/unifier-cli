@@ -12,11 +12,11 @@ export class ImagePlaceholderDirective implements OnChanges {
     this.url = this.placeholder;
   }
 
-  constructor(private sanitizer: DomSanitizer) {}
+  constructor(private _sanitizer: DomSanitizer) {}
 
   ngOnChanges({ src }: SimpleChanges): void {
     if (src?.currentValue) {
-      this.url = this.sanitizer.bypassSecurityTrustResourceUrl(src.currentValue);
+      this.url = this._sanitizer.bypassSecurityTrustResourceUrl(src.currentValue);
     } else {
       this.url = '';
     }

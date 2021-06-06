@@ -8,7 +8,7 @@ import { filter, takeUntil } from 'rxjs/operators';
   template: ''
 })
 export abstract class QueryParamsConnectedAbstractComponent<T = any> implements OnInit, OnDestroy {
-  protected readonly destroyed$: Subject<void> = new Subject<void>();
+  protected readonly DESTROYED$: Subject<void> = new Subject<void>();
   protected paramsBuilder: QueryBuilder = new QueryBuilder();
 
   constructor(protected activatedRoute: ActivatedRoute, protected router: Router) {}
@@ -17,15 +17,15 @@ export abstract class QueryParamsConnectedAbstractComponent<T = any> implements 
     this.initialize();
     this.router.events
       .pipe(
-        takeUntil(this.destroyed$),
+        takeUntil(this.DESTROYED$),
         filter((event: RouterEvent): boolean => event instanceof NavigationEnd)
       )
       .subscribe(this.initialize.bind(this));
   }
 
   ngOnDestroy(): void {
-    this.destroyed$.next();
-    this.destroyed$.complete();
+    this.DESTROYED$.next();
+    this.DESTROYED$.complete();
   }
 
   get params(): Params {

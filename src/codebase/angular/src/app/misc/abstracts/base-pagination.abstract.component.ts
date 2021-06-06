@@ -8,7 +8,7 @@ import { PER_PAGE_DEFAULT } from '@misc/constants/_base.constant';
   template: ''
 })
 export abstract class BasePaginationAbstractComponent implements OnChanges {
-  private readonly paginatorId: string = getRandomIdentifier();
+  private readonly _PAGINATOR_ID: string = getRandomIdentifier();
   @Input() isLoading: boolean;
   @Input() list: List;
   @Input() itemsPerPage: number = PER_PAGE_DEFAULT;
@@ -36,7 +36,7 @@ export abstract class BasePaginationAbstractComponent implements OnChanges {
 
   get paginatePipeArgs(): PaginatePipeArgs {
     return {
-      id: this.paginatorId,
+      id: this._PAGINATOR_ID,
       itemsPerPage: this.itemsPerPage,
       currentPage: this.currentPage,
       totalItems: this.totalItems

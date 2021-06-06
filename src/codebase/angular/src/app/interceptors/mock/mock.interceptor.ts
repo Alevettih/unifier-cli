@@ -26,26 +26,26 @@ interface IMockEndpoints {
 export class MockInterceptor implements HttpInterceptor {
   endpoints: IMockEndpoints = {
     GET: {
-      [`${this.config.apiUrl}/api/users`]: { handler: usersResponses.list },
-      [`${this.config.apiUrl}/api/users/:id`]: { handler: usersResponses.oneById }
+      [`${this._config.apiUrl}/api/users`]: { handler: usersResponses.list },
+      [`${this._config.apiUrl}/api/users/:id`]: { handler: usersResponses.oneById }
     },
     POST: {
-      [`${this.config.apiUrl}/oauth/v2/token`]: { handler: tokensResponses.accessToken },
-      [`${this.config.apiUrl}/api/users`]: { handler: usersResponses.create },
-      [`${this.config.apiUrl}/api/users/send/token`]: { handler: usersResponses.sendToken }
+      [`${this._config.apiUrl}/oauth/v2/token`]: { handler: tokensResponses.accessToken },
+      [`${this._config.apiUrl}/api/users`]: { handler: usersResponses.create },
+      [`${this._config.apiUrl}/api/users/send/token`]: { handler: usersResponses.sendToken }
     },
     PATCH: {
-      [`${this.config.apiUrl}/api/users/:token/confirm`]: { handler: usersResponses.confirmAccount },
-      [`${this.config.apiUrl}/api/users/:token/password`]: { handler: usersResponses.updatePassword },
-      [`${this.config.apiUrl}/api/users/:id`]: { handler: usersResponses.update },
-      [`${this.config.apiUrl}/api/users/logout`]: { handler: usersResponses.logout }
+      [`${this._config.apiUrl}/api/users/:token/confirm`]: { handler: usersResponses.confirmAccount },
+      [`${this._config.apiUrl}/api/users/:token/password`]: { handler: usersResponses.updatePassword },
+      [`${this._config.apiUrl}/api/users/:id`]: { handler: usersResponses.update },
+      [`${this._config.apiUrl}/api/users/logout`]: { handler: usersResponses.logout }
     }
   };
 
-  constructor(@Inject(APP_CONFIG) private config: IAppConfig) {}
+  constructor(@Inject(APP_CONFIG) private _config: IAppConfig) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const endpoint: { params: string[]; path: string } = this.getEndpoint(request);
+    const endpoint: { params: string[]; path: string } = this._getEndpoint(request);
     const currentMockEndpoint: IMockHandler =
       this.endpoints?.[request.method]?.[request.url] ?? this.endpoints?.[request.method]?.[endpoint?.path];
 
@@ -66,11 +66,11 @@ export class MockInterceptor implements HttpInterceptor {
     );
   }
 
-  private getEndpoint(request: HttpRequest<any>): { params: string[]; path: string } {
+  private _getEndpoint(request: HttpRequest<any>): { params: string[]; path: string } {
     let res: { params: string[]; path: string };
 
     Object.keys(this.endpoints?.[request.method] ?? {}).forEach((path: string): void => {
-      const params: string[] = this.findDiff(path, request.url);
+      const params: string[] = this._findDiff(path, request.url);
       let updatedPath: string = path;
 
       if (path === request.url) {
@@ -87,7 +87,7 @@ export class MockInterceptor implements HttpInterceptor {
     return res;
   }
 
-  private findDiff(str1: string, str2: string): string[] {
+  private _findDiff(str1: string, str2: string): string[] {
     const diff: string[] = [];
 
     str2.split('/').forEach((val: string, i: number): void => {

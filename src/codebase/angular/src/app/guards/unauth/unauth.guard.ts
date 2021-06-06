@@ -6,10 +6,10 @@ import { AuthService } from '@services/auth/auth.service';
   providedIn: 'root'
 })
 export class UnauthGuard implements CanActivate {
-  constructor(private router: Router, private auth: AuthService) {}
+  constructor(private _router: Router, private _auth: AuthService) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    this.auth.clearTokens();
+    this._auth.clearTokens();
 
     return true;
   }

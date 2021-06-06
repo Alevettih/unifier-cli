@@ -23,7 +23,7 @@ export interface ITransitData {
   providedIn: 'root'
 })
 export abstract class ApiBaseAbstractService<T> {
-  protected abstract readonly model: ClassConstructor<T>;
+  protected abstract readonly MODEL: ClassConstructor<T>;
   protected abstract readonly URLPath: string = '/';
   protected URLParams: string[] = [];
 
@@ -38,16 +38,16 @@ export abstract class ApiBaseAbstractService<T> {
   }
 
   get url(): string {
-    return this.baseUrl + this.composeUrlPath();
+    return this.baseUrl + this._composeUrlPath();
   }
 
   getItems(params?: Params, servicesConfig?: IServicesConfig): Observable<List<T>> {
     const httpParams: HttpParams = new HttpParams({ fromObject: params, encoder: new CustomHTTPParamsEncoder() });
-    return this.http.get(this.url, { params: httpParams }, servicesConfig).pipe(toModelsList(this.model));
+    return this.http.get(this.url, { params: httpParams }, servicesConfig).pipe(toModelsList(this.MODEL));
   }
 
   getItem(id?: string, params?: Params, servicesConfig?: IServicesConfig): Observable<T> {
-    return this.http.get(id ? `${this.url}/${id}` : this.url, { params }, servicesConfig).pipe(toModel(this.model));
+    return this.http.get(id ? `${this.url}/${id}` : this.url, { params }, servicesConfig).pipe(toModel(this.MODEL));
   }
 
   createItem(data: Partial<T>, servicesConfig?: IServicesConfig): Observable<T> {
@@ -74,7 +74,7 @@ export abstract class ApiBaseAbstractService<T> {
     return this.http.get(`${this.url}/${id}/transit`, { params }, servicesConfig);
   }
 
-  private composeUrlPath(): string {
+  private _composeUrlPath(): string {
     let URLPath: string = this.URLPath;
 
     if (this.URLParams?.length) {

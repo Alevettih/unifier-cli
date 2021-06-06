@@ -13,7 +13,7 @@ export interface IFormControls {
   template: ''
 })
 export abstract class BaseFormAbstractComponent implements OnDestroy {
-  protected readonly destroyed$: Subject<void> = new Subject();
+  protected readonly DESTROYED$: Subject<void> = new Subject();
   readonly FormControlItemType: typeof FormControlItemType = FormControlItemType;
   readonly InputType: typeof InputType = InputType;
   formGroup: FormGroup;
@@ -23,22 +23,22 @@ export abstract class BaseFormAbstractComponent implements OnDestroy {
   }
 
   getGroup(name: string): FormGroup {
-    return this.getItemFormGroup(name) as FormGroup;
+    return this._getItemFormGroup(name) as FormGroup;
   }
 
   getControl(name: string): FormControl {
-    return this.getItemFormGroup(name) as FormControl;
+    return this._getItemFormGroup(name) as FormControl;
   }
 
   getArray(name: string): FormArray {
-    return this.getItemFormGroup(name) as FormArray;
+    return this._getItemFormGroup(name) as FormArray;
   }
 
-  private getItemFormGroup(name: string): AbstractControl {
+  private _getItemFormGroup(name: string): AbstractControl {
     return this.formGroup.get(name);
   }
 
-  public setControlsArray(formControls: IFormControlItem[]): void {
+  setControlsArray(formControls: IFormControlItem[]): void {
     if (!formControls.length) {
       return;
     }
@@ -47,7 +47,7 @@ export abstract class BaseFormAbstractComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroyed$.next();
-    this.destroyed$.complete();
+    this.DESTROYED$.next();
+    this.DESTROYED$.complete();
   }
 }

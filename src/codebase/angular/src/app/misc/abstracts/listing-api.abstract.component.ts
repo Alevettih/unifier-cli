@@ -28,7 +28,7 @@ export abstract class ListingApiAbstractComponent<T = any> extends CrudHelpersAb
   ngOnInit(): void {
     merge(this.activatedRoute.queryParams, this.activatedRoute.params)
       .pipe(
-        takeUntil(this.destroyed$),
+        takeUntil(this.DESTROYED$),
         switchMap((): Observable<List> => this.loadItems(this.params))
       )
       .subscribe(this.onNavigationEnd.bind(this));
@@ -70,7 +70,7 @@ export abstract class ListingApiAbstractComponent<T = any> extends CrudHelpersAb
   protected loadItems(params: Params): Observable<List<T>> {
     this.isLoading = true;
     return this.getItems(params).pipe(
-      takeUntil(this.destroyed$),
+      takeUntil(this.DESTROYED$),
       catchError((err: HttpServiceError): Observable<never> => {
         this.isLoading = false;
         return throwError(err);

@@ -12,78 +12,80 @@ import { SnackBarNotificationType } from '@models/enums/snack-bar-notification-t
   providedIn: 'root'
 })
 export class UploadService {
+  private _urlPath: string = '/api/files';
+  private _shouldShowNotifications: boolean;
   key: string = 'FILE.';
-  constructor(
-    private http: HttpClient,
-    private api: ApiBaseAbstractService<FileResponse>,
-    private notificationService: NotificationService,
-    private translateService: TranslateService
-  ) {}
-  private urlPath: string = '/api/files';
-  private showNotifications: boolean;
 
-  public upload(
+  constructor(
+    private _http: HttpClient,
+    private _api: ApiBaseAbstractService<FileResponse>,
+    private _notificationService: NotificationService,
+    private _translateService: TranslateService
+  ) {}
+
+  upload(
     files: Array<File> | File,
-    urlPath: string = this.urlPath,
+    urlPath: string = this._urlPath,
     withNotifications?: boolean
   ): Observable<FileResponse[] | FileResponse> {
-    const errMessage: string = this.translateService.instant(`${this.key}SELECT_ONE_FILE`);
-    this.showNotifications = withNotifications;
+    const errMessage: string = this._translateService.instant(`${this.key}SELECT_ONE_FILE`);
+    this._shouldShowNotifications = withNotifications;
 
     if (Array.isArray(files)) {
       if (files?.length === 1) {
-        if (this.showNotifications) {
-          this.notificationService.show(this.translateService.instant(`${this.key}UPLOADING`), SnackBarNotificationType.success);
+        if (this._shouldShowNotifications) {
+          this._notificationService.show(this._translateService.instant(`${this.key}UPLOADING`), SnackBarNotificationType.success);
         }
         return this.uploadFile(files[0], urlPath, false);
       } else {
-        if (this.showNotifications) {
-          this.notificationService.show(this.translateService.instant(`${this.key}UPLOADING`), SnackBarNotificationType.success);
+        if (this._shouldShowNotifications) {
+          this._notificationService.show(this._translateService.instant(`${this.key}UPLOADING`), SnackBarNotificationType.success);
         }
-        return this.uploadMultipleFiles(files, urlPath);
+        return this._uploadMultipleFiles(files, urlPath);
       }
     }
 
     if (files instanceof File) {
-      if (this.showNotifications) {
-        this.notificationService.show(this.translateService.instant(`${this.key}UPLOADING`), SnackBarNotificationType.success);
+      if (this._shouldShowNotifications) {
+        this._notificationService.show(this._translateService.instant(`${this.key}UPLOADING`), SnackBarNotificationType.success);
       }
       return this.uploadFile(files, urlPath, false);
     }
 
-    this.notificationService.show(errMessage, SnackBarNotificationType.error);
+    this._notificationService.show(errMessage, SnackBarNotificationType.error);
     return throwError(errMessage);
   }
 
-  public uploadFile(file: File, urlPath: string, isMultiple: boolean = false): Observable<FileResponse> {
-    const fullUrl: string = `${this.api.baseUrl}${urlPath}`;
+  uploadFile(file: File, urlPath: string, isMultiple: boolean = false): Observable<FileResponse> {
+    const fullUrl: string = `${this._api.baseUrl}${urlPath}`;
     const fd: FormData = new FormData();
 
     fd.append('file', file);
     fd.append('thumbnail', String(file.type.includes('image/')));
 
-    return this.http.request(new HttpRequest('POST', fullUrl, fd, { reportProgress: true })).pipe(
+    return this._http.request(new HttpRequest('POST', fullUrl, fd, { reportProgress: true })).pipe(
       filter((event: HttpProgressEvent | HttpResponse<FileResponse>): boolean => event instanceof HttpResponse),
       map((res: HttpResponse<any>): any => {
         if (!isMultiple) {
-          if (this.showNotifications) {
-            this.notificationService.show(this.translateService.instant(`${this.key}UPLOADING_SUCCESS`), SnackBarNotificationType.success);
+          if (this._shouldShowNotifications) {
+            this._notificationService.show(
+              this._translateService.instant(`${this.key}UPLOADING_SUCCESS`),
+              SnackBarNotificationType.success
+            );
           }
         }
         return res.body;
       }),
-      catchError(
-        (err: string): Observable<never> => {
-          if (!isMultiple) {
-            return this.errorHandler(err);
-          }
-          return throwError(err);
+      catchError((err: string): Observable<never> => {
+        if (!isMultiple) {
+          return this._errorHandler(err);
         }
-      )
+        return throwError(err);
+      })
     );
   }
 
-  private uploadMultipleFiles(files: Array<File>, urlPath: string): Observable<FileResponse[]> {
+  private _uploadMultipleFiles(files: Array<File>, urlPath: string): Observable<FileResponse[]> {
     const requests: Observable<FileResponse>[] = [...Array.from(files)].map(
       (item: File): Observable<FileResponse> => this.uploadFile(item, urlPath, true)
     );
@@ -91,13 +93,13 @@ export class UploadService {
     return forkJoin(requests).pipe(
       map((res: FileResponse[]): FileResponse[] => {
         if (res.every((item: FileResponse): boolean => item instanceof Error)) {
-          this.notificationService.show(this.translateService.instant(`${this.key}FILES_UPLOAD_FILED`), SnackBarNotificationType.error);
+          this._notificationService.show(this._translateService.instant(`${this.key}FILES_UPLOAD_FILED`), SnackBarNotificationType.error);
         } else if (res.some((item: FileResponse): boolean => item instanceof Error)) {
-          this.notificationService.show(this.translateService.instant(`${this.key}SOME_UPLOAD_FILED`), SnackBarNotificationType.error);
+          this._notificationService.show(this._translateService.instant(`${this.key}SOME_UPLOAD_FILED`), SnackBarNotificationType.error);
         } else if (res.every((item: FileResponse): boolean => !(item instanceof Error))) {
-          if (this.showNotifications) {
-            this.notificationService.show(
-              this.translateService.instant(`${this.key}FILES_UPLOADING_SUCCESS`),
+          if (this._shouldShowNotifications) {
+            this._notificationService.show(
+              this._translateService.instant(`${this.key}FILES_UPLOADING_SUCCESS`),
               SnackBarNotificationType.success
             );
           }
@@ -107,9 +109,9 @@ export class UploadService {
     );
   }
 
-  private errorHandler(error: string): Observable<never> {
+  private _errorHandler(error: string): Observable<never> {
     if (error) {
-      this.notificationService.show(this.translateService.instant(`${this.key}UPLOAD_FILED`), SnackBarNotificationType.error);
+      this._notificationService.show(this._translateService.instant(`${this.key}UPLOAD_FILED`), SnackBarNotificationType.error);
     }
     return throwError(error);
   }

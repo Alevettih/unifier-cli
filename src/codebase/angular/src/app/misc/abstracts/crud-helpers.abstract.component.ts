@@ -14,16 +14,13 @@ import { IFormControlItem } from '@models/interfaces/forms/form-control-item.int
   template: ''
 })
 export abstract class CrudHelpersAbstractComponent<T = any> implements OnDestroy {
-  protected readonly destroyed$: Subject<void> = new Subject<void>();
+  protected readonly DESTROYED$: Subject<void> = new Subject<void>();
 
-  constructor(
-    protected dialog: MatDialog,
-    protected translate: TranslateService
-  ) {}
+  constructor(protected dialog: MatDialog, protected translate: TranslateService) {}
 
   ngOnDestroy(): void {
-    this.destroyed$.next();
-    this.destroyed$.complete();
+    this.DESTROYED$.next();
+    this.DESTROYED$.complete();
   }
 
   onRemove(entity: T): void {

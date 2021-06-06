@@ -7,7 +7,10 @@ export const angularProject = ({ title }: Answer = { title: '' } as Answer): Lis
   return new Listr([
     {
       title: 'Install Angular project',
-      task: () => command(`npx @angular/cli new ${title} --style=scss --routing=true`)
+      task: () =>
+        command(
+          `npx --package @angular/cli@latest ng new ${title} --style=scss --routing=true --skip-install --verbose`
+        )
     },
     {
       title: 'Specify it...',

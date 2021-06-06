@@ -11,7 +11,7 @@ import { UserApiService } from '@services/api/user-api/user-api.service';
   styleUrls: ['./sign-up.component.scss']
 })
 export class SignUpComponent extends BaseFormAbstractComponent {
-  constructor(private formBuilder: FormBuilder, private auth: AuthService, private userApi: UserApiService, private router: Router) {
+  constructor(private _formBuilder: FormBuilder, private _auth: AuthService, private _userApi: UserApiService, private _router: Router) {
     super();
   }
 
@@ -20,6 +20,6 @@ export class SignUpComponent extends BaseFormAbstractComponent {
       return;
     }
 
-    this.userApi.createItem(this.formGroup.getRawValue()).subscribe((): Promise<boolean> => this.router.navigate(['']));
+    this._userApi.createItem(this.formGroup.getRawValue()).subscribe((): Promise<boolean> => this._router.navigate(['']));
   }
 }

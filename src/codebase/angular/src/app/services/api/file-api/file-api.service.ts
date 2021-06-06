@@ -13,8 +13,8 @@ import { PathParsePipe } from '@pipes/path-parse/path-parse.pipe';
   providedIn: 'root'
 })
 export class FileApiService extends ApiBaseAbstractService<FileResponse> {
-  protected readonly downloadedImages: Map<string, BehaviorSubject<File>> = new Map<string, BehaviorSubject<File>>();
-  protected model: ClassConstructor<FileResponse> = FileResponse;
+  protected readonly DOWNLOADED_IMAGES$: Map<string, BehaviorSubject<File>> = new Map<string, BehaviorSubject<File>>();
+  protected MODEL: ClassConstructor<FileResponse> = FileResponse;
   protected URLPath: string = '/api/file';
 
   constructor(@Inject(APP_CONFIG) protected config: IAppConfig, protected http: HttpService, protected pathParsePipe: PathParsePipe) {
@@ -22,17 +22,17 @@ export class FileApiService extends ApiBaseAbstractService<FileResponse> {
   }
 
   getFile({ id, originalName }: ApiFile): Observable<File> {
-    if (this.downloadedImages.has(id)) {
-      const subject$: BehaviorSubject<File> = this.downloadedImages.get(id);
+    if (this.DOWNLOADED_IMAGES$.has(id)) {
+      const subject$: BehaviorSubject<File> = this.DOWNLOADED_IMAGES$.get(id);
       return subject$.value ? subject$ : subject$.pipe(filter((file: File): boolean => Boolean(file)));
     }
 
-    this.downloadedImages.set(id, new BehaviorSubject(null));
+    this.DOWNLOADED_IMAGES$.set(id, new BehaviorSubject(null));
 
     return this.http.get(`${this.baseUrl}/api/files/${id}`, { responseType: 'blob' }, { skipLoaderStart: true }).pipe(
       map((blob: Blob): File => new File([blob], originalName)),
       tap((url: File): void => {
-        this.downloadedImages.get(id).next(url);
+        this.DOWNLOADED_IMAGES$.get(id).next(url);
       })
     );
   }

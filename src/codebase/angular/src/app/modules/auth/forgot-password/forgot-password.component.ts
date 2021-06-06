@@ -12,8 +12,8 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   token: string;
   withToken: boolean = false;
 
-  constructor(private auth: AuthService, private activatedRoute: ActivatedRoute) {
-    this.activatedRoute.queryParams.subscribe(({ token }: Params): void => {
+  constructor(private _auth: AuthService, private _activatedRoute: ActivatedRoute) {
+    this._activatedRoute.queryParams.subscribe(({ token }: Params): void => {
       if (token) {
         this.token = token;
       }
@@ -23,15 +23,15 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.auth.clearTokens();
-    this.auth
+    this._auth.clearTokens();
+    this._auth
       .getTemporaryToken()
       .pipe(catchError(this.onSubscribeError.bind(this)))
       .subscribe();
   }
 
   ngOnDestroy(): void {
-    this.auth.clearTokens();
+    this._auth.clearTokens();
   }
 
   onSubscribeError(error: Error): void {

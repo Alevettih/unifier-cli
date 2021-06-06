@@ -16,6 +16,7 @@ export class AngularSpecifier extends Specifier {
       },
       { title: 'Install dependencies', task: () => this.installPackages(config.modules) },
       { title: 'Add Material', task: () => this.installMaterial() },
+      { title: 'Add ESLint', task: () => this.installEsLint() },
       {
         title: 'Do some magic...',
         task: () =>
@@ -55,11 +56,21 @@ export class AngularSpecifier extends Specifier {
   }
 
   installMaterial(): Promise<ExecaReturnValue> {
-    return command(`node node_modules/@angular/cli/bin/ng add @angular/material`, this.childProcessOptions).catch(
-      ({ message }) => {
-        throw new Error(red(`Material installing error: ${message}`));
-      }
-    );
+    return command(
+      `npx --package @angular/cli ng add @angular/material@latest --skip-confirmation --verbose`,
+      this.childProcessOptions
+    ).catch(({ message }) => {
+      throw new Error(red(`Material installing error: ${message}`));
+    });
+  }
+
+  installEsLint(): Promise<ExecaReturnValue> {
+    return command(
+      `npx --package @angular/cli ng add @angular-eslint/schematics@latest --skip-confirmation --verbose`,
+      this.childProcessOptions
+    ).catch(({ message }) => {
+      throw new Error(red(`ESLint installing error: ${message}`));
+    });
   }
 
   copyConfigs(...configPaths: ConfigPaths[]): Listr {

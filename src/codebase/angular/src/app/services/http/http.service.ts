@@ -21,106 +21,109 @@ export interface IServicesConfig {
 export class HttpService extends HttpClient {
   constructor(
     handler: HttpHandler,
-    private notification: NotificationService,
-    private loader: LoaderService,
-    private translate: TranslateService
+    private _notification: NotificationService,
+    private _loader: LoaderService,
+    private _translate: TranslateService
   ) {
     super(handler);
   }
 
   get(url: string, options?: any, services?: IServicesConfig | null): Observable<any> {
-    this.startLoader(services);
+    this._startLoader(services);
 
     return super
       .get(url, options)
       .pipe(
-        tap(this.onSuccess.bind(this, services)),
-        catchError(this.onError.bind(this, services)),
-        finalize(this.onEveryCase.bind(this, services))
+        tap(this._onSuccess.bind(this, services)),
+        catchError(this._onError.bind(this, services)),
+        finalize(this._onEveryCase.bind(this, services))
       );
   }
 
   post(url: string, body: any | null, options?: any, services?: IServicesConfig | null): Observable<any> {
-    this.startLoader(services);
+    this._startLoader(services);
 
     return super
       .post(url, body, options)
       .pipe(
-        tap(this.onSuccess.bind(this, services)),
-        catchError(this.onError.bind(this, services)),
-        finalize(this.onEveryCase.bind(this, services))
+        tap(this._onSuccess.bind(this, services)),
+        catchError(this._onError.bind(this, services)),
+        finalize(this._onEveryCase.bind(this, services))
       );
   }
 
   patch(url: string, body: any | null, options?: any, services?: IServicesConfig | null): Observable<any> {
-    this.startLoader(services);
+    this._startLoader(services);
 
     return super
       .patch(url, body, options)
       .pipe(
-        tap(this.onSuccess.bind(this, services)),
-        catchError(this.onError.bind(this, services)),
-        finalize(this.onEveryCase.bind(this, services))
+        tap(this._onSuccess.bind(this, services)),
+        catchError(this._onError.bind(this, services)),
+        finalize(this._onEveryCase.bind(this, services))
       );
   }
 
   delete(url: string, options?: any, services?: IServicesConfig | null): Observable<any> {
-    this.startLoader(services);
+    this._startLoader(services);
 
     return super
       .delete(url, options)
       .pipe(
-        tap(this.onSuccess.bind(this, services)),
-        catchError(this.onError.bind(this, services)),
-        finalize(this.onEveryCase.bind(this, services))
+        tap(this._onSuccess.bind(this, services)),
+        catchError(this._onError.bind(this, services)),
+        finalize(this._onEveryCase.bind(this, services))
       );
   }
 
   put(url: string, body: any | null, options?: any, services?: IServicesConfig | null): Observable<any> {
-    this.startLoader(services);
+    this._startLoader(services);
 
     return super
       .put(url, body, options)
       .pipe(
-        tap(this.onSuccess.bind(this, services)),
-        catchError(this.onError.bind(this, services)),
-        finalize(this.onEveryCase.bind(this, services))
+        tap(this._onSuccess.bind(this, services)),
+        catchError(this._onError.bind(this, services)),
+        finalize(this._onEveryCase.bind(this, services))
       );
   }
 
-  private onSuccess(config: IServicesConfig): void {
+  private _onSuccess(config: IServicesConfig): void {
     if (config?.showSuccessNotification) {
-      this.notification.addToQueue(config?.showSuccessNotification?.text ?? 'Request successfully sent!', SnackBarNotificationType.success);
+      this._notification.addToQueue(
+        config?.showSuccessNotification?.text ?? 'Request successfully sent!',
+        SnackBarNotificationType.success
+      );
     }
   }
 
-  private onError(config: IServicesConfig, error: HttpErrorResponse): Observable<HttpServiceError> {
+  private _onError(config: IServicesConfig, error: HttpErrorResponse): Observable<HttpServiceError> {
     const customError: HttpServiceError = new HttpServiceError(error);
 
     if (!config || !config.skipErrorNotification) {
       customError.descriptions.forEach(({ key, message }: IErrorDescription): void => {
-        const notificationMessage: string = key ? this.translate.instant(`BACKEND_ERRORS.${key.toUpperCase()}`) : message;
+        const notificationMessage: string = key ? this._translate.instant(`BACKEND_ERRORS.${key.toUpperCase()}`) : message;
 
-        this.notification.addToQueue(notificationMessage, SnackBarNotificationType.error);
+        this._notification.addToQueue(notificationMessage, SnackBarNotificationType.error);
       });
     }
 
     return throwError(customError);
   }
 
-  private onEveryCase(config: IServicesConfig): void {
-    this.endLoader(config);
+  private _onEveryCase(config: IServicesConfig): void {
+    this._endLoader(config);
   }
 
-  private startLoader(config: IServicesConfig): void {
+  private _startLoader(config: IServicesConfig): void {
     if (!config || (config && !config.skipLoaderStart)) {
-      this.loader.on();
+      this._loader.on();
     }
   }
 
-  private endLoader(config: IServicesConfig): void {
+  private _endLoader(config: IServicesConfig): void {
     if (!config || (config && !config.skipLoaderEnd)) {
-      this.loader.off();
+      this._loader.off();
     }
   }
 }

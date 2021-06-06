@@ -14,21 +14,21 @@ import { BaseFormAbstractComponent } from '@misc/abstracts/base-form.abstract.co
   styleUrls: ['./set-new-password-form.component.scss']
 })
 export class SetNewPasswordFormComponent extends BaseFormAbstractComponent implements OnInit {
-  readonly pageKey: string = 'AUTH.';
+  readonly PAGE_KEY: string = 'AUTH.';
   @Input() token: string;
 
   constructor(
-    private formBuilder: FormBuilder,
-    private auth: AuthService,
-    private userApi: UserApiService,
-    private router: Router,
-    private dialog: MatDialog
+    private _formBuilder: FormBuilder,
+    private _auth: AuthService,
+    private _userApi: UserApiService,
+    private _router: Router,
+    private _dialog: MatDialog
   ) {
     super();
   }
 
   ngOnInit(): void {
-    this.formGroup = this.formBuilder.group(
+    this.formGroup = this._formBuilder.group(
       {
         password: ['', [Validators.required, VALIDATORS_SET.PASSWORD]],
         repeatPassword: ['', [Validators.required, VALIDATORS_SET.PASSWORD]]
@@ -44,10 +44,10 @@ export class SetNewPasswordFormComponent extends BaseFormAbstractComponent imple
 
     const { password: plainPassword }: { password: string; repeatPassword: string } = this.formGroup.getRawValue();
 
-    this.userApi.updatePassword(this.token, { plainPassword }, { skipErrorNotification: true }).subscribe(this.onSubscribeNext.bind(this));
+    this._userApi.updatePassword(this.token, { plainPassword }, { skipErrorNotification: true }).subscribe(this.onSubscribeNext.bind(this));
   }
 
   onSubscribeNext(): void {
-    this.router.navigate(['', 'auth', 'log-in']);
+    this._router.navigate(['', 'auth', 'log-in']);
   }
 }

@@ -7,14 +7,14 @@ import { ActivatedRoute, Params } from '@angular/router';
   styleUrls: ['./confirmation-email.component.scss']
 })
 export class ConfirmationEmailComponent implements OnInit {
-  readonly pageKey: string = 'AUTH';
-  heading: string = `${this.pageKey}.CONFIRMATION_SUCCESS`;
+  readonly PAGE_KEY: string = 'AUTH';
+  heading: string = `${this.PAGE_KEY}.CONFIRMATION_SUCCESS`;
   isError: boolean;
 
-  constructor(private activatedRoute: ActivatedRoute) {}
+  constructor(private _activatedRoute: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.activatedRoute.data.subscribe(({ emailConfirmationErrorMessage }: Params): void => {
+    this._activatedRoute.data.subscribe(({ emailConfirmationErrorMessage }: Params): void => {
       this.isError = !!emailConfirmationErrorMessage;
 
       if (emailConfirmationErrorMessage) {
@@ -24,6 +24,6 @@ export class ConfirmationEmailComponent implements OnInit {
   }
 
   get subheading(): string {
-    return this.isError ? `${this.pageKey}.TRY_ANOTHER_LINK` : `${this.pageKey}.GO_TO_APP`;
+    return this.isError ? `${this.PAGE_KEY}.TRY_ANOTHER_LINK` : `${this.PAGE_KEY}.GO_TO_APP`;
   }
 }

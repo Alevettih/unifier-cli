@@ -8,7 +8,7 @@ import { InputType } from '@models/enums/input-type.enum';
   styleUrls: ['./base-input.component.scss']
 })
 export class BaseInputComponent extends BaseFormFieldAbstractComponent {
-  private revealPassword: boolean = false;
+  private _shouldRevealPassword: boolean = false;
   @Input() inputType: InputType;
 
   get isButtonShown(): boolean {
@@ -16,19 +16,19 @@ export class BaseInputComponent extends BaseFormFieldAbstractComponent {
   }
 
   get buttonIcon(): string {
-    return this.revealPassword ? 'visibility_off' : 'visibility';
+    return this._shouldRevealPassword ? 'visibility_off' : 'visibility';
   }
 
   get type(): string {
     switch (this.inputType) {
       case InputType.password:
-        return this.revealPassword ? InputType.text : InputType.password;
+        return this._shouldRevealPassword ? InputType.text : InputType.password;
       default:
         return this.inputType;
     }
   }
 
   togglePassword(): void {
-    this.revealPassword = !this.revealPassword;
+    this._shouldRevealPassword = !this._shouldRevealPassword;
   }
 }

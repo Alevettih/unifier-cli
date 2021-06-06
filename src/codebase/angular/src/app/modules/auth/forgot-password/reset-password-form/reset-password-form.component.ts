@@ -14,20 +14,20 @@ import { BaseFormAbstractComponent } from '@misc/abstracts/base-form.abstract.co
   styleUrls: ['./reset-password-form.component.scss']
 })
 export class ResetPasswordFormComponent extends BaseFormAbstractComponent implements OnInit {
-  readonly pageKey: string = 'AUTH.';
+  readonly PAGE_KEY: string = 'AUTH.';
 
   constructor(
-    private dialog: MatDialog,
-    private formBuilder: FormBuilder,
-    private auth: AuthService,
-    private userApi: UserApiService,
-    private router: Router
+    private _dialog: MatDialog,
+    private _formBuilder: FormBuilder,
+    private _auth: AuthService,
+    private _userApi: UserApiService,
+    private _router: Router
   ) {
     super();
   }
 
   ngOnInit(): void {
-    this.formGroup = this.formBuilder.group({
+    this.formGroup = this._formBuilder.group({
       email: ['', [Validators.required, VALIDATORS_SET.EMAIL]]
     });
   }
@@ -37,12 +37,12 @@ export class ResetPasswordFormComponent extends BaseFormAbstractComponent implem
       return;
     }
 
-    this.userApi
+    this._userApi
       .sendToken(this.form.email.value, UserTokenAction.resetPassword, null, { skipErrorNotification: true })
       .subscribe(this.onSubscribeNext.bind(this));
   }
 
   onSubscribeNext(): void {
-    this.router.navigate(['', 'auth', 'log-in']);
+    this._router.navigate(['', 'auth', 'log-in']);
   }
 }

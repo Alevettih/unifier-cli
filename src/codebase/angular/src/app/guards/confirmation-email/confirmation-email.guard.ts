@@ -5,13 +5,13 @@ import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from
   providedIn: 'root'
 })
 export class ConfirmationEmailGuard implements CanActivate {
-  constructor(private router: Router) {}
+  constructor(private _router: Router) {}
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     const hasToken: boolean = next.queryParamMap.has('token');
 
     if (!hasToken) {
-      this.router.navigate(['', 'auth', 'log-in']);
+      this._router.navigate(['', 'auth', 'log-in']);
       return false;
     }
 

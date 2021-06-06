@@ -11,15 +11,15 @@ export class ImagePreloadDirective implements OnChanges {
   @Input() apiFile: ApiFile;
   @HostBinding('src') src: string | SafeResourceUrl;
 
-  constructor(private sanitizer: DomSanitizer, private fileApi: FileApiService) {}
+  constructor(private _sanitizer: DomSanitizer, private _fileApi: FileApiService) {}
 
   ngOnChanges({ apiFile }: SimpleChanges): void {
     if (apiFile?.currentValue) {
-      this.fileApi
+      this._fileApi
         .getFile(apiFile.currentValue)
         .pipe(map((file: File): string => window.URL.createObjectURL(file)))
         .subscribe((url: string): void => {
-          this.src = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+          this.src = this._sanitizer.bypassSecurityTrustResourceUrl(url);
         });
     } else {
       this.src = '';

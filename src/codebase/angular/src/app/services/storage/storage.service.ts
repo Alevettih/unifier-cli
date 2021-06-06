@@ -6,17 +6,17 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class StorageService {
-  private shouldUseLocalstorage$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private _shouldUseLocalstorage$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   set shouldUseLocalstorage(value: boolean) {
-    this.shouldUseLocalstorage$.next(value);
+    this._shouldUseLocalstorage$.next(value);
   }
 
   get current(): Storage {
     const alreadyUsedStorage: Storage = [sessionStorage, localStorage].find((storage: Storage): string =>
       storage.getItem(StorageKey.tokens)
     );
-    const newStorage: Storage = this.shouldUseLocalstorage$.value ? localStorage : sessionStorage;
+    const newStorage: Storage = this._shouldUseLocalstorage$.value ? localStorage : sessionStorage;
 
     return alreadyUsedStorage || newStorage;
   }
