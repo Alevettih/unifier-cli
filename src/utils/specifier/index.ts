@@ -167,7 +167,7 @@ export class Specifier {
 
   runPrettier(): Promise<ExecaReturnValue<string>> {
     return command(
-      'prettier "./src/**/*.{js,jsx,ts,tsx,html,vue}" --write',
+      'node ./node_modules/prettier/bin-prettier "./src/**/*.{js,jsx,ts,tsx,html,vue}" --write',
       Object.assign({ preferLocal: true }, this.childProcessOptions)
     ).catch(({ message }) => {
       throw new Error(red(`Prettier execution failed: ${message}`));

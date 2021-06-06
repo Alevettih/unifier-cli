@@ -177,7 +177,7 @@ describe('Specifier should', () => {
     await expect(specifier.runPrettier()).rejects.toThrow();
 
     expect(execa.command).toBeCalledWith(
-      'prettier "./src/**/*.{js,jsx,ts,tsx,html,vue}" --write',
+      'node ./node_modules/prettier/bin-prettier "./src/**/*.{js,jsx,ts,tsx,html,vue}" --write',
       Object.assign({ preferLocal: true }, specifier.childProcessOptions)
     );
   });
