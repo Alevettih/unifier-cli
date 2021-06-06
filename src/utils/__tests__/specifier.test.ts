@@ -269,7 +269,10 @@ describe('Specifier should', () => {
     });
     await expect(specifier.initialCommit()).rejects.toThrow();
 
-    expect(execa.command).toBeCalledWith('git add .&& git commit -m "Initial commit" -n', specifier.childProcessOptions);
+    expect(execa.command).toBeCalledWith(
+      'git add .&& git commit -m "Initial commit" -n',
+      specifier.childProcessOptions
+    );
 
     await specifier.initialCommit(true);
 
