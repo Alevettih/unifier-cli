@@ -1,6 +1,6 @@
 {
   "name": "unifier-cli",
-  "version": "0.3.10",
+  "version": "0.3.11",
   "description": "unifier-cli is a front-end tool, that created for unifying all configs, structure, and share base codebase within different Requestum projects",
   "main": "dist/main.js",
   "scripts": {
