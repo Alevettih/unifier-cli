@@ -3,6 +3,13 @@ import { ConfigPaths } from '@utils/specifier';
 
 export default {
   modules: [
+    '@types/lodash.get',
+    '@types/lodash.transform',
+    '@types/lodash.isequal',
+    'lodash.get',
+    'lodash.transform',
+    'lodash.isequal',
+
     '@ngx-translate/core',
     '@ngx-translate/http-loader',
     'ngx-pagination',
@@ -21,6 +28,8 @@ export default {
 
     'reset-css',
 
+    'postcss',
+    'postcss-scss',
     'stylelint',
     'stylelint-config-standard',
     'stylelint-declaration-strict-value',

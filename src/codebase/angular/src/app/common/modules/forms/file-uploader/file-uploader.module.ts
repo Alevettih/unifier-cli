@@ -8,6 +8,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { CroppedTextModule } from '@shared/components/cropped-text/cropped-text.module';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [FileUploaderComponent],
@@ -19,7 +20,8 @@ import { CroppedTextModule } from '@shared/components/cropped-text/cropped-text.
     TranslateModule,
     MatFormFieldModule,
     MatInputModule,
-    CroppedTextModule
+    CroppedTextModule,
+    MatProgressSpinnerModule
   ],
   exports: [FileUploaderComponent]
 })

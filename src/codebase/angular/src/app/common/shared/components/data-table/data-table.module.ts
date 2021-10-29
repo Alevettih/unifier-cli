@@ -8,9 +8,10 @@ import { PaginatorModule } from '@shared/components/paginator/paginator.module';
 import { LoaderContainerModule } from '@shared/components/loader-container/loader-container.module';
 import { CroppedTextModule } from '../cropped-text/cropped-text.module';
 import { TableActionsComponent } from './table-actions/table-actions.component';
+import { TableComponent } from './table/table.component';
 
 @NgModule({
-  declarations: [DataTableComponent, TableActionsComponent],
+  declarations: [DataTableComponent, TableActionsComponent, TableComponent],
   imports: [CommonModule, PipesModule, TranslateModule, MaterialModule, PaginatorModule, LoaderContainerModule, CroppedTextModule],
   exports: [DataTableComponent, TableActionsComponent]
 })

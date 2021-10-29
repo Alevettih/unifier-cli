@@ -1,7 +1,7 @@
 <form [formGroup]="formGroup" (ngSubmit)="onSubmit()" class="auth-form__form">
   <base-form-input
     [inputType]="InputType.email"
-    [control]="form.email"
+    [control]="form.username"
     [placeholder]="'INPUT_NAME.EMAIL' | translate"
     [required]="true"
   ></base-form-input>

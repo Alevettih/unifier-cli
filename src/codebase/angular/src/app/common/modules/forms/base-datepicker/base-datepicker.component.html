@@ -6,16 +6,19 @@
       (dateChange)="handleDateChange($event)"
       [matDatepicker]="dp3"
       [formControl]="formControl"
+      [placeholder]="placeholder"
       [required]="required"
       [min]="minDate"
       [max]="maxDate"
     />
-    <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
+    <mat-datepicker-toggle matSuffix [for]="dp3">
+      <mat-icon matDatepickerToggleIcon svgIcon="calendar"></mat-icon>
+    </mat-datepicker-toggle>
 
     <mat-datepicker #dp3 disabled="false" [startView]="startViewMode" [startAt]="startDate">
       <mat-datepicker-actions>
-        <button mat-button matDatepickerCancel>Cancel</button>
-        <button mat-raised-button color="primary" matDatepickerApply>Apply</button>
+        <button mat-flat-button color="accent" matDatepickerCancel>Cancel</button>
+        <button mat-flat-button color="primary" matDatepickerApply>Apply</button>
       </mat-datepicker-actions>
     </mat-datepicker>
 

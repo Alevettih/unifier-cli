@@ -1,8 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Router } from '@angular/router';
 import { HttpRequest } from '@angular/common/http';
-import { first, map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { Token } from '@models/classes/tokens.model';
 import { IApiTokens } from '@models/interfaces/api-tokens.interface';
 import { APP_CONFIG, IAppConfig } from '@misc/constants/app-config.constant';
@@ -27,28 +26,19 @@ export class AuthService {
   constructor(
     @Inject(APP_CONFIG) private _config: IAppConfig,
     private _http: HttpService,
-    private _router: Router,
     private _storage: StorageService,
     private _userApi: UserApiService
   ) {}
 
-  sendAuthCode({ username, password }: ILoginParams): Observable<object> {
-    return this.getTemporaryToken().pipe(
-      first(),
-      switchMap((): Observable<any> => this._http.post(`${this._config.apiUrl}/api/auth/code`, { username, password }))
-    );
-  }
-
   getTemporaryToken(services?: IServicesConfig): Observable<Token> {
     const { apiUrl, client_id: clientId, client_secret: clientSecret }: IAppConfig = this._config;
-    return this._http
-      .post(
-        `${apiUrl}/oauth/v2/token`,
-        { client_id: clientId, client_secret: clientSecret, grant_type: GrantType.clientCredentials },
-        {},
-        services
-      )
-      .pipe(map(this._onTokenResponse.bind(this)));
+    const form: FormData = new FormData();
+
+    form.append('grant_type', GrantType.clientCredentials);
+    form.append('client_id', clientId);
+    form.append('client_secret', clientSecret);
+
+    return this._http.post(`${apiUrl}/oauth/token`, form, {}, services).pipe(map(this._onTokenResponse.bind(this)));
   }
 
   login(
@@ -58,33 +48,35 @@ export class AuthService {
   ): Observable<User> {
     const { apiUrl, client_id: clientId, client_secret: clientSecret }: IAppConfig = this._config;
     this._storage.shouldUseLocalstorage = shouldRemember;
+    const form: FormData = new FormData();
+
+    form.append('grant_type', grant_type ?? GrantType.password);
+    form.append('client_id', clientId);
+    form.append('client_secret', clientSecret);
+    form.append('username', username);
+    form.append('password', password);
+
     return this._http
-      .post(
-        `${apiUrl}/oauth/v2/token`,
-        { username, password, client_id: clientId, client_secret: clientSecret, grant_type, code },
-        {},
-        services
-      )
+      .post(`${apiUrl}/oauth/token`, form, {}, services)
       .pipe(map(this._onTokenResponse.bind(this)), switchMap(this.getMe.bind(this)));
   }
 
   refreshToken(): Observable<any> {
     const { apiUrl, client_id: clientId, client_secret: clientSecret }: IAppConfig = this._config;
+    const form: FormData = new FormData();
+
+    form.append('grant_type', GrantType.refreshToken);
+    form.append('client_id', clientId);
+    form.append('client_secret', clientSecret);
+    form.append('refresh_token', this.token.refresh);
 
     return this._http
-      .post(`${apiUrl}/oauth/v2/token`, {
-        client_id: clientId,
-        client_secret: clientSecret,
-        grant_type: GrantType.refreshToken,
-        refresh_token: this.token.refresh
-      })
+      .post(`${apiUrl}/oauth/token`, form, {}, {})
       .pipe(map(this._onTokenResponse.bind(this)), switchMap(this.getMe.bind(this)));
   }
 
-  logout(): void {
-    this._userApi.logout({ skipLoaderStart: true }).subscribe();
-    this.clearTokens();
-    this._router.navigate(['']);
+  logout(): Observable<void> {
+    return this._userApi.logout({ skipLoaderStart: true }).pipe(tap((): void => this.clearTokens()));
   }
 
   clearTokens(): void {
@@ -108,13 +100,6 @@ export class AuthService {
     return Boolean(this.myRole && this.token?.access && this.token?.refresh);
   }
 
-  get isAuthenticated$(): Observable<boolean> {
-    return this._tokens$.pipe(
-      withLatestFrom(this._role$),
-      map(([tokens, role]: [Token, UserRole]): boolean => Boolean(role && tokens?.access && tokens?.refresh))
-    );
-  }
-
   get token(): Token {
     return this._tokens$.value;
   }
@@ -129,7 +114,7 @@ export class AuthService {
 
   setRole(role: UserRole): UserRole {
     this._role$.next(role);
-    this._storage.current.setItem(StorageKey.role, role);
+    this._storage.current.setItem(StorageKey.role, JSON.stringify(role ?? []));
     return role;
   }
 

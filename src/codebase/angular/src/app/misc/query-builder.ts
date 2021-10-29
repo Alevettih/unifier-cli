@@ -7,9 +7,8 @@ import { IQueryBuilderBaseKeys } from '@models/interfaces/query-builder/query-bu
 
 export class QueryBuilder {
   static readonly BASE_KEYS: IQueryBuilderBaseKeys = Object.freeze({
-    ORDER_BY: 'order-by',
     PAGE: 'page',
-    PER_PAGE: 'per-page'
+    PER_PAGE: 'itemsPerPage'
   });
   private _params$: BehaviorSubject<Params>;
 
@@ -46,14 +45,14 @@ export class QueryBuilder {
   }
 
   sort(field: string, direction: SortDirection): QueryBuilder {
-    if (!field || !['asc', 'desc', null].includes(direction)) {
+    if (!field || !['asc', 'desc', null, ''].includes(direction)) {
       return;
     }
 
+    this.clearSort();
+
     if (direction) {
-      this._params$.next({ ...this.params, [QueryBuilder.BASE_KEYS.ORDER_BY]: `${field}|${direction}` });
-    } else {
-      this.clearSort();
+      this._params$.next({ ...this.params, [`order[${field}]`]: direction });
     }
 
     return this;
@@ -79,7 +78,12 @@ export class QueryBuilder {
   }
 
   clearSort(): QueryBuilder {
-    this.clearParams(QueryBuilder.BASE_KEYS.ORDER_BY);
+    const key: string = this.getCurrentSortKey(this.params);
+
+    if (key) {
+      this.clearParams(key);
+    }
+
     return this;
   }
 
@@ -88,5 +92,9 @@ export class QueryBuilder {
     paramsNames.forEach((itemName: string): boolean => delete params[itemName]);
     this._params$.next(params);
     return this;
+  }
+
+  getCurrentSortKey(params: Params): string {
+    return Object.keys(params).find((key: string): boolean => key.includes('order['));
   }
 }

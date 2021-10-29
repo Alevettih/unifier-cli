@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpHandler } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHandler, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { NotificationService } from '@services/notification/notification.service';
 import { catchError, finalize, tap } from 'rxjs/operators';
@@ -9,7 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { SnackBarNotificationType } from '@models/enums/snack-bar-notification-type.enum';
 
 export interface IServicesConfig {
-  skipErrorNotification?: boolean;
+  skipErrorNotification?: ((err: HttpServiceError) => boolean) | boolean;
   showSuccessNotification?: { text: string };
   skipLoaderStart?: boolean;
   skipLoaderEnd?: boolean;
@@ -30,9 +30,14 @@ export class HttpService extends HttpClient {
 
   get(url: string, options?: any, services?: IServicesConfig | null): Observable<any> {
     this._startLoader(services);
+    const httpOptions: { headers: HttpHeaders } = {
+      headers: new HttpHeaders({
+        Accept: 'application/ld+json'
+      })
+    };
 
     return super
-      .get(url, options)
+      .get(url, { ...httpOptions, ...options })
       .pipe(
         tap(this._onSuccess.bind(this, services)),
         catchError(this._onError.bind(this, services)),
@@ -54,9 +59,13 @@ export class HttpService extends HttpClient {
 
   patch(url: string, body: any | null, options?: any, services?: IServicesConfig | null): Observable<any> {
     this._startLoader(services);
-
+    const httpOptions: { headers: HttpHeaders } = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/merge-patch+json'
+      })
+    };
     return super
-      .patch(url, body, options)
+      .patch(url, body, { ...httpOptions, ...options })
       .pipe(
         tap(this._onSuccess.bind(this, services)),
         catchError(this._onError.bind(this, services)),
@@ -91,7 +100,9 @@ export class HttpService extends HttpClient {
   private _onSuccess(config: IServicesConfig): void {
     if (config?.showSuccessNotification) {
       this._notification.addToQueue(
-        config?.showSuccessNotification?.text ?? 'Request successfully sent!',
+        {
+          message: config?.showSuccessNotification?.text ?? 'Request successfully sent!'
+        },
         SnackBarNotificationType.success
       );
     }
@@ -100,11 +111,14 @@ export class HttpService extends HttpClient {
   private _onError(config: IServicesConfig, error: HttpErrorResponse): Observable<HttpServiceError> {
     const customError: HttpServiceError = new HttpServiceError(error);
 
-    if (!config || !config.skipErrorNotification) {
+    if (
+      !config ||
+      !(typeof config.skipErrorNotification === 'boolean' ? config.skipErrorNotification : config.skipErrorNotification?.(customError))
+    ) {
       customError.descriptions.forEach(({ key, message }: IErrorDescription): void => {
         const notificationMessage: string = key ? this._translate.instant(`BACKEND_ERRORS.${key.toUpperCase()}`) : message;
 
-        this._notification.addToQueue(notificationMessage, SnackBarNotificationType.error);
+        this._notification.addToQueue({ message: notificationMessage }, SnackBarNotificationType.error);
       });
     }
 

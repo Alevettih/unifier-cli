@@ -1,0 +1,11 @@
+.base-input {
+  &__right-icon {
+    --size: 3rem;
+    width: var(--size);
+    height: var(--size);
+    font-size: 2.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

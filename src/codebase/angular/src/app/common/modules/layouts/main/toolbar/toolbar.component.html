@@ -1,0 +1,9 @@
+<div class="toolbar" [class.toolbar_hidden]="isHidden">
+  <breadcrumbs class="toolbar__breadcrumbs"></breadcrumbs>
+
+  <div class="toolbar__content" *ngIf="template">
+    <ng-container *ngTemplateOutlet="template ? template : defaultItemTemplate; context: { $implicit: templateData }"></ng-container>
+  </div>
+</div>
+
+<ng-template #defaultItemTemplate></ng-template>

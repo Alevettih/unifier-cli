@@ -2,9 +2,9 @@ import { Inject, Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor, HttpResponse } from '@angular/common/http';
 import { Observable, timer } from 'rxjs';
 import { APP_CONFIG, IAppConfig } from '@misc/constants/app-config.constant';
-import { tokensResponses } from '@interceptors/mock/token.responses';
-import { usersResponses } from '@interceptors/mock/users.responses';
 import { mergeMap } from 'rxjs/operators';
+import { tokensResponses } from '@interceptors/mock/responses/token.responses';
+import { usersResponses } from '@interceptors/mock/responses/users.responses';
 
 interface IMockHandler {
   handler(...params: any[]): Observable<HttpResponse<any>>;
@@ -30,15 +30,17 @@ export class MockInterceptor implements HttpInterceptor {
       [`${this._config.apiUrl}/api/users/:id`]: { handler: usersResponses.oneById }
     },
     POST: {
-      [`${this._config.apiUrl}/oauth/v2/token`]: { handler: tokensResponses.accessToken },
-      [`${this._config.apiUrl}/api/users`]: { handler: usersResponses.create },
-      [`${this._config.apiUrl}/api/users/send/token`]: { handler: usersResponses.sendToken }
+      [`${this._config.apiUrl}/oauth/token`]: { handler: tokensResponses.accessToken },
+      [`${this._config.apiUrl}/api/users`]: { handler: usersResponses.create }
     },
     PATCH: {
-      [`${this._config.apiUrl}/api/users/:token/confirm`]: { handler: usersResponses.confirmAccount },
-      [`${this._config.apiUrl}/api/users/:token/password`]: { handler: usersResponses.updatePassword },
-      [`${this._config.apiUrl}/api/users/:id`]: { handler: usersResponses.update },
-      [`${this._config.apiUrl}/api/users/logout`]: { handler: usersResponses.logout }
+      [`${this._config.apiUrl}/api/users/:id`]: { handler: usersResponses.update }
+    },
+    PUT: {
+      [`${this._config.apiUrl}/api/users/:id`]: { handler: usersResponses.update }
+    },
+    DELETE: {
+      [`${this._config.apiUrl}/api/users/:id`]: { handler: usersResponses.delete }
     }
   };
 

@@ -1,0 +1,26 @@
+@import "variables/modules/breakpoints";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.auth-layout {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+  &__content {
+    padding: 7.6rem 10rem;
+
+    @media (max-width: $desktop-m) {
+      padding: var(--s-5) 10rem;
+    }
+  }
+
+  &__content::ng-deep > &__router-outlet + * {
+    align-items: center;
+    justify-content: center;
+  }
+}

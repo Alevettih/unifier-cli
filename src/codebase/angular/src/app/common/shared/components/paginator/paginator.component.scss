@@ -1,0 +1,56 @@
+.paginator {
+  --button-size: 3.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: var(--s-10);
+
+  &__icon {
+    width: var(--button-size);
+    height: var(--button-size);
+  }
+
+  &__button {
+    --button-color: var(--color-primary);
+    --button-background: transparent;
+    min-width: var(--button-size);
+    min-height: var(--button-size);
+    padding: 0;
+    color: var(--button-color);
+    background: var(--button-background);
+    transition-property: background, color, opacity;
+    transition-duration: 0.3s;
+
+    &:hover {
+      --button-background: var(--color-white);
+
+      &::ng-deep {
+        .mat-button-focus-overlay {
+          display: none;
+        }
+      }
+    }
+
+    &_page {
+      --button-color: var(--color-primary);
+      --button-background: var(--color-white);
+      font-weight: var(--fw-normal);
+    }
+
+    &:disabled,
+    &_current {
+      pointer-events: none;
+    }
+
+    &_page:hover,
+    &_current {
+      --button-color: var(--color-white);
+      --button-background: var(--color-primary);
+    }
+
+    &_current {
+      font-weight: var(--fw-bold);
+    }
+  }
+}

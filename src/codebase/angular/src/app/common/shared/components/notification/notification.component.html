@@ -1,0 +1,13 @@
+<div class="notification">
+  <div class="notification__image-wrap">
+    <img class="notification__image" [src]="image" placeholder="/assets/img/logo.png" alt="Notification image" />
+  </div>
+  <div class="notification__content">
+    <h3 class="notification__heading">{{ data.heading }}</h3>
+    <p class="notification__message">{{ data.message }}</p>
+  </div>
+  <button class="notification__close" mat-icon-button (click)="close()">
+    <mat-icon>close</mat-icon>
+  </button>
+  <a class="notification__link" (click)="close()" *ngIf="data.url" [routerLink]="data.url"></a>
+</div>

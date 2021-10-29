@@ -1,12 +1,13 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { UploadService } from '@services/upload/upload.service';
-import { FormControl } from '@angular/forms';
-import { FileResponse } from '@models/classes/file-response.model';
-import { FileType } from '@models/enums/file-type.enum';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { BaseFormFieldAbstractComponent } from '@misc/abstracts/base-form-field.abstract.component';
-import { TranslateService } from '@ngx-translate/core';
+import { FormControl } from '@angular/forms';
+import { FileType } from '@models/enums/file-type.enum';
 import { ApiFile } from '@models/classes/file.model';
-import { Params } from '@angular/router';
+import { DomSanitizer } from '@angular/platform-browser';
+import { TranslateService } from '@ngx-translate/core';
+import { ThemePalette } from '@angular/material/core/common-behaviors/color';
+import { FileApiService } from '@services/api/file-api/file-api.service';
+import { Observable, zip } from 'rxjs';
 
 @Component({
   selector: 'file-uploader',
@@ -14,19 +15,36 @@ import { Params } from '@angular/router';
   styleUrls: ['./file-uploader.component.scss']
 })
 export class FileUploaderComponent extends BaseFormFieldAbstractComponent implements OnInit {
+  @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement>;
+  @Output() fileDragover: EventEmitter<DragEvent> = new EventEmitter<DragEvent>();
+  @Output() fileDragleave: EventEmitter<DragEvent> = new EventEmitter<DragEvent>();
   @Input() control: FormControl;
   @Input() fileType: FileType[] = [FileType.any];
-  @Input() iconSrcDownloadLink: string;
-  @Input() isDownloadButton: boolean = false;
-  @Input() textDownloadLink: string = 'BUTTON_NAME.DOWNLOAD_CONTRACT';
-  @Input() textTemplateDownloadLink: string = 'BUTTON_NAME.DOWNLOAD_CONTRACT_TEMPLATE';
-  @Input() iconSrcDownloadPanel: string = 'document';
-  @Input() textDownloadPanel: string = 'BUTTON_NAME.ATTACH_FILE';
   @Input() multiple: boolean = true;
   @Input() maxCountFile: number = 10;
   @Input() maxSizeFile: number;
+  @Input() previewHeight: number = 160;
+  @Input() previewWidth: number = 225;
+  @Input() actionsYPosition: 'start' | 'end' = 'end';
+  @Input() actionsXPosition: 'start' | 'end' = 'end';
+  @Input() actionsColor: ThemePalette = 'primary';
+  filesOnLoading: Set<string> = new Set<string>();
+  filesWithError: Set<string> = new Set<string>();
   selectFile: ApiFile[] = [];
   fileError: string = '';
+
+  constructor(
+    private _fileApi: FileApiService,
+    private _sanitizer: DomSanitizer,
+    protected cdr: ChangeDetectorRef,
+    protected translate: TranslateService
+  ) {
+    super(cdr, translate);
+  }
+
+  ngOnInit(): void {
+    this.selectFile = this.valueControl ? (this.multiple ? (this.control.value as ApiFile[]) : [this.control.value]) : [];
+  }
 
   get isFileError(): boolean {
     return (this.control?.invalid && this.control?.touched) || !!this.fileError;
@@ -43,16 +61,15 @@ export class FileUploaderComponent extends BaseFormFieldAbstractComponent implem
     return this.control?.value;
   }
 
-  constructor(private _uploadService: UploadService, protected cdr: ChangeDetectorRef, protected translate: TranslateService) {
-    super(cdr, translate);
+  get actionsPositionClasses(): string[] {
+    return [`file-uploader__file-actions_x-${this.actionsXPosition}`, `file-uploader__file-actions_y-${this.actionsYPosition}`];
   }
 
-  ngOnInit(): void {
-    this.selectFile = this.valueControl ? (this.multiple ? (this.control.value as ApiFile[]) : [this.control.value]) : [];
+  get placeholderWord(): string {
+    return this.translate.instant(`FILE_UPLOADER.FILE${this.multiple ? 'S' : ''}`);
   }
 
   getFiles(event: Event): File[] {
-    console.log((event.target as HTMLInputElement).files);
     return Array.prototype.map.call((event.target as HTMLInputElement).files, (file: File): File => file);
   }
 
@@ -65,6 +82,10 @@ export class FileUploaderComponent extends BaseFormFieldAbstractComponent implem
 
     if (!this.multiple) {
       this.selectFile.length = 0;
+
+      if (filteredFiles.length > 1) {
+        filteredFiles.length = 1;
+      }
     }
 
     this.selectFile.push(...(filteredFiles as any as ApiFile[]));
@@ -72,29 +93,25 @@ export class FileUploaderComponent extends BaseFormFieldAbstractComponent implem
   }
 
   fileUploadHandler(files: File[]): void {
-    if (files.length && this.fileValidation(files)) {
-      const filesItem: File[] = Array.prototype.map.call(files, (file: File): File => file);
-      this._uploadService.upload(filesItem).subscribe((response: FileResponse): any => {
-        if (this.multiple) {
-          this.control.setValue(this.control.value ? [].concat(this.control.value, response?.uploaded) : response?.uploaded);
-        } else {
-          this.control.setValue(response?.uploaded?.[0]);
-        }
-        this.fileError = response?.failed?.map((failed: Params): string => failed?.error?.message ?? '').join(' ,');
-      });
-    }
+    zip(
+      ...files.map((file: File): Observable<ApiFile> => {
+        return this._fileApi.uploadMedia(file, { skipErrorNotification: true });
+      })
+    ).subscribe((apiFiles: ApiFile[]): void => {
+      this.control.setValue(this.multiple ? apiFiles : apiFiles[0]);
+    });
   }
 
   fileValidation(files: File[]): boolean {
     if (files.find((file: File): boolean => this.toMB(file.size) > this.maxSizeFile)?.size) {
-      this.fileError = this.translate.instant('FILE.FILE_SIZE', { size: this.maxSizeFile });
+      this.fileError = this.translate.instant('FILE_UPLOADER.FILE_SIZE', { size: this.maxSizeFile });
       return false;
     } else {
       this.fileError = '';
     }
 
     if (this.maxCountFile && this.maxCountFile < files.length) {
-      this.fileError = this.translate.instant('FILE.SELECTED_FILES_MAX', { count: this.maxCountFile });
+      this.fileError = this.translate.instant('FILE_UPLOADER.SELECTED_FILES_MAX', { count: this.maxCountFile });
       return false;
     } else {
       this.fileError = '';
@@ -107,10 +124,16 @@ export class FileUploaderComponent extends BaseFormFieldAbstractComponent implem
     event.stopPropagation();
     event.preventDefault();
     const haveBeenErrored: boolean = Boolean(this.fileError);
+    this.filesWithError.delete(this.selectFile?.find?.((file: ApiFile, index: number): boolean => idx === index)?.originalName);
     this.selectFile = (this.selectFile as ApiFile[]).filter((file: ApiFile, index: number): boolean => idx !== index);
     this.control.setValue(
       this.control.value?.length ? this.control.value.filter((file: File, index: number): boolean => idx !== index) : null
     );
+    if (this.fileInput?.nativeElement) {
+      this.fileInput.nativeElement.value = this.control.value?.length
+        ? this.control.value.filter((file: File, index: number): boolean => idx !== index)
+        : null;
+    }
     if (haveBeenErrored && this.fileValidation(this.selectFile as any as File[])) {
       this.fileUploadHandler(this.selectFile as any as File[]);
     }
@@ -118,6 +141,18 @@ export class FileUploaderComponent extends BaseFormFieldAbstractComponent implem
 
   isFileMaxSize(file: ApiFile | File): boolean {
     return this.toMB(file.size) > this.maxSizeFile;
+  }
+
+  chooseAnotherFile(): void {
+    this.fileInput?.nativeElement.dispatchEvent(new MouseEvent('click'));
+  }
+
+  getNativeFileUrl(file: ApiFile | File): string {
+    if (file instanceof ApiFile) {
+      return this._sanitizer.bypassSecurityTrustResourceUrl(file.uri) as string;
+    }
+
+    return this._sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(file)) as string;
   }
 
   protected toMB(size: number): number {

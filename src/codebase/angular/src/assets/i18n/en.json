@@ -13,17 +13,39 @@
     "ACCEPT": "Accept",
     "CLOSE": "Close"
   },
+  "MODALS": {
+    "CREATE": {
+      "TITLE": "Create"
+    },
+    "EDIT": {
+      "TITLE": "Change"
+    },
+    "REMOVE": {
+      "TITLE": "Delete"
+    }
+  },
   "MESSAGE": {
     "EMPTY_LIST": "No search results"
   },
+  "CUSTOM_NOTIFICATIONS": {
+    "HELLO": "Hello!",
+    "ERROR": "Error",
+    "SUCCESS": "Success",
+    "WRONG_ROLE": "You're not authorized to access the veterinarian and approver dashboards.",
+    "WRONG_ROLE_ADMIN": "You're not authorized to access the admin panel.",
+    "WRONG_CREDENTIALS": "Entered email address or password is not correct. Please, try again."
+  },
   "ERROR_MESSAGE": {
-    "REQUIRED": "This field is required.",
+    "FORM_EMPTY": "At least one field must be populated",
+    "REQUIRED": "{{fieldName}} is required.",
+    "LOGIN_REQUIRED": "Please, enter your {{fieldName}} to login.",
+    "DECLINE_REQUIRED": "It’s required to specify a reason for the declining.",
     "MUST_MATCH": "Passwords do not match. Please try again.",
     "MIN": "The value must be higher than or equal to {{value}}.",
     "MIN_LENGTH": "The value must contain at least {{value}} characters.",
     "MAX": "The value must be less than or equal to {{value}}.",
     "MAX_LENGTH": "The value must not contain more than {{value}} characters.",
-    "EMAIL": "Incorrect format of an email address.",
+    "EMAIL": "Email address is not valid.",
     "PHONE": "Incorrect format of phone number.",
     "LETTERS_NUMBERS": "The value must contain letters and numbers only.",
     "URL": "Invalid url format.",
@@ -32,8 +54,11 @@
     "NOT_UNIQUE_VALUE": "This email is already used."
   },
   "BACKEND_ERRORS": {
+    "INVALID_REQUEST": "Invalid Request",
     "INVALID_GRANT": "Invalid email or password",
     "NOT_FOUND": "Not found",
+    "THE_REASON_IS_MISSING": "The reason is missing",
+    "ACCESS_DENIED": "You haven't got permissions for access to this area.",
     "USER_NOT_ALLOWED_BY_CLIENT": "This user is not allowed by the client",
     "ERROR": {
       "CONSTRAINT": {

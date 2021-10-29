@@ -11,7 +11,7 @@ export class HttpServiceError extends HttpErrorResponse {
   }
 
   private get _isFormError(): boolean {
-    return Boolean(this.error.fields || this.error.errors);
+    return Boolean(this.error.violations);
   }
 
   get descriptions(): IErrorDescription[] {
@@ -23,16 +23,12 @@ export class HttpServiceError extends HttpErrorResponse {
     let key: string;
 
     if (this.error) {
-      if (this.error.error_description) {
-        message = this.error.error_description;
-      }
-
-      if (this.error.error_message) {
-        message = this.error.error_message;
-      }
-
       if (this.error.message) {
         message = this.error.message;
+      }
+
+      if (this.error.detail) {
+        message = this.error.detail;
       }
 
       key = this.error.error;
@@ -42,30 +38,12 @@ export class HttpServiceError extends HttpErrorResponse {
   }
 
   private _getFormFieldsErrorDescriptions(error: HttpErrorResponse): IErrorDescription[] {
-    const { fields }: { fields: { errors: { error: string; description: string } } } = error.error;
-    const { errors: mainErrors }: { errors: { error: string; description: string }[] } = error.error;
+    const { violations: mainErrors }: { violations: { code: string; message: string }[] } = error.error;
     const result: IErrorDescription[] = [];
 
-    if (fields) {
-      Object.keys(fields).forEach((fieldName: string): void => {
-        const { errors }: { errors: { error: string; description: string }[] } = fields[fieldName];
-        const descriptions: IErrorDescription[] = this._getFormFieldsErrorDescriptions({
-          error: fields[fieldName]
-        } as HttpErrorResponse);
-
-        if (!errors) {
-          result.push(...descriptions);
-        }
-
-        (errors ?? []).map(({ error: key, description: message }: { error: string; description: string }): void => {
-          result.push({ key, message });
-        });
-      });
-    }
-
     if (mainErrors) {
-      mainErrors.forEach((obtainedError: { error: string; description: string }): void => {
-        result.push({ key: obtainedError.error, message: obtainedError.description });
+      mainErrors.forEach((obtainedError: { code: string; message: string }): void => {
+        result.push({ key: obtainedError.code, message: obtainedError.message });
       });
     }
 

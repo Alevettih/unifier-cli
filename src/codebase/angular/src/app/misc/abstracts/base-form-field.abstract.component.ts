@@ -17,18 +17,18 @@ export enum FormFieldFloatLabelMode {
 export abstract class BaseFormFieldAbstractComponent implements OnChanges, OnDestroy {
   protected destroyed$: Subject<void> = new Subject<void>();
   @Input() icon: string;
-  @Input() svgIcon: string;
+  @Input() customRequiredKey: string;
   @Input() placeholder: string;
   @Input() label: string;
   @Input() id: string;
+  @Input() value: any;
   @Input() required: boolean = false;
   @Input() disabled: boolean = false;
   @Input() readonly: boolean = false;
-  @Input() value: string = '';
   @Input() appearance: MatFormFieldAppearance = 'outline';
   @Input() control: AbstractControl = new FormControl();
   @Input() floatLabel: FormFieldFloatLabelMode = FormFieldFloatLabelMode.never;
-  @Input() maxLength: number = 255;
+  @Input() maxLength: number = 256;
   @Input() autocomplete: string = 'off';
 
   constructor(protected cdr: ChangeDetectorRef, protected translate: TranslateService) {}
@@ -70,6 +70,8 @@ export abstract class BaseFormFieldAbstractComponent implements OnChanges, OnDes
 
   get errorMessage(): string {
     const mainTranslateKey: string = 'ERROR_MESSAGE';
+    const fieldName: string = this.label ?? this.placeholder;
+
     switch (true) {
       case this.control.hasError('mustMatch'):
         return this.translate.instant(`${mainTranslateKey}.MUST_MATCH`);
@@ -100,9 +102,13 @@ export abstract class BaseFormFieldAbstractComponent implements OnChanges, OnDes
       case this.control.hasError('lettersNumbersOnly'):
         return this.translate.instant(`${mainTranslateKey}.LETTERS_NUMBERS`);
       case this.control.hasError('required'):
-        return this.translate.instant(`${mainTranslateKey}.REQUIRED`);
+        return this.translate.instant(`${mainTranslateKey}.${this.customRequiredKey ?? 'REQUIRED'}`, {
+          fieldName: this.customRequiredKey ? fieldName.toLowerCase() : fieldName
+        });
       case this.control.hasError('requiredTrue'):
-        return this.translate.instant(`${mainTranslateKey}.REQUIRED`);
+        return this.translate.instant(`${mainTranslateKey}.${this.customRequiredKey ?? 'REQUIRED'}`, {
+          fieldName: this.customRequiredKey ? fieldName.toLowerCase() : fieldName
+        });
       default:
         return null;
     }

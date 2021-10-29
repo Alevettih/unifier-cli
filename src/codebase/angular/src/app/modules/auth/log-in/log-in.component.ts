@@ -15,8 +15,6 @@ import { BaseFormAbstractComponent } from '@misc/abstracts/base-form.abstract.co
 })
 export class LogInComponent extends BaseFormAbstractComponent implements OnInit {
   readonly BooleanFieldType: typeof BooleanFieldType = BooleanFieldType;
-  readonly PAGE_KEY: string = 'AUTH.';
-  token: string;
 
   constructor(
     private _translate: TranslateService,
@@ -30,16 +28,11 @@ export class LogInComponent extends BaseFormAbstractComponent implements OnInit 
   }
 
   ngOnInit(): void {
-    this.token = this._activatedRoute.snapshot.queryParams.token;
     this.formGroup = this._formBuilder.group({
-      email: new FormControl('', [Validators.required, VALIDATORS_SET.EMAIL]),
+      username: new FormControl('', [Validators.required, VALIDATORS_SET.EMAIL]),
       password: new FormControl('', [Validators.required]),
       shouldRemember: new FormControl(false)
     });
-    if (this.token) {
-      this._userApi.confirmAccount(this.token, { skipErrorNotification: true }).subscribe();
-      this.formGroup.addControl('terms', this._formBuilder.control(false, [Validators.requiredTrue]));
-    }
   }
 
   onSubmit(): void {
@@ -49,11 +42,8 @@ export class LogInComponent extends BaseFormAbstractComponent implements OnInit 
       return;
     }
 
-    const {
-      email: username,
-      password,
-      shouldRemember
-    }: { email: string; password: string; shouldRemember: boolean } = this.formGroup.getRawValue();
+    const { username, password, shouldRemember }: { username: string; password: string; shouldRemember: boolean } =
+      this.formGroup.getRawValue();
 
     this._auth.login({ username, password }, shouldRemember, { skipErrorNotification: true }).subscribe((): void => {
       this._router.navigate(['']);

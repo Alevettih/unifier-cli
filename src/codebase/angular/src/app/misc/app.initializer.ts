@@ -4,13 +4,13 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 export function AppInitializerFactory(translate: TranslateService): () => void {
   return (): void => {
-    const languages: string[] = ['en', 'fr', 'es'];
+    const languages: string[] = ['en'];
     const browserLang: string = translate.getBrowserLang();
 
     translate.addLangs(languages);
     translate.setDefaultLang('en');
 
-    translate.use(browserLang.match(/en|fr|es/) ? browserLang : 'en');
+    translate.use(browserLang.match(/en/) ? browserLang : 'en');
   };
 }
 

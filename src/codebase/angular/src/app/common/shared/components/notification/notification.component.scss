@@ -1,0 +1,44 @@
+.notification {
+  padding: 14px 16px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &__heading,
+  &__message {
+    margin-bottom: 0;
+  }
+
+  &__image-wrap {
+    max-width: 6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-right: 1em;
+  }
+
+  &__image {
+    max-width: 100%;
+  }
+
+  &__content {
+    flex-grow: 1;
+  }
+
+  &__close {
+    position: relative;
+    margin-left: 1em;
+    z-index: 2;
+  }
+
+  &__link {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+  }
+}

@@ -1,0 +1,13 @@
+.user-modal {
+  display: flex;
+  flex-direction: column;
+
+  &__row {
+    display: flex;
+    gap: 2rem;
+  }
+
+  &__input {
+    flex-grow: 1;
+  }
+}

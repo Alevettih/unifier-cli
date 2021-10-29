@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { List } from '@models/classes/_base.model';
 import { PaginatePipeArgs } from 'ngx-pagination/dist/paginate.pipe';
 import { getRandomIdentifier } from '@misc/helpers/get-random-identifier.function';
 import { PER_PAGE_DEFAULT } from '@misc/constants/_base.constant';
+import { List } from '@models/classes/_list.model';
 
 @Component({
   template: ''

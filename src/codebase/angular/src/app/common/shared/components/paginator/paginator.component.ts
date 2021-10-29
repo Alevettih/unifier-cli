@@ -10,6 +10,7 @@ import { IPaginatePipeArgs } from '@models/interfaces/paginate-pipe-args.interfa
 })
 export class PaginatorComponent extends QueryParamsConnectedAbstractComponent implements OnChanges {
   @Input() paginatePipeArgs: IPaginatePipeArgs;
+  @Input() marginTop: string = '4rem';
   @Output() paginatePipeArgsChange: EventEmitter<IPaginatePipeArgs> = new EventEmitter<IPaginatePipeArgs>();
 
   ngOnChanges({ paginatePipeArgs }: SimpleChanges): void {
@@ -39,10 +40,6 @@ export class PaginatorComponent extends QueryParamsConnectedAbstractComponent im
   set value(page: number) {
     this.paramsBuilder.paginate(page, this.paginatePipeArgs?.itemsPerPage as number);
     this.applyQueryParams();
-  }
-
-  get pageIndex(): number {
-    return (Number(this.paginatePipeArgs?.currentPage) || 1) - 1;
   }
 
   protected initialize(): void {

@@ -1,14 +1,13 @@
-import { Exclude, Expose, Transform, TransformFnParams } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
+import { BaseModel } from '@models/classes/_base.model';
 
 @Exclude()
-export class ApiFile {
-  @Expose() id: string;
+export class ApiFile extends BaseModel {
   @Expose() name: string;
   @Expose() originalName: string;
+  @Expose() context: string;
+  @Expose() path: string;
   @Expose() mimeType: string;
   @Expose() size: number;
-  @Expose() private: boolean;
-  @Expose()
-  @Transform(({ value }: TransformFnParams): Date => new Date(value))
-  createdAt: Date;
+  @Expose() uri: string;
 }

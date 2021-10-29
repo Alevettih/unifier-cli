@@ -1,9 +1,11 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, NgZone, OnDestroy } from '@angular/core';
 import { MatSnackBar, MatSnackBarConfig, MatSnackBarDismiss } from '@angular/material/snack-bar';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { delay, filter, map, take, takeUntil, tap } from 'rxjs/operators';
 import { SnackBarNotificationType } from '@models/enums/snack-bar-notification-type.enum';
 import { ISnackBarQueueItem } from '@models/interfaces/snack-bar-queue-item.interface';
+import { INotificationData, NotificationComponent } from '@shared/components/notification/notification.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +20,7 @@ export class NotificationService implements OnDestroy {
     verticalPosition: 'top'
   };
 
-  constructor(private _snackBar: MatSnackBar) {
+  constructor(private _snackBar: MatSnackBar, private _translate: TranslateService, private _ngZone: NgZone) {
     this._queue$
       .pipe(
         filter((queue: ISnackBarQueueItem[]): boolean => queue.length > 0 && !queue[0].beingDispatched),
@@ -31,7 +33,7 @@ export class NotificationService implements OnDestroy {
         takeUntil(this._ngDestroy)
       )
       .subscribe((snackBarItem: ISnackBarQueueItem): void =>
-        this.show(snackBarItem.message, snackBarItem.messageType, snackBarItem.configParams)
+        this.show(snackBarItem.data, snackBarItem.messageType, snackBarItem.configParams)
       );
   }
 
@@ -42,8 +44,17 @@ export class NotificationService implements OnDestroy {
     this._ngDestroy.complete();
   }
 
-  addToQueue(message: string, messageType: SnackBarNotificationType, configParams?: MatSnackBarConfig): void {
-    this._queue.next(this._queue.value.concat([{ message, messageType, configParams, beingDispatched: false }]));
+  addToQueue(data: INotificationData, messageType?: SnackBarNotificationType, configParams?: MatSnackBarConfig): void {
+    this._queue.next(
+      this._queue.value.concat([
+        {
+          data: { heading: this._translate.instant(`CUSTOM_NOTIFICATIONS.${(messageType ?? '').toUpperCase() ?? 'HELLO'}`), ...data },
+          messageType,
+          configParams,
+          beingDispatched: false
+        }
+      ])
+    );
   }
 
   private _removeDismissedSnackBar(dismissed: Observable<MatSnackBarDismiss>): void {
@@ -56,9 +67,13 @@ export class NotificationService implements OnDestroy {
     });
   }
 
-  show(message: string, type?: SnackBarNotificationType, config?: MatSnackBarConfig): void {
+  show(data: INotificationData, type?: SnackBarNotificationType, config?: MatSnackBarConfig): void {
     this._removeDismissedSnackBar(
-      this._snackBar.open(message, 'OK', Object.assign(this._config, config, { panelClass: type })).afterDismissed()
+      this._ngZone.run(() =>
+        this._snackBar
+          .openFromComponent(NotificationComponent, Object.assign({ ...this._config, ...config }, { panelClass: type, data }))
+          .afterDismissed()
+      )
     );
   }
 }
