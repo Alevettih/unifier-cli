@@ -1,22 +1,20 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
-import { filter, switchMap } from 'rxjs/operators';
-import { FormModalComponent } from '@modals/form-modal/form-modal.component';
-import { IFormModalData } from '@models/interfaces/modals/form-modal-data.interface';
-import { MessageModalComponent } from '@modals/message-modal/message-modal.component';
-import { MessageModalType } from '@models/enums/message-modal-type.enum';
-import { IMessageModalData } from '@models/interfaces/modals/message-modal-data.interface';
-import { IFormControlItem } from '@models/interfaces/forms/form-control-item.interface';
+import { switchMap } from 'rxjs/operators';
+import { IModalProperties, ModalService } from '@shared/modal/modal.service';
 
 @Component({
   template: ''
 })
 export abstract class CrudHelpersAbstractComponent<T = any> implements OnDestroy {
+  protected readonly ACTION_MODAL_COMPONENT: any;
+  protected readonly MESSAGE_MODAL_COMPONENT: any;
+  protected readonly MODAL_OPTIONS: IModalProperties = {};
   protected readonly DESTROYED$: Subject<void> = new Subject<void>();
+  protected readonly MODAL_NAMESPACE: string = '';
 
-  constructor(protected dialog: MatDialog, protected translate: TranslateService) {}
+  constructor(protected modal: ModalService, protected translate: TranslateService) {}
 
   ngOnDestroy(): void {
     this.DESTROYED$.next();
@@ -50,49 +48,45 @@ export abstract class CrudHelpersAbstractComponent<T = any> implements OnDestroy
   // tslint:disable-next-line:no-empty
   onAfterEdit(...params: any[]): void {}
 
-  protected openCreateModal(): Observable<Partial<T>> {
-    const modalKey: string = 'MODAL.CREATE';
+  protected get namespace(): string {
+    return this.MODAL_NAMESPACE ? `.${this.MODAL_NAMESPACE}` : '';
+  }
 
-    return this.dialog
-      .open(FormModalComponent, {
-        data: {
-          title: this.translate.instant(`${modalKey}.TITLE`),
-          inputs: this.getModalInputs() ?? [],
-          getRawValue: this.getFormRawValue
-        } as IFormModalData
-      })
-      .afterClosed()
-      .pipe(filter((res: Partial<T>): boolean => Boolean(res)));
+  protected openCreateModal(): Observable<Partial<T>> {
+    const modalKey: string = `MODALS${this.namespace}.CREATE`;
+
+    return this.modal.open<Partial<T>>(
+      {
+        title: this.translate.instant(`${modalKey}.TITLE`),
+        component: this.ACTION_MODAL_COMPONENT
+      },
+      this.MODAL_OPTIONS
+    );
   }
 
   protected openEditModal(entity: T): Observable<Partial<T>> {
-    const modalKey: string = 'MODAL.EDIT';
+    const modalKey: string = `MODALS${this.namespace}.EDIT`;
 
-    return this.dialog
-      .open(FormModalComponent, {
-        data: {
-          title: this.translate.instant(`${modalKey}.TITLE`),
-          inputs: this.getModalInputs(entity) ?? [],
-          getRawValue: this.getFormRawValue
-        } as IFormModalData
-      })
-      .afterClosed()
-      .pipe(filter((res: Partial<T>): boolean => Boolean(res)));
+    return this.modal.open<Partial<T>>(
+      {
+        title: this.translate.instant(`${modalKey}.TITLE`),
+        component: this.ACTION_MODAL_COMPONENT,
+        context: { entity }
+      },
+      this.MODAL_OPTIONS
+    );
   }
 
   protected openConfirmationModal(): Observable<boolean> {
-    const modalKey: string = 'MODAL.REMOVE';
+    const modalKey: string = `MODALS${this.namespace}.REMOVE`;
 
-    return this.dialog
-      .open(MessageModalComponent, {
-        data: {
-          title: this.translate.instant(`${modalKey}.TITLE`),
-          message: this.translate.instant(`${modalKey}.MESSAGE`),
-          type: MessageModalType.confirm
-        } as IMessageModalData
-      })
-      .afterClosed()
-      .pipe(filter((res: boolean): boolean => res));
+    return this.modal.open<boolean>(
+      {
+        title: this.translate.instant(`${modalKey}.TITLE`),
+        component: this.MESSAGE_MODAL_COMPONENT
+      },
+      this.MODAL_OPTIONS
+    );
   }
 
   protected updateItem(entity: Partial<T>): Observable<T> {
@@ -106,7 +100,4 @@ export abstract class CrudHelpersAbstractComponent<T = any> implements OnDestroy
   protected removeItem(entity: T): Observable<void> {
     throw new Error('Method not implemented');
   }
-
-  protected abstract getModalInputs(entity?: T): IFormControlItem[];
-  protected abstract getFormRawValue(fromValue: any): Partial<T>;
 }

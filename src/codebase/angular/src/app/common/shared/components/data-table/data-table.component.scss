@@ -1,7 +1,6 @@
 :host {
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
 }
 
 .data-table {
@@ -15,11 +14,7 @@
     flex-grow: 1;
     min-height: 50rem;
     overflow: auto;
-  }
-
-  &__pagination {
-    margin: 0 auto;
-    width: 100%;
+    padding: 1rem 3.6rem 0;
   }
 
   &__empty-block {
@@ -35,16 +30,5 @@
     height: 4.5em;
     width: 4.5em;
     margin-bottom: 0.5em;
-  }
-
-  &::ng-deep {
-    .mat-column-createdAt,
-    .mat-column-lastUpdatedAt {
-      max-width: 14rem;
-
-      &:last-child {
-        max-width: calc(14rem + 24px);
-      }
-    }
   }
 }

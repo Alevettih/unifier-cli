@@ -1,12 +1,26 @@
-import { ClassConstructor } from 'class-transformer';
-import { convertToModelsArray } from '@misc/helpers/model-conversion/convert-to-models-array';
+import { Exclude, Expose, Transform, TransformFnParams } from 'class-transformer';
 
-export class List<T = any> {
-  entities: T[];
-  total: number;
+@Exclude()
+export abstract class BaseModel {
+  @Expose({ name: '@id' })
+  iri: string;
+  @Expose()
+  id: string;
+  @Expose()
+  @Transform(({ value }: TransformFnParams): Date => (value ? new Date(value) : null))
+  createdAt: Date;
+  @Expose()
+  @Transform(({ value }: TransformFnParams): Date => (value ? new Date(value) : null))
+  date: Date;
 
-  constructor({ entities = [], total = 0 }: List<T> = { entities: [], total: 0 }, entityClass: ClassConstructor<T>) {
-    this.entities = convertToModelsArray(entities, entityClass);
-    this.total = total;
+  [Symbol.toPrimitive](hint: 'number' | 'string' | 'default') {
+    switch (hint) {
+      case 'string':
+        return this.iri;
+      case 'number':
+      case 'default':
+      default:
+        return null;
+    }
   }
 }

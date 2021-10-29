@@ -1,0 +1,31 @@
+<form [formGroup]="formGroup" class="user-modal" (ngSubmit)="onSubmit()">
+  <div class="user-modal__row">
+    <base-form-input
+      class="user-modal__input"
+      [control]="form.firstName"
+      [placeholder]="'INPUT_NAME.FIRST_NAME' | translate"
+    ></base-form-input>
+    <base-form-input
+      class="user-modal__input"
+      [control]="form.lastName"
+      [placeholder]="'INPUT_NAME.LAST_NAME' | translate"
+    ></base-form-input>
+  </div>
+  <div class="user-modal__row">
+    <base-form-input
+      class="user-modal__input"
+      [control]="form.email"
+      [placeholder]="'INPUT_NAME.EMAIL' | translate"
+      [inputType]="InputType.email"
+    ></base-form-input>
+  </div>
+  <div class="user-modal__row">
+    <base-select
+      class="user-modal__input"
+      [control]="form.roles"
+      [placeholder]="'INPUT_NAME.ROLE' | translate"
+      [options]="roleOptions"
+    ></base-select>
+  </div>
+  <modal-actions [actions]="actions"></modal-actions>
+</form>

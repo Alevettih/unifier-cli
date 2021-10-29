@@ -1,0 +1,14 @@
+<div class="dialog">
+  <header class="dialog__header">
+    <img [srcset]="srcset" [src]="src" [alt]="data?.title | translate" />
+  </header>
+  <div class="dialog__body">
+    <h3 mat-dialog-title class="dialog__title">{{ data?.title | translate }}</h3>
+    <div class="dialog__template" *ngIf="data?.template">
+      <ng-container *ngTemplateOutlet="data.template; context: context"></ng-container>
+    </div>
+    <ng-container *ngIf="data?.component">
+      <ng-container *ngComponentOutlet="data.component; injector: injector"></ng-container>
+    </ng-container>
+  </div>
+</div>

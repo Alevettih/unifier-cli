@@ -7,6 +7,7 @@ import { FileType } from '@models/enums/file-type.enum';
 
 export interface IFormControlItem {
   name: string;
+  customRequiredKey?: string;
   placeholder: string;
   control: FormControl;
   controlType: FormControlItemType;

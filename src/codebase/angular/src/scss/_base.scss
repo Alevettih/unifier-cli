@@ -10,12 +10,20 @@ body {
   display: flex;
   flex-direction: column;
   font-family: var(--ff-main-font);
-  color: var(--color-russian-violet);
+  color: var(--color-black);
   font-size: 1.4rem;
-  min-width: 375px;
+  min-width: var(--tablet-l);
   min-height: 100vh;
-  background-color: var(--material-base-background-color);
+  background-color: var(--color-white);
   -moz-osx-font-smoothing: grayscale;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
+
+  b, strong {
+    font-weight: var(--fw-medium);
+  }
+
+  i, em {
+    font-style: italic;
+  }
 }

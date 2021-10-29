@@ -1,28 +1,30 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { List } from '@models/classes/_base.model';
 import { merge, Observable, throwError } from 'rxjs';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { catchError, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { MatDialog } from '@angular/material/dialog';
+import { ModalService } from '@shared/modal/modal.service';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpServiceError } from '@services/http/http-service-error.class';
 import { CrudHelpersAbstractComponent } from '@misc/abstracts/crud-helpers.abstract.component';
+import { List } from '@models/classes/_list.model';
+import { DATE_FORMAT } from '@misc/constants/_base.constant';
+import { QueryBuilder } from '@misc/query-builder';
 
 @Component({
   template: ''
 })
 export abstract class ListingApiAbstractComponent<T = any> extends CrudHelpersAbstractComponent<T> implements OnInit, OnDestroy {
-  readonly BASE_DATE_FORMAT: string = 'dd/MM/yyyy HH:mm:ss';
+  readonly BASE_DATE_FORMAT: string = DATE_FORMAT.FULL;
   abstract list: List<T>;
   isLoading: boolean = false;
 
   constructor(
     protected activatedRoute: ActivatedRoute,
     protected router: Router,
-    protected dialog: MatDialog,
+    protected modal: ModalService,
     protected translate: TranslateService
   ) {
-    super(dialog, translate);
+    super(modal, translate);
   }
 
   ngOnInit(): void {
@@ -42,7 +44,7 @@ export abstract class ListingApiAbstractComponent<T = any> extends CrudHelpersAb
     const queryParams: Params = this.activatedRoute?.snapshot?.queryParams;
     if (isDelete) {
       const params: Params = { ...this.params, page: 1 };
-      if (queryParams.hasOwnProperty('page') || queryParams.hasOwnProperty('per-page')) {
+      if (queryParams.hasOwnProperty(QueryBuilder.BASE_KEYS.PAGE) || queryParams.hasOwnProperty(QueryBuilder.BASE_KEYS.PER_PAGE)) {
         this.router.navigate([], { relativeTo: this.activatedRoute, queryParams: params });
       } else {
         this.loadItems(params).subscribe();

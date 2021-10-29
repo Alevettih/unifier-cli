@@ -1,6 +1,12 @@
-// COLORS
 :root {
-  --color-black: #000;
-  --color-white: #fff;
-  --color-red: #f20917;
+  // VALUES
+
+  --value-black: 0, 0, 0; // #000
+  --value-white: 255, 255, 255; // #fff
+  --value-red: 242, 9, 23; // #f20917
+  // COLORS
+
+  --color-black: rgb(var(--value-black)); // #000
+  --color-white: rgb(var(--value-white)); // #fff
+  --color-red: rgb(var(--value-red)); // #f20917
 }

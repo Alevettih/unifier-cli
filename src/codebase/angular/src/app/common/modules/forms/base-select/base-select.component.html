@@ -1,12 +1,12 @@
 <label class="base-select">
   <mat-form-field class="base-select__field" [floatLabel]="floatLabel" [appearance]="appearance">
     <mat-label *ngIf="placeholder">{{ placeholder }}</mat-label>
-    <mat-select [id]="id" [placeholder]="placeholder" [formControl]="formControl" [required]="required">
+    <mat-select [id]="id" [placeholder]="placeholder" [formControl]="formControl" [required]="required" [multiple]="multiple">
       <mat-select-trigger *ngIf="triggerTemplate">
         <ng-container *ngTemplateOutlet="triggerTemplate; context: { $implicit: control.value }"></ng-container>
       </mat-select-trigger>
       <ng-container *ngIf="options">
-        <mat-option *ngFor="let option of options" [value]="getValue(option)">
+        <mat-option *ngFor="let option of options" [value]="getValue(option)" [disabled]="option.disabled">
           <ng-container *ngIf="!optionTemplate; else withTemplate">{{ getTitle(option) }}</ng-container>
           <ng-template #withTemplate>
             <ng-container *ngTemplateOutlet="optionTemplate; context: { $implicit: option }"></ng-container>

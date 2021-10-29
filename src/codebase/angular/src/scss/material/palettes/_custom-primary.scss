@@ -1,0 +1,38 @@
+$color: #444;
+
+:root {
+  --color-primary: $color;
+}
+
+$palette: (
+  50: lighten($color: $color, $amount: 0.5),
+  100: lighten($color: $color, $amount: 0.25),
+  200: $color,
+  300: darken($color: $color, $amount: 0.1),
+  400: darken($color: $color, $amount: 0.2),
+  500: darken($color: $color, $amount: 0.3),
+  600: darken($color: $color, $amount: 0.4),
+  700: darken($color: $color, $amount: 0.5),
+  800: darken($color: $color, $amount: 0.6),
+  900: darken($color: $color, $amount: 0.7),
+  A100: lighten($color: $color, $amount: 0.2),
+  A200: darken($color: $color, $amount: 0.05),
+  A400: darken($color: $color, $amount: 0.25),
+  A700: darken($color: $color, $amount: 0.55),
+  contrast: (
+    50: var(--color-white),
+    100: var(--color-white),
+    200: var(--color-white),
+    300: var(--color-white),
+    400: var(--color-white),
+    500: var(--color-white),
+    600: var(--color-white),
+    700: var(--color-white),
+    800: var(--color-white),
+    900: var(--color-white),
+    A100: var(--color-white),
+    A200: var(--color-white),
+    A400: var(--color-white),
+    A700: var(--color-white),
+  )
+);

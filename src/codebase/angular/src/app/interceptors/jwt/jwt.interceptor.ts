@@ -16,7 +16,7 @@ export class JwtInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(this._auth.addTokenToRequest(req)).pipe(
       catchError((error: HttpErrorResponse): Observable<HttpEvent<any>> => {
-        if (error instanceof HttpErrorResponse && this.shouldHandleUnauthorized(error)) {
+        if (error instanceof HttpErrorResponse && this.shouldHandleUnauthorized(error, req)) {
           return this._handleUnauthorized(req, next);
         } else {
           throw error;
@@ -25,11 +25,12 @@ export class JwtInterceptor implements HttpInterceptor {
     );
   }
 
-  shouldHandleUnauthorized(error: HttpErrorResponse): boolean {
+  shouldHandleUnauthorized(error: HttpErrorResponse, req: HttpRequest<any>): boolean {
     const isUnauthorizedResponse: boolean = (error as HttpErrorResponse).status === 401;
     const isNotIgnoredPage: boolean = [].every((page: string): boolean => !this._router.url.includes(page));
+    const isNotIgnoredEndpoint: boolean = ['/oauth/token'].every((endpoint: string): boolean => !req.url.includes(endpoint));
 
-    return isUnauthorizedResponse && isNotIgnoredPage;
+    return isUnauthorizedResponse && isNotIgnoredPage && isNotIgnoredEndpoint;
   }
 
   private _handleUnauthorized(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {

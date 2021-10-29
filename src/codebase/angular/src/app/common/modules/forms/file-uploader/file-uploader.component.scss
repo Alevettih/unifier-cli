@@ -1,78 +1,78 @@
 .file-uploader {
+  --indent: 1.6rem;
+  --radius: 0.4rem;
+  position: relative;
   display: flex;
-  justify-content: center;
   flex-direction: column;
+  overflow-y: auto;
   margin: 0.25em 0;
-  padding-bottom: 1.34375em;
+  padding-bottom: 1.3438em;
 
   &__label {
-    font-size: 1.1rem;
-    padding: 0 0.5rem;
+    display: inline-block;
+    margin: 0 0 0.4rem;
+    font: var(--typography-body-16);
     color: var(--color-black);
-    background-color: var(--color-black);
-    position: absolute;
-    top: 0;
-    left: 0.4rem;
-    transform: translateY(-50%);
-  }
-
-  &__link-panel {
-    margin-bottom: 3.5rem;
-    margin-top: 0.3rem;
-  }
-
-  &__link-download {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: var(--s-2);
-    width: 100%;
-
-    .mat-icon {
-      width: 19px;
-      margin-right: 0.5rem;
-    }
-
-    &:last-child {
-      margin-bottom: 0;
-    }
+    vertical-align: top;
   }
 
   &__panel {
+    color: var(--color-grey);
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    border: 1px solid var(--color-black);
-    border-radius: 4px;
+    border: 2px dashed currentColor;
+    border-radius: var(--radius);
     text-align: center;
     padding: 1rem;
     transition-duration: 0.5s;
     transition-property: color, border-color;
 
-    &::before {
-      content: "";
-      position: absolute;
-      top: -1px;
-      left: -1px;
-      right: -1px;
-      bottom: -1px;
-      border: 2px solid var(--color-black);
-      border-radius: 4px;
-      opacity: 0;
-      transition: opacity 0.3s;
+    &.error {
+      border: 2px solid var(--color-red);
     }
 
-    &:hover {
-      &::before {
-        opacity: 1;
-      }
-    }
-
+    &:not(&.error):hover,
     &.file-over {
-      color: var(--color-black);
+      color: var(--color-electric-blue);
     }
+
+    &:not(:last-child) {
+      margin-right: var(--indent);
+    }
+  }
+
+  &__icon,
+  &__title,
+  &__hint {
+    color: var(--color-dark-grey);
+    transition: color 0.3s;
+
+    :hover > & {
+      color: var(--color-electric-blue);
+    }
+
+    .error & {
+      color: var(--color-red);
+    }
+  }
+
+  &__title,
+  &__hint {
+    font-size: 1.2rem;
+    margin: 0;
+  }
+
+  &__icon {
+    display: inline-block;
+    margin-bottom: var(--s-2);
+  }
+
+  &__title {
+    text-transform: uppercase;
+    font-weight: var(--fw-bold);
   }
 
   &__input {
@@ -86,23 +86,14 @@
     left: 0;
   }
 
+  &__panel,
   &__list {
+    flex-shrink: 0;
+  }
+
+  &__list {
+    display: flex;
     position: relative;
-    z-index: 3;
-    width: 100%;
-    margin-top: 1rem;
-  }
-
-  &__icon {
-    display: inline-block;
-    margin-bottom: var(--s-2);
-  }
-
-  &__text {
-    font-size: var(--s-3);
-    font-style: italic;
-    padding: 0 3rem;
-    margin: 0;
   }
 
   &__selected {
@@ -110,35 +101,70 @@
   }
 
   &__error {
-    position: relative;
+    position: absolute;
     font-size: 75%;
-    margin-top: 0.6666666667em;
+    margin-top: 0.6667em;
     padding: 0 1em;
     line-height: 1.4;
+    bottom: 0;
   }
 
   &__file-item {
+    display: flex;
+    align-items: center;
     position: relative;
-    margin-bottom: 1rem;
     text-align: left;
+
+    &:not(:first-child) {
+      margin-left: 1.6rem;
+    }
 
     &.error {
       color: var(--color-red);
     }
+  }
 
-    &:last-child {
-      margin-bottom: 0;
-    }
+  &__loader {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  &__preview {
+    display: flex;
+    object-fit: cover;
+    border-radius: var(--radius);
   }
 
   &__file-name {
     padding-right: 4rem;
   }
 
-  &__file-remove {
+  &__file-actions {
     position: absolute;
-    top: 50%;
-    right: 0;
-    transform: translateY(-50%);
+    display: flex;
+
+    &_x-start {
+      left: 0;
+    }
+
+    &_x-end {
+      right: 0;
+    }
+
+    &_y-start {
+      top: 0;
+    }
+
+    &_y-end {
+      bottom: 0;
+    }
+  }
+
+  &__action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }

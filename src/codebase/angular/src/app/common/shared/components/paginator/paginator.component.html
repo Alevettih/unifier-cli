@@ -1,9 +1,35 @@
-<mat-divider></mat-divider>
-<mat-paginator
-  [showFirstLastButtons]="true"
-  [hidePageSize]="true"
-  [pageIndex]="pageIndex"
-  [pageSize]="paginatePipeArgs.itemsPerPage"
-  [length]="paginatePipeArgs.totalItems"
-  (page)="paginate($event.pageIndex + 1)"
-></mat-paginator>
+<pagination-template
+  class="paginator"
+  #p="paginationApi"
+  [id]="paginatePipeArgs.id"
+  [style.margin-top]="p.getLastPage() > 1 ? null : 0"
+  [maxSize]="5"
+  (pageChange)="paginate($event)"
+>
+  <ng-container *ngIf="p.getLastPage() > 1">
+    <button mat-button class="paginator__button paginator__button_first" [disabled]="p.isFirstPage()" (click)="p.setCurrent(1)">
+      <mat-icon class="paginator__icon" svgIcon="arrows-left"></mat-icon>
+    </button>
+    <button mat-button class="paginator__button paginator__button_previous" [disabled]="p.isFirstPage()" (click)="p.previous()">
+      <mat-icon class="paginator__icon" svgIcon="arrow-left"></mat-icon>
+    </button>
+
+    <button
+      *ngFor="let page of p.pages"
+      mat-button
+      class="paginator__button paginator__button_page"
+      [class.paginator__button_current]="p.getCurrent() === page.value"
+      (click)="p.setCurrent(page.value)"
+    >
+      {{ page.label }}
+    </button>
+
+    <button mat-button class="paginator__button paginator__button_next" [disabled]="p.isLastPage()" (click)="p.next()">
+      <mat-icon class="paginator__icon" svgIcon="arrow-right"></mat-icon>
+    </button>
+
+    <button mat-button class="paginator__button paginator__button_last" [disabled]="p.isLastPage()" (click)="p.setCurrent(p.getLastPage())">
+      <mat-icon class="paginator__icon" svgIcon="arrows-right"></mat-icon>
+    </button>
+  </ng-container>
+</pagination-template>

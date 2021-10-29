@@ -16,31 +16,5 @@ export class BaseBooleanFieldComponent extends BaseFormFieldAbstractComponent {
   @Input() type: BooleanFieldType;
   @Input() title: string;
   @Input() shouldStopPropagation: boolean;
-  @Output() controlChange: EventEmitter<string> = new EventEmitter();
-  isLinkElement: boolean = false;
-
-  stopCheckboxEvent(event: any): void {
-    if (this.shouldStopPropagation) {
-      event.stopPropagation();
-    }
-    if (event.type === 'input') {
-      this.controlChange.emit('');
-    }
-  }
-
-  focusOut(): void {
-    if (this.isLinkElement) {
-      this.control.markAsUntouched();
-    }
-  }
-
-  clickCheckbox(event: MouseEvent): void {
-    const target: HTMLLinkElement = event.target as HTMLLinkElement;
-    const isLink: boolean = !!target.closest('a');
-    this.isLinkElement = isLink;
-
-    if (isLink) {
-      event.stopPropagation();
-    }
-  }
+  @Output() controlChange: EventEmitter<any> = new EventEmitter<any>();
 }

@@ -1,7 +1,18 @@
 .dialog {
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__body {
+    padding: 2rem;
+  }
+
   &__title {
-    font-weight: 500;
-    font-size: 2rem;
+    font-weight: var(--fw-medium);
+    font-size: 1.7rem;
   }
 
   &__title,
@@ -9,7 +20,28 @@
     text-align: center;
   }
 
+  &__text {
+    font-size: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  &__template {
+    font-size: 1.3rem;
+    margin-bottom: 1.5em;
+  }
+
   &__actions {
     justify-content: center;
+    gap: 2rem;
+  }
+
+  &__button {
+    &.mat-button-base {
+      min-width: 12rem;
+    }
+
+    &:only-child {
+      flex-grow: 1;
+    }
   }
 }

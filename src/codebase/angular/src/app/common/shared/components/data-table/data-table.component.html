@@ -1,32 +1,17 @@
 <loader-container [isLoading]="isLoading" class="data-table">
-  <div class="data-table__table-wrap">
-    <mat-table [style.min-width]="minWidth" [dataSource]="dataSource" class="data-table__table">
-      <ng-container *ngFor="let columnItem of columns" matColumnDef="{{ columnItem.columnName }}">
-        <mat-header-cell class="data-table__table-cell data-table__table-cell_header" *matHeaderCellDef>
-          {{ columnItem.title | translate }}
-        </mat-header-cell>
-        <mat-cell class="data-table__table-cell" *matCellDef="let data; let i = index">
-          <ng-container *ngIf="columnItem?.template; else base">
-            <ng-container
-              *ngTemplateOutlet="
-                columnItem.template;
-                context: { $implicit: data | pathParse: columnItem.columnName, index: i, entity: data }
-              "
-            ></ng-container>
-          </ng-container>
-          <ng-template #base>
-            <cropped-text [text]="(data | pathParse: columnItem.columnName) || ''"></cropped-text>
-          </ng-template>
-        </mat-cell>
-      </ng-container>
-
-      <mat-header-row *matHeaderRowDef="displayedColumns" class="data-table__table-header-row"></mat-header-row>
-      <mat-row class="data-table__table-row" *matRowDef="let row; columns: displayedColumns"></mat-row>
-    </mat-table>
+  <mat-card class="data-table__table-wrap">
+    <table
+      [paginatePipeArgs]="paginatePipeArgs"
+      [dataSource]="dataSource"
+      [minWidth]="minWidth"
+      [columns]="columns"
+      [displayedColumns]="displayedColumns"
+      (rowClick)="rowClick.emit($event)"
+    ></table>
     <div class="data-table__empty-block" *ngIf="!dataSource.length && !isLoading">
       <mat-icon class="data-table__empty-icon" [svgIcon]="emptyIcon"></mat-icon>
       <h4 class="data-table__empty-message">{{ emptyMessage | translate }}</h4>
     </div>
-  </div>
+  </mat-card>
   <paginator class="data-table__pagination" [(paginatePipeArgs)]="paginatePipeArgs"></paginator>
 </loader-container>

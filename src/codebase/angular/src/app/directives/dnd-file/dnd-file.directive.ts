@@ -6,6 +6,8 @@ import { Directive, EventEmitter, HostBinding, HostListener, Output } from '@ang
 export class DndFileDirective {
   @HostBinding('class.file-over') fileOver: boolean;
   @Output() fileDropped: EventEmitter<File[]> = new EventEmitter<File[]>();
+  @Output() fileDragover: EventEmitter<DragEvent> = new EventEmitter<DragEvent>();
+  @Output() fileDragleave: EventEmitter<DragEvent> = new EventEmitter<DragEvent>();
 
   @HostListener('dragover', ['$event']) onDragOver(event: DragEvent): void {
     event.preventDefault();

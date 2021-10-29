@@ -1,0 +1,20 @@
+.layout-base {
+  &,
+  &__content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  &__header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  &__content > &__router-outlet + * {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+}
