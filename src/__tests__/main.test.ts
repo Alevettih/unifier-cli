@@ -45,26 +45,6 @@ describe('User answers', () => {
       expect(projects.angularProject).toHaveBeenCalled();
     });
 
-    test('React', async () => {
-      Object.defineProperty(inquirer, 'prompt', {
-        value: jest.fn(async () => ({ title, type: projects.types.REACT }))
-      });
-
-      await main();
-
-      expect(projects.reactProject).toHaveBeenCalled();
-    });
-
-    test('Vue', async () => {
-      Object.defineProperty(inquirer, 'prompt', {
-        value: jest.fn(async () => ({ title, type: projects.types.VUE }))
-      });
-
-      await main();
-
-      expect(projects.vueProject).toHaveBeenCalled();
-    });
-
     test('should throw TypeError with invalid project type', async () => {
       Object.defineProperty(inquirer, 'prompt', {
         value: jest.fn(async () => ({ title, type: null }))

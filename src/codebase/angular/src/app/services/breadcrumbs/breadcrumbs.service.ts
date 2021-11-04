@@ -26,7 +26,7 @@ export class BreadcrumbsService implements OnDestroy {
     this._routerEventsSubscription = this._router.events
       .pipe(
         filter<RouterEvent>(isActivationEnd),
-        pluck<RouterEvent, ActivatedRouteSnapshot>('snapshot'),
+        pluck<RouterEvent>('snapshot'),
         buffer<ActivatedRouteSnapshot>(navigationEnd$),
         map<ActivatedRouteSnapshot[], ActivatedRouteSnapshot[]>((bcData: ActivatedRouteSnapshot[]): ActivatedRouteSnapshot[] =>
           bcData.reverse()

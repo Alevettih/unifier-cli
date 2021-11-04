@@ -19,7 +19,6 @@ export abstract class BaseFormFieldAbstractComponent implements OnChanges, OnDes
   @Input() icon: string;
   @Input() customRequiredKey: string;
   @Input() placeholder: string;
-  @Input() label: string;
   @Input() id: string;
   @Input() value: any;
   @Input() required: boolean = false;
@@ -70,7 +69,7 @@ export abstract class BaseFormFieldAbstractComponent implements OnChanges, OnDes
 
   get errorMessage(): string {
     const mainTranslateKey: string = 'ERROR_MESSAGE';
-    const fieldName: string = this.label ?? this.placeholder;
+    const fieldName: string = this.placeholder;
 
     switch (true) {
       case this.control.hasError('mustMatch'):

@@ -12,7 +12,7 @@ import { selectProjectType } from '@src/project-types';
 import { ListrOptions } from 'listr';
 import { title } from '@utils/validators';
 
-export type ProjectType = 'email' | 'plain-js' | 'angular' | 'react' | 'vue';
+export type ProjectType = 'email' | 'plain-js' | 'angular';
 
 export interface Answer {
   title: string;

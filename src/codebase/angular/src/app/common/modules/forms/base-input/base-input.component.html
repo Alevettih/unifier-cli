@@ -1,5 +1,5 @@
-<label class="base-input">
-  <mat-form-field [appearance]="appearance" class="base-input__field">
+<label>
+  <mat-form-field [appearance]="appearance">
     <mat-label *ngIf="placeholder">{{ placeholder }}</mat-label>
     <mat-icon matPrefix *ngIf="icon">{{ icon }}</mat-icon>
     <input
@@ -14,7 +14,7 @@
       (keydown.enter)="onEnter($event)"
     />
     <button *ngIf="isPasswordInput" [disabled]="disabled" mat-icon-button matSuffix tabindex="-1" type="button" (click)="togglePassword()">
-      <mat-icon class="base-input__right-icon" fontSet="material-icons-outlined">{{ buttonIcon }}</mat-icon>
+      <mat-icon>{{ buttonIcon }}</mat-icon>
     </button>
     <button
       *ngIf="isSearchInput"
@@ -25,7 +25,7 @@
       type="button"
       (click)="search.emit(formControl.value)"
     >
-      <mat-icon class="base-input__right-icon" fontSet="material-icons-outlined">search</mat-icon>
+      <mat-icon>search</mat-icon>
     </button>
     <mat-error *ngIf="control?.invalid && errorMessage">{{ errorMessage }}</mat-error>
   </mat-form-field>

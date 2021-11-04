@@ -14,7 +14,5 @@ export enum BooleanFieldType {
 export class BaseBooleanFieldComponent extends BaseFormFieldAbstractComponent {
   readonly BooleanFieldType: typeof BooleanFieldType = BooleanFieldType;
   @Input() type: BooleanFieldType;
-  @Input() title: string;
-  @Input() shouldStopPropagation: boolean;
   @Output() controlChange: EventEmitter<any> = new EventEmitter<any>();
 }

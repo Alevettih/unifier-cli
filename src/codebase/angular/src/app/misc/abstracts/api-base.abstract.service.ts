@@ -1,15 +1,15 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Params } from '@angular/router';
-import { IServicesConfig } from '@services/http/http.service';
+import { HttpService, IServicesConfig } from '@services/http/http.service';
 import { IEntity } from '@models/interfaces/entity.interface';
 import { ClassConstructor } from 'class-transformer';
 import { toModelsList } from '@misc/rxjs-operators/to-models-list.operator';
 import { toModel } from '@misc/rxjs-operators/to-model.operator';
 import { CustomHTTPParamsEncoder } from '@misc/custom-http-params-encoder';
 import { HttpParams } from '@angular/common/http';
-import { ApiPreloadHelperAbstractService } from '@misc/abstracts/api-preload-helper-abstract.service';
 import { List } from '@models/classes/_list.model';
+import { APP_CONFIG, IAppConfig } from '@misc/constants/app-config.constant';
 
 export type transition = 'cancel' | 'reject' | 'accept';
 
@@ -23,10 +23,12 @@ export interface ITransitData {
 @Injectable({
   providedIn: 'root'
 })
-export abstract class ApiBaseAbstractService<T> extends ApiPreloadHelperAbstractService {
+export abstract class ApiBaseAbstractService<T> {
   protected abstract readonly MODEL: ClassConstructor<T>;
-  protected abstract readonly URLPath: string = '/';
+  protected abstract readonly URLPath: string;
   protected URLParams: string[] = [];
+
+  protected constructor(@Inject(APP_CONFIG) protected config: IAppConfig, protected http: HttpService) {}
 
   get baseUrl(): string {
     return this.config.apiUrl;

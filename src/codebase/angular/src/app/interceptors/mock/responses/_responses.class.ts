@@ -5,10 +5,11 @@ import { Observable, of } from 'rxjs';
 import { List } from '@models/classes/_list.model';
 import { getRandomIdentifier } from '@misc/helpers/get-random-identifier.function';
 import { Params } from '@angular/router';
+import { QueryBuilder } from '@misc/query-builder';
 
 export abstract class Responses<T extends { id: string }> {
   protected abstract readonly MODEL: ClassConstructor<T>;
-  abstract readonly ENTITIES: T[] = [];
+  readonly ENTITIES: T[] = [];
 
   protected abstract entitiesFn(index: number): Partial<T>;
 
@@ -45,17 +46,18 @@ export abstract class Responses<T extends { id: string }> {
     entities?: Partial<T>[]
   ): Observable<HttpResponse<List<Partial<T>>>> {
     let resEntities: Partial<T>[] = entities ?? this.ENTITIES;
+    const total = resEntities?.length;
 
-    if (body.has('page')) {
-      const page: number = Number(body.get('page'));
-      const perPage: number = Number(body.get('per-page')) || 20;
+    if (body.has(QueryBuilder.BASE_KEYS.PAGE)) {
+      const page: number = Number(body.get(QueryBuilder.BASE_KEYS.PAGE));
+      const perPage: number = Number(body.get(QueryBuilder.BASE_KEYS.PER_PAGE)) || 20;
       resEntities = resEntities.slice((page - 1) * perPage, page * perPage);
     }
 
     return of(
       new HttpResponse({
         status: 200,
-        body: { entities: resEntities, total: this.ENTITIES.length }
+        body: { entities: resEntities, total: total }
       })
     );
   }
@@ -102,7 +104,8 @@ export abstract class Responses<T extends { id: string }> {
 
     return of(
       new HttpResponse({
-        status: 200
+        status: 200,
+        body: null
       })
     );
   }

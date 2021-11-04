@@ -13,6 +13,7 @@ export default {
     '@ngx-translate/core',
     '@ngx-translate/http-loader',
     'ngx-pagination',
+    'ngx-infinite-scroll',
 
     'eslint-plugin-prettier',
     'eslint-config-prettier',
@@ -27,9 +28,9 @@ export default {
     'pretty-quick',
 
     'reset-css',
-
     'postcss',
     'postcss-scss',
+
     'stylelint',
     'stylelint-config-standard',
     'stylelint-declaration-strict-value',

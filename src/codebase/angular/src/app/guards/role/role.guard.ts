@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, Router } from '@angular/router';
-import { Observable } from 'rxjs';
 import { AuthService } from '@services/auth/auth.service';
 import { UserRole } from '@models/enums/user-role.enum';
-import { fromPromise } from 'rxjs/internal-compatibility';
 import { NotificationService } from '@services/notification/notification.service';
 import { SnackBarNotificationType } from '@models/enums/snack-bar-notification-type.enum';
 import { TranslateService } from '@ngx-translate/core';
@@ -25,22 +23,22 @@ export class RoleGuard implements CanActivate, CanActivateChild {
     private _translate: TranslateService
   ) {}
 
-  canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | boolean {
+  canActivate(route: ActivatedRouteSnapshot): Promise<boolean> | boolean {
     return this._isRoleAllowed(route?.data?.roleGuardParams ?? {});
   }
 
-  canActivateChild(childRoute: ActivatedRouteSnapshot): Observable<boolean> | boolean {
+  canActivateChild(childRoute: ActivatedRouteSnapshot): Promise<boolean> | boolean {
     return this._isRoleAllowed(childRoute?.data?.roleGuardParams ?? {});
   }
 
-  private _isRoleAllowed({ redirectTo, roles, skipErrorNotification }: IRoleGuardParams): Observable<boolean> | boolean {
+  private _isRoleAllowed({ redirectTo, roles, skipErrorNotification }: IRoleGuardParams): Promise<boolean> | boolean {
     const isRoleAllowed: boolean = Boolean((roles ?? [])?.find((role: UserRole): boolean => this._auth.myRole === role));
 
     if (!isRoleAllowed) {
       if (!skipErrorNotification) {
         this._notification.addToQueue({ message: this._translate.instant('BACKEND_ERRORS.ACCESS_DENIED') }, SnackBarNotificationType.error);
       }
-      return redirectTo?.length ? fromPromise(this._router.navigate(redirectTo)) : false;
+      return redirectTo?.length ? this._router.navigate(redirectTo) : false;
     }
 
     return isRoleAllowed;

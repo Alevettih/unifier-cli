@@ -12,5 +12,4 @@ export class BaseTextareaComponent extends BaseFormFieldAbstractComponent {
   @ViewChild('autosize') autosize: CdkTextareaAutosize;
   @Input() minRows: number = 8;
   @Input() maxRows: number = 12;
-  @Input() formRef: FormGroupDirective;
 }

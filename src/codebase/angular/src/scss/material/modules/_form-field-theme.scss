@@ -1,5 +1,5 @@
 @use "sass:map";
-@use "~@angular/material" as mat;
+@use "@angular/material" as mat;
 
 @mixin color($theme) {
   $color-config: mat.get-color-config($theme);
@@ -27,5 +27,9 @@
 
   .mat-form-field {
     width: 100%;
+
+    .mat-form-field-infix {
+      width: auto;
+    }
   }
 }

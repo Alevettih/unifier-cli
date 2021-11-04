@@ -1,6 +1,7 @@
-import { Component, Inject, InjectionToken, Injector, TemplateRef, Type, ValueProvider } from '@angular/core';
+import { Component, Inject, InjectionToken, Injector, TemplateRef, Type, OnInit, ValueProvider, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { UserModalComponent } from '@shared/modal/modals/user-modal/user-modal.component';
+import { IModalAction } from '@shared/modal/modal-actions/modal-actions.component';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 export const COMPONENT_CONTEXT: InjectionToken<string> = new InjectionToken<string>('COMPONENT_CONTEXT');
 
@@ -10,12 +11,19 @@ export interface IModalComponentContext<T> {
   [key: string]: any;
 }
 
-export interface IModalData<T> {
-  title?: string;
+export interface IModalFormComponent {
+  formGroup: FormGroup;
+  onSubmit(): void;
+}
+
+export interface IModalData<T = any> {
   icon?: string;
+  title?: string;
+  message?: string;
   template?: TemplateRef<any>;
-  component?: Type<UserModalComponent>;
+  component?: Type<IModalFormComponent>;
   context?: IModalComponentContext<T>;
+  actions?: IModalAction<T>[];
 }
 
 @Component({
@@ -23,30 +31,25 @@ export interface IModalData<T> {
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.scss']
 })
-export class ModalComponent<T> {
+export class ModalComponent<T> implements OnInit {
   injector: Injector;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: IModalData<T>,
     private _dialog: MatDialogRef<ModalComponent<T>>,
-    private _injector: Injector
-  ) {
+    private _injector: Injector,
+    private _fb: FormBuilder
+  ) {}
+
+  ngOnInit(): void {
     this.injector = Injector.create({
       providers: [{ provide: COMPONENT_CONTEXT, useValue: this.context, multi: false } as ValueProvider],
-      parent: _injector
+      parent: this._injector
     });
   }
 
-  get src(): string {
-    return this._getIconPath();
-  }
-
-  get srcset(): string {
-    return [this._getIconPath(), this._getIconPath('2x'), this._getIconPath('3x')].join(', ');
-  }
-
   get icon(): string {
-    return this.data.icon ?? 'name';
+    return this.data.icon ?? 'warning_amber';
   }
 
   get context(): IModalComponentContext<T> {

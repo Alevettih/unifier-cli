@@ -1,6 +1,6 @@
 <label>
   <mat-form-field [appearance]="appearance" (click)="onLabelClicked()">
-    <mat-label>{{ placeholder }}</mat-label>
+    <mat-label *ngIf="placeholder">{{ placeholder }}</mat-label>
     <input
       matInput
       (dateChange)="handleDateChange($event)"
@@ -15,7 +15,7 @@
       <mat-icon matDatepickerToggleIcon svgIcon="calendar"></mat-icon>
     </mat-datepicker-toggle>
 
-    <mat-datepicker #dp3 disabled="false" [startView]="startViewMode" [startAt]="startDate">
+    <mat-datepicker #dp3="matDatepicker" disabled="false" [startView]="startViewMode" [startAt]="startDate">
       <mat-datepicker-actions>
         <button mat-flat-button color="accent" matDatepickerCancel>Cancel</button>
         <button mat-flat-button color="primary" matDatepickerApply>Apply</button>

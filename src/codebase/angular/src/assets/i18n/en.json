@@ -4,14 +4,20 @@
     "PASSWORD": "Password",
     "NEW_PASSWORD": "New password",
     "CONFIRM_PASSWORD": "Confirm password",
-    "REMEMBER_ME": "Remember me"
+    "REMEMBER_ME": "Remember me",
+    "ROLE": "Role",
+    "FIRST_NAME": "First Name",
+    "LAST_NAME": "Last Name"
   },
   "BUTTON_NAME": {
     "FORGOT_PASSWORD": "Forgot password",
     "LOGIN": "Login",
     "SUBMIT": "Submit",
     "ACCEPT": "Accept",
-    "CLOSE": "Close"
+    "CLOSE": "Close",
+    "CANCEL": "Cancel",
+    "CREATE": "Create",
+    "SAVE": "Save"
   },
   "MODALS": {
     "CREATE": {

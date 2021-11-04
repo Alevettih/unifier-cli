@@ -1,7 +1,7 @@
 <ul class="breadcrumbs" [ngClass]="{ breadcrumbs__hidden: hidden }">
   <li *ngFor="let breadcrumb of breadcrumbs$ | async; let last = last" class="breadcrumbs__item">
     <a [routerLink]="breadcrumb.url" *ngIf="!last" class="breadcrumbs__link">{{ breadcrumb.name }}</a>
-    <mat-icon *ngIf="!last" fontSet="material-icons-outlined" class="breadcrumbs__icon">keyboard_arrow_right</mat-icon>
+    <mat-icon *ngIf="!last" class="breadcrumbs__icon">keyboard_arrow_right</mat-icon>
     <span *ngIf="last" class="breadcrumbs__label">{{ breadcrumb.name }}</span>
   </li>
 </ul>

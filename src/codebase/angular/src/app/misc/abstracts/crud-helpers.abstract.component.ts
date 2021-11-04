@@ -24,29 +24,20 @@ export abstract class CrudHelpersAbstractComponent<T = any> implements OnDestroy
   onRemove(entity: T): void {
     this.openConfirmationModal()
       .pipe(switchMap((): Observable<void> => this.removeItem(entity)))
-      .subscribe(this.onAfterRemove.bind(this));
+      .subscribe();
   }
 
   onCreate(): void {
     this.openCreateModal()
       .pipe(switchMap((entity: Partial<T>): Observable<T> => this.createItem(entity)))
-      .subscribe(this.onAfterCreate.bind(this));
+      .subscribe();
   }
 
   onEdit(entity: T): void {
     this.openEditModal(entity)
       .pipe(switchMap((res: Partial<T>): Observable<T> => this.updateItem({ id: (entity as any)?.id, ...res })))
-      .subscribe(this.onAfterEdit.bind(this));
+      .subscribe();
   }
-
-  // tslint:disable-next-line:no-empty
-  onAfterRemove(...params: any[]): void {}
-
-  // tslint:disable-next-line:no-empty
-  onAfterCreate(...params: any[]): void {}
-
-  // tslint:disable-next-line:no-empty
-  onAfterEdit(...params: any[]): void {}
 
   protected get namespace(): string {
     return this.MODAL_NAMESPACE ? `.${this.MODAL_NAMESPACE}` : '';
@@ -82,22 +73,35 @@ export abstract class CrudHelpersAbstractComponent<T = any> implements OnDestroy
 
     return this.modal.open<boolean>(
       {
+        icon: 'attention',
         title: this.translate.instant(`${modalKey}.TITLE`),
-        component: this.MESSAGE_MODAL_COMPONENT
+        message:
+          this.translate.instant(`${modalKey}.MESSAGE`) !== `${modalKey}.MESSAGE` ? this.translate.instant(`${modalKey}.MESSAGE`) : '',
+        component: this.MESSAGE_MODAL_COMPONENT,
+        context: {},
+        actions: this.MESSAGE_MODAL_COMPONENT
+          ? null
+          : [
+            { type: 'close', value: false, color: 'accent', name: this.translate.instant('BUTTON_NAME.NO') },
+            { type: 'close', value: true, color: 'primary', name: this.translate.instant('BUTTON_NAME.YES') }
+          ]
       },
       this.MODAL_OPTIONS
     );
   }
 
   protected updateItem(entity: Partial<T>): Observable<T> {
+    console.log(entity);
     throw new Error('Method not implemented');
   }
 
   protected createItem(entity: Partial<T>): Observable<T> {
+    console.log(entity);
     throw new Error('Method not implemented');
   }
 
   protected removeItem(entity: T): Observable<void> {
+    console.log(entity);
     throw new Error('Method not implemented');
   }
 }
