@@ -36,7 +36,7 @@ describe('Angular specifier should', () => {
     expect(specifier.copyBaseStructure()).rejects.toThrow();
   });
 
-  test('add config.json to assets', async (): Promise<void> => {
+  test('add token.json to assets', async (): Promise<void> => {
     await specifier.addTokenJsonToAssets();
 
     expect(fs.outputFile).toBeCalled();

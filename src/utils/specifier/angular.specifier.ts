@@ -12,7 +12,7 @@ export class AngularSpecifier extends Specifier {
     return new Listr([
       {
         title: `Update ${blue('package.json')}`,
-        task: () => this.mergeWithJson(join(this.name, 'package.json'), config.packageJson)
+        task: () => this.mergeWithJson(join(this.name, 'package.json'), config.packageJson(this.name))
       },
       { title: 'Install dependencies', task: () => this.installPackages(config.modules) },
       { title: 'Add Material', task: () => this.installMaterial() },

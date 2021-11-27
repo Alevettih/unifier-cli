@@ -39,25 +39,27 @@ export default {
 
     'tslint-config-prettier'
   ],
-  packageJson: {
-    scripts: {
-      'start:ssl': 'ng serve --ssl',
-      'config:to-base64': 'node ./bin/to-base64.js',
-      'config:from-base64': 'node ./bin/from-base64.js',
-      lint: 'ng lint --fix',
-      build: 'ng build --prod',
-      'lint:scss': 'stylelint "./src/**/*.scss" --fix',
-      'lint:all': 'npm run lint && npm run lint:scss',
-      prettier: 'prettier --write "src/**/*.*(ts|js|json|html)"',
-      'pretty-quick': 'pretty-quick --staged --pattern "src/**/*.*(ts|js|json|html)"',
-      'deploy:requestumdemo': 'run-s build update-env:requestumdemo',
-      'update-env:requestumdemo': 'bash bin/update-env/requestumdemo.sh .env.demo frontend/'
-    },
-    husky: {
-      hooks: {
-        'pre-commit': 'npm run pretty-quick && npm run lint:all'
+  packageJson(projectName: string) {
+    return {
+      scripts: {
+        'start:ssl': 'ng serve --ssl',
+        'config:to-base64': 'node ./bin/to-base64.js',
+        'config:from-base64': 'node ./bin/from-base64.js',
+        lint: 'ng lint --fix',
+        build: 'ng build --prod',
+        'lint:scss': 'stylelint "./src/**/*.scss" --fix',
+        'lint:all': 'npm run lint && npm run lint:scss',
+        prettier: 'prettier --write "src/**/*.*(ts|js|json|html)"',
+        'pretty-quick': 'pretty-quick --staged --pattern "src/**/*.*(ts|js|json|html)"',
+        'deploy:dev': 'run-s build update-env:dev',
+        'update-env:dev': `bash bin/update-env/ssh-deploy.sh .env.dev ${projectName}/`
+      },
+      husky: {
+        hooks: {
+          'pre-commit': 'npm run pretty-quick && npm run lint:all'
+        }
       }
-    }
+    };
   },
   getConfigsPaths(name: string): ConfigPaths[] {
     return [
