@@ -15,7 +15,7 @@ export class UserApiService extends ApiBaseAbstractService<User> {
   protected readonly MODEL: ClassConstructor<User> = User;
 
   getMe(services?: IServicesConfig): Observable<User> {
-    return this.getItem('me', { expand: 'profile.attachmentFiles' }, services);
+    return this.getItem('me', services);
   }
 
   logout(services?: IServicesConfig): Observable<void> {

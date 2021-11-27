@@ -8,7 +8,7 @@ import { ModalActionsModule } from '@shared/modal/modal-actions/modal-actions.mo
 
 @NgModule({
   declarations: [UserModalComponent],
-  exports: [UserModalComponent],
-  imports: [CommonModule, AppFormsModule, MaterialModule, TranslateModule, ModalActionsModule]
+  imports: [CommonModule, AppFormsModule, MaterialModule, TranslateModule, ModalActionsModule],
+  exports: [UserModalComponent]
 })
 export class UserModalModule {}

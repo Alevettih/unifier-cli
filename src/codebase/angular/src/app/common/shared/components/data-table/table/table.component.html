@@ -6,12 +6,12 @@
   class="table"
 >
   <ng-container *ngFor="let columnItem of columns" matColumnDef="{{ columnItem.columnName }}">
-    <ng-container *ngIf="columnItem.sortable">
+    <ng-container *ngIf="columnItem.sort">
       <mat-header-cell [mat-sort-header]="columnItem.columnName" class="table__cell table__cell_header" *matHeaderCellDef>
         {{ columnItem.title | translate }}
       </mat-header-cell>
     </ng-container>
-    <ng-container *ngIf="!columnItem.sortable">
+    <ng-container *ngIf="!columnItem.sort">
       <mat-header-cell class="table__cell table__cell_header" *matHeaderCellDef>
         {{ columnItem.title | translate }}
       </mat-header-cell>

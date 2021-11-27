@@ -21,10 +21,14 @@ export class StorageService {
     return alreadyUsedStorage || newStorage;
   }
 
-  get(key: string): string {
+  get<T>(key: string): T {
     const currentStorage: Storage = [sessionStorage, localStorage].find((storage: Storage): boolean => Boolean(storage.getItem(key)));
 
-    return currentStorage?.getItem(key) || null;
+    return currentStorage?.getItem(key) ? JSON.parse(currentStorage?.getItem(key)) : null;
+  }
+
+  set(name: StorageKey, value: any): void {
+    this.current.setItem(name, JSON.stringify(value ?? ''));
   }
 
   remove(key: string): void {

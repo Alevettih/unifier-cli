@@ -2,7 +2,7 @@ import { ClassConstructor } from 'class-transformer';
 import { convertToModel } from '@misc/helpers/model-conversion/convert-to-model.function';
 import { HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { List } from '@models/classes/_list.model';
+import { IListEntry } from '@models/classes/_list.model';
 import { getRandomIdentifier } from '@misc/helpers/get-random-identifier.function';
 import { Params } from '@angular/router';
 import { QueryBuilder } from '@misc/query-builder';
@@ -19,7 +19,7 @@ export abstract class Responses<T extends { id: string }> {
     }
   }
 
-  get list(): (params: string[], body: Params, headers: HttpHeaders) => Observable<HttpResponse<List<Partial<T>>>> {
+  get list(): (params: string[], body: Params, headers: HttpHeaders) => Observable<HttpResponse<IListEntry<Partial<T>>>> {
     return this._list.bind(this);
   }
 
@@ -44,7 +44,7 @@ export abstract class Responses<T extends { id: string }> {
     body: HttpParams,
     headers: HttpHeaders,
     entities?: Partial<T>[]
-  ): Observable<HttpResponse<List<Partial<T>>>> {
+  ): Observable<HttpResponse<IListEntry<Partial<T>>>> {
     let resEntities: Partial<T>[] = entities ?? this.ENTITIES;
     const total = resEntities?.length;
 
@@ -57,7 +57,7 @@ export abstract class Responses<T extends { id: string }> {
     return of(
       new HttpResponse({
         status: 200,
-        body: { entities: resEntities, total: total }
+        body: { 'hydra:member': resEntities, 'hydra:totalItems': total }
       })
     );
   }

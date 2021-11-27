@@ -19,8 +19,8 @@ import { GrantType } from '@models/enums/grant-type.enum';
   providedIn: 'root'
 })
 export class AuthService {
-  private _tokens$: BehaviorSubject<Token> = new BehaviorSubject<Token>(JSON.parse(this._storage.get(StorageKey.tokens)) as Token);
-  private _role$: BehaviorSubject<UserRole> = new BehaviorSubject<UserRole>(this._storage.get(StorageKey.role) as UserRole);
+  private _tokens$: BehaviorSubject<Token> = new BehaviorSubject<Token>(this._storage.get<Token>(StorageKey.tokens));
+  private _role$: BehaviorSubject<UserRole> = new BehaviorSubject<UserRole>(this._storage.get<UserRole>(StorageKey.role));
   me$: BehaviorSubject<User> = new BehaviorSubject<User>(null);
 
   constructor(
@@ -114,7 +114,7 @@ export class AuthService {
 
   setRole(role: UserRole): UserRole {
     this._role$.next(role);
-    this._storage.current.setItem(StorageKey.role, JSON.stringify(role ?? []));
+    this._storage.set(StorageKey.role, role);
     return role;
   }
 
@@ -133,7 +133,7 @@ export class AuthService {
 
     if (res.access_token) {
       tokens = plainToClass(Token, res);
-      this._storage.current.setItem(StorageKey.tokens, JSON.stringify(tokens));
+      this._storage.set(StorageKey.tokens, tokens);
       this._tokens$.next(tokens);
     }
 

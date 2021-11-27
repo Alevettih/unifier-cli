@@ -1,16 +1,30 @@
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { PER_PAGE_DEFAULT } from './constants/_base.constant';
-import { SortDirection } from '@angular/material/sort';
+import { Sort, SortDirection } from '@angular/material/sort';
 import { Params } from '@angular/router';
-import { IParsedSorting } from '@models/interfaces/query-builder/parsed-sorting.interface';
-import { IQueryBuilderBaseKeys } from '@models/interfaces/query-builder/query-builder-base-keys.interface';
+import { auditTime } from 'rxjs/operators';
+
+export interface IQueryBuilderBaseKeys {
+  PAGE: string;
+  PER_PAGE: string;
+}
+
+export interface IDateRange {
+  start: string;
+  end: string;
+}
 
 export class QueryBuilder {
   static readonly BASE_KEYS: IQueryBuilderBaseKeys = Object.freeze({
+    ORDER_BY: 'order-by',
     PAGE: 'page',
     PER_PAGE: 'itemsPerPage'
   });
-  private _params$: BehaviorSubject<Params>;
+  private readonly _params$: BehaviorSubject<Params>;
+
+  get params$(): Observable<Params> {
+    return this._params$.pipe(auditTime(100));
+  }
 
   get params(): Params {
     return this._params$.getValue();
@@ -20,11 +34,11 @@ export class QueryBuilder {
     this._params$ = new BehaviorSubject<Params>(defaultQuery ?? ({} as Params));
   }
 
-  static parseSorting(value: string): IParsedSorting {
+  static parseSorting(value: string): Sort {
     const res: string[] = value?.split?.('|');
 
     return {
-      field: res?.[0],
+      active: res?.[0],
       direction: res?.[1] as SortDirection
     };
   }
@@ -45,10 +59,9 @@ export class QueryBuilder {
   }
 
   sort(field: string, direction: SortDirection): QueryBuilder {
-    if (!field || !['asc', 'desc', null, ''].includes(direction)) {
+    if (!field || !['asc', 'desc', ''].includes(direction)) {
       return;
     }
-
     this.clearSort();
 
     if (direction) {
@@ -59,12 +72,34 @@ export class QueryBuilder {
   }
 
   searchQuery(query: string | number, fieldName: string): QueryBuilder {
-    this._params$.next({ ...this.params, [fieldName]: query });
+    this.clearParams(fieldName);
+    if (query) {
+      this._params$.next({ ...this.params, [fieldName]: query });
+    }
     return this;
   }
 
   addFilter(fieldName: string, value: any): QueryBuilder {
     this._params$.next({ ...this.params, [fieldName]: value });
+    return this;
+  }
+
+  addRange(fieldName: string, value: IDateRange): QueryBuilder {
+    this.clearRange(fieldName);
+
+    if (value.start) {
+      this._params$.next({ ...this.params, [`${fieldName}[after]`]: value.start });
+    }
+
+    if (value.end) {
+      this._params$.next({ ...this.params, [`${fieldName}[before]`]: value.end });
+    }
+
+    return this;
+  }
+
+  clearRange(fieldName: string): QueryBuilder {
+    this.clearParams(`${fieldName}[after]`, `${fieldName}[before]`);
     return this;
   }
 

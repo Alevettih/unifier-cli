@@ -36,7 +36,7 @@
   }
 
   &.is-loading &__content {
-    opacity: 75%;
+    opacity: 0.75;
     filter: blur(3px);
   }
 }

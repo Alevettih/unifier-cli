@@ -1,56 +1,81 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { QueryParamsConnectedAbstractComponent } from '@misc/abstracts/query-params-connected-abstract.component';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { QueryBuilder } from '@misc/query-builder';
 import { IPaginatePipeArgs } from '@models/interfaces/paginate-pipe-args.interface';
+import { Params } from '@angular/router';
+import { Subject } from 'rxjs';
+import { map, takeUntil, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'paginator',
   templateUrl: './paginator.component.html',
   styleUrls: ['./paginator.component.scss']
 })
-export class PaginatorComponent extends QueryParamsConnectedAbstractComponent implements OnChanges {
+export class PaginatorComponent implements OnChanges, OnInit, OnDestroy {
+  protected readonly DESTROYED$: Subject<void> = new Subject<void>();
+  protected readonly PARAMS_CHANGED$: Subject<void> = new Subject<void>();
+  @Input() queryParams: QueryBuilder;
   @Input() paginatePipeArgs: IPaginatePipeArgs;
-  @Input() marginTop: string = '4rem';
   @Output() paginatePipeArgsChange: EventEmitter<IPaginatePipeArgs> = new EventEmitter<IPaginatePipeArgs>();
+  perPage: number;
+  page: number;
 
-  ngOnChanges({ paginatePipeArgs }: SimpleChanges): void {
+  ngOnInit(): void {
+    this.initialize();
+  }
+
+  ngOnChanges({ paginatePipeArgs, queryParams }: SimpleChanges): void {
     if (paginatePipeArgs?.currentValue) {
       if (
         paginatePipeArgs?.currentValue?.itemsPerPage !== paginatePipeArgs?.previousValue?.itemsPerPage ||
         paginatePipeArgs?.currentValue?.currentPage !== paginatePipeArgs?.previousValue?.currentPage
       ) {
-        this.paramsBuilder.paginate(this.paginatePipeArgs.currentPage as number, this.paginatePipeArgs.itemsPerPage as number);
-        this.applyQueryParams();
+        this.queryParams.paginate(this.paginatePipeArgs.currentPage as number, this.paginatePipeArgs.itemsPerPage as number);
       }
+    }
+
+    if (queryParams?.currentValue) {
+      this.page = this.queryParams.params[QueryBuilder.BASE_KEYS.PAGE];
+      this.perPage = this.queryParams.params[QueryBuilder.BASE_KEYS.PER_PAGE];
+
+      this.PARAMS_CHANGED$.next();
+      this.queryParams.params$
+        .pipe(
+          takeUntil(this.PARAMS_CHANGED$),
+          takeUntil(this.DESTROYED$),
+          map(({ [QueryBuilder.BASE_KEYS.PAGE]: page, [QueryBuilder.BASE_KEYS.PER_PAGE]: perPage }): Params => ({ page, perPage })),
+          tap(({ page, perPage }): void => {
+            this.page = page;
+            this.perPage = perPage;
+          })
+        )
+        .subscribe(this.initialize.bind(this));
     }
   }
 
+  ngOnDestroy(): void {
+    this.DESTROYED$.next();
+    this.DESTROYED$.complete();
+  }
+
   paginate(page: number): void {
-    this.value = page;
+    this.setValue(page);
   }
 
-  get perPage(): number {
-    return parseInt(this.activatedRoute.snapshot.queryParamMap.get(QueryBuilder.BASE_KEYS.PER_PAGE), 10);
+  setValue(page: number) {
+    this.queryParams.paginate(page, this.paginatePipeArgs?.itemsPerPage as number);
   }
 
-  get value(): number {
-    return parseInt(this.activatedRoute.snapshot.queryParamMap.get(QueryBuilder.BASE_KEYS.PAGE), 10);
-  }
-
-  set value(page: number) {
-    this.paramsBuilder.paginate(page, this.paginatePipeArgs?.itemsPerPage as number);
-    this.applyQueryParams();
+  get pageIndex(): number {
+    return (Number(this.paginatePipeArgs?.currentPage) || 1) - 1;
   }
 
   protected initialize(): void {
-    super.initialize();
-
-    this.paginatePipeArgs.currentPage = this.value;
+    this.paginatePipeArgs.currentPage = this.page;
     this.paginatePipeArgs.itemsPerPage = this.perPage;
     this.paginatePipeArgsChange.emit(this.paginatePipeArgs);
 
-    if (!this.value) {
-      this.value = 1;
+    if (!this.page) {
+      this.setValue(1);
     }
   }
 }

@@ -82,9 +82,9 @@ export abstract class CrudHelpersAbstractComponent<T = any> implements OnDestroy
         actions: this.MESSAGE_MODAL_COMPONENT
           ? null
           : [
-            { type: 'close', value: false, color: 'accent', name: this.translate.instant('BUTTON_NAME.NO') },
-            { type: 'close', value: true, color: 'primary', name: this.translate.instant('BUTTON_NAME.YES') }
-          ]
+              { type: 'close', value: false, color: 'accent', name: this.translate.instant('BUTTON_NAME.NO') },
+              { type: 'close', value: true, color: 'primary', name: this.translate.instant('BUTTON_NAME.YES') }
+            ]
       },
       this.MODAL_OPTIONS
     );

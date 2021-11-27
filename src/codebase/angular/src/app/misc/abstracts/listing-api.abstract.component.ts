@@ -8,13 +8,14 @@ import { HttpServiceError } from '@services/http/http-service-error.class';
 import { CrudHelpersAbstractComponent } from '@misc/abstracts/crud-helpers.abstract.component';
 import { List } from '@models/classes/_list.model';
 import { DATE_FORMAT } from '@misc/constants/_base.constant';
-import { QueryBuilder } from '@misc/query-builder';
+import { IDateRange, QueryBuilder } from '@misc/query-builder';
 
 @Component({
   template: ''
 })
 export abstract class ListingApiAbstractComponent<T = any> extends CrudHelpersAbstractComponent<T> implements OnInit, OnDestroy {
   readonly BASE_DATE_FORMAT: string = DATE_FORMAT.FULL;
+  readonly QUERY_PARAMS: QueryBuilder = new QueryBuilder();
   abstract list: List<T>;
   isLoading: boolean = false;
 
@@ -28,46 +29,42 @@ export abstract class ListingApiAbstractComponent<T = any> extends CrudHelpersAb
   }
 
   ngOnInit(): void {
-    merge(this.activatedRoute.queryParams, this.activatedRoute.params)
+    merge(this.QUERY_PARAMS.params$, this.activatedRoute.params)
       .pipe(
         takeUntil(this.DESTROYED$),
         switchMap((): Observable<List> => this.loadItems(this.params))
       )
-      .subscribe(this.onNavigationEnd.bind(this));
+      .subscribe();
   }
 
   get params(): Params {
-    return this.activatedRoute.snapshot.queryParams;
+    return this.QUERY_PARAMS.params;
   }
 
-  protected updateList(isDelete: boolean): void {
-    const queryParams: Params = this.activatedRoute?.snapshot?.queryParams;
-    if (isDelete) {
-      const params: Params = { ...this.params, page: 1 };
-      if (queryParams.hasOwnProperty(QueryBuilder.BASE_KEYS.PAGE) || queryParams.hasOwnProperty(QueryBuilder.BASE_KEYS.PER_PAGE)) {
-        this.router.navigate([], { relativeTo: this.activatedRoute, queryParams: params });
-      } else {
-        this.loadItems(params).subscribe();
-      }
+  onFilter(fieldName: string, value: any, type: 'search' | 'date-range'): void {
+    switch (type) {
+      case 'search':
+        this.QUERY_PARAMS.searchQuery((value as string)?.trim?.(), fieldName);
+        break;
+      case 'date-range':
+        this.QUERY_PARAMS.addRange(fieldName, value as IDateRange);
+        break;
+    }
+
+    this.QUERY_PARAMS.paginate(1, this.QUERY_PARAMS.params[QueryBuilder.BASE_KEYS.PER_PAGE]);
+  }
+
+  onSort(data: Params): void {
+    this.QUERY_PARAMS.sort(data?.active, data.direction);
+  }
+
+  protected updateList(clearPagination: boolean): void {
+    if (clearPagination) {
+      this.QUERY_PARAMS.paginate(1, this.QUERY_PARAMS.params[QueryBuilder.BASE_KEYS.PER_PAGE]);
     } else {
       this.loadItems(this.params).subscribe();
     }
   }
-
-  onAfterRemove(): void {
-    this.updateList(true);
-  }
-
-  onAfterEdit(): void {
-    this.updateList(false);
-  }
-
-  onAfterCreate(): void {
-    this.updateList(false);
-  }
-
-  // tslint:disable-next-line:no-empty
-  protected onNavigationEnd(...params: any[]): void {}
 
   protected loadItems(params: Params): Observable<List<T>> {
     this.isLoading = true;

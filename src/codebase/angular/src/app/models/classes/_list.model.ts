@@ -1,7 +1,7 @@
 import { ClassConstructor } from 'class-transformer';
 import { convertToModelsArray } from '@misc/helpers/model-conversion/convert-to-models-array';
 
-interface IListEntry<T = any> {
+export interface IListEntry<T = any> {
   'hydra:member'?: T[];
   'hydra:totalItems'?: number;
   entities?: T[];
