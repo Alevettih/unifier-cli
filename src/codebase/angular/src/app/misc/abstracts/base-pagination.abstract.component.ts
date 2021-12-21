@@ -48,8 +48,4 @@ export abstract class BasePaginationAbstractComponent implements OnChanges {
     this.totalItems = Number(totalItems);
     this.cdr.detectChanges();
   }
-
-  get shouldShowPagination(): boolean {
-    return this.totalItems > this.itemsPerPage;
-  }
 }
