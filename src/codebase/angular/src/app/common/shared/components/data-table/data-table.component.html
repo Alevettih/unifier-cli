@@ -8,7 +8,6 @@
       [columns]="columns"
       [displayedColumns]="displayedColumns"
       (rowClick)="rowClick.emit($event)"
-      (sort)="sort.emit($event)"
     ></table>
     <div class="data-table__empty-block" *ngIf="!dataSource.length && !isLoading">
       <mat-icon class="data-table__empty-icon" [svgIcon]="emptyIcon"></mat-icon>

@@ -20,7 +20,7 @@ export abstract class BasePaginationAbstractComponent implements OnChanges {
 
   ngOnChanges({ list, itemsPerPage }: SimpleChanges): void {
     if (list?.currentValue) {
-      if (list.currentValue?.total !== this.totalItems) {
+      if (list?.previousValue && list.currentValue?.total !== this.totalItems) {
         this.currentPage = 1;
       }
 

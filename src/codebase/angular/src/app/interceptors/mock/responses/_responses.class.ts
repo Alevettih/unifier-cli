@@ -5,7 +5,7 @@ import { Observable, of } from 'rxjs';
 import { IListEntry } from '@models/classes/_list.model';
 import { getRandomIdentifier } from '@misc/helpers/get-random-identifier.function';
 import { Params } from '@angular/router';
-import { QueryBuilder } from '@misc/query-builder';
+import { QueryParamsService } from '@services/query-params/query-params.service';
 
 export abstract class Responses<T extends { id: string }> {
   protected abstract readonly MODEL: ClassConstructor<T>;
@@ -48,9 +48,9 @@ export abstract class Responses<T extends { id: string }> {
     let resEntities: Partial<T>[] = entities ?? this.ENTITIES;
     const total = resEntities?.length;
 
-    if (body.has(QueryBuilder.BASE_KEYS.PAGE)) {
-      const page: number = Number(body.get(QueryBuilder.BASE_KEYS.PAGE));
-      const perPage: number = Number(body.get(QueryBuilder.BASE_KEYS.PER_PAGE)) || 20;
+    if (body.has(QueryParamsService.BASE_KEYS.PAGE)) {
+      const page: number = Number(body.get(QueryParamsService.BASE_KEYS.PAGE));
+      const perPage: number = Number(body.get(QueryParamsService.BASE_KEYS.PER_PAGE)) || 20;
       resEntities = resEntities.slice((page - 1) * perPage, page * perPage);
     }
 
