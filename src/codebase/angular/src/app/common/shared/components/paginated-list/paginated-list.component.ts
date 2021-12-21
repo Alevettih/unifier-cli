@@ -1,5 +1,6 @@
 import { Component, Input, TemplateRef } from '@angular/core';
 import { BasePaginationAbstractComponent } from '@misc/abstracts/base-pagination.abstract.component';
+import { QueryParamsService } from '@services/query-params/query-params.service';
 
 @Component({
   selector: 'paginated-list',
@@ -7,11 +8,11 @@ import { BasePaginationAbstractComponent } from '@misc/abstracts/base-pagination
   styleUrls: ['./paginated-list.component.scss']
 })
 export class PaginatedListComponent extends BasePaginationAbstractComponent {
+  @Input() queryParams: QueryParamsService;
   @Input() hidePagination: boolean = false;
   @Input() emptyMessage: string;
   @Input() emptyIcon: string = 'no';
   @Input() columnWidth: string = '1fr';
-  @Input() maxHeight: string = 'none';
   @Input() gridGap: string = '2.5rem';
   @Input() itemTemplate: TemplateRef<any>;
 
