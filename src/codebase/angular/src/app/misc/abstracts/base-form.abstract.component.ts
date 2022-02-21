@@ -19,7 +19,7 @@ export abstract class BaseFormAbstractComponent implements OnDestroy {
   formGroup: FormGroup;
 
   get form(): IFormControls {
-    return this.formGroup.controls;
+    return this.formGroup?.controls;
   }
 
   getGroup(name: string): FormGroup {

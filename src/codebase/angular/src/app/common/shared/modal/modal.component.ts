@@ -1,17 +1,27 @@
-import { Component, Inject, InjectionToken, Injector, TemplateRef, Type, OnInit, ValueProvider, ViewChild } from '@angular/core';
+import {
+  Component,
+  Inject,
+  TemplateRef,
+  Type,
+  ViewContainerRef,
+  Renderer2,
+  ViewChild,
+  AfterViewInit,
+  ElementRef,
+  ChangeDetectorRef,
+  ComponentRef
+} from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { IModalAction } from '@shared/modal/modal-actions/modal-actions.component';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
-export const COMPONENT_CONTEXT: InjectionToken<string> = new InjectionToken<string>('COMPONENT_CONTEXT');
-
 export interface IModalComponentContext<T> {
   entity?: T;
   dialog?: MatDialogRef<any>;
-  [key: string]: any;
 }
 
-export interface IModalFormComponent {
+export interface IModalFormComponent<T = any> {
+  context: IModalComponentContext<T>;
   formGroup: FormGroup;
   onSubmit(): void;
 }
@@ -23,7 +33,7 @@ export interface IModalData<T = any> {
   template?: TemplateRef<any>;
   component?: Type<IModalFormComponent>;
   context?: IModalComponentContext<T>;
-  actions?: IModalAction<T>[];
+  actions?: IModalAction[];
 }
 
 @Component({
@@ -31,21 +41,23 @@ export interface IModalData<T = any> {
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.scss']
 })
-export class ModalComponent<T> implements OnInit {
-  injector: Injector;
+export class ModalComponent<T> implements AfterViewInit {
+  @ViewChild('modalBody') modalBody: ElementRef<HTMLDivElement>;
+  componentRef: ComponentRef<IModalFormComponent<T>>;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: IModalData<T>,
     private _dialog: MatDialogRef<ModalComponent<T>>,
-    private _injector: Injector,
-    private _fb: FormBuilder
+    private _fb: FormBuilder,
+    private _cdr: ChangeDetectorRef,
+    private _renderer: Renderer2,
+    private _viewContainerRef: ViewContainerRef
   ) {}
 
-  ngOnInit(): void {
-    this.injector = Injector.create({
-      providers: [{ provide: COMPONENT_CONTEXT, useValue: this.context, multi: false } as ValueProvider],
-      parent: this._injector
-    });
+  ngAfterViewInit(): void {
+    if (this.data.component) {
+      this._createComponent();
+    }
   }
 
   get icon(): string {
@@ -56,7 +68,19 @@ export class ModalComponent<T> implements OnInit {
     return { ...this.data?.context, dialog: this._dialog };
   }
 
-  private _getIconPath(size?: string): string {
-    return `/assets/img/modal-icons/${this.icon}/${this.icon}${size ? `@${size}` : ''}.png ${size ?? ''}`.trim();
+  get componentInstance(): IModalFormComponent<T> {
+    return this.componentRef?.instance;
+  }
+
+  onSubmit(): void {
+    this.componentInstance?.formGroup?.markAllAsTouched();
+    this.componentInstance?.onSubmit?.();
+  }
+
+  private _createComponent(): void {
+    this.componentRef = this._viewContainerRef.createComponent(this.data.component);
+    this.componentRef.instance.context = this.context;
+    this._renderer.appendChild(this.modalBody.nativeElement, this.componentRef.location.nativeElement);
+    this._cdr.detectChanges();
   }
 }

@@ -1,5 +1,5 @@
 import { ClassConstructor } from 'class-transformer';
-import { convertToModelsArray } from '@misc/helpers/model-conversion/convert-to-models-array';
+import { convertToModelsArrayFunction } from '@misc/helpers/model-conversion/convert-to-models-array.function';
 
 export interface IListEntry<T = any> {
   'hydra:member'?: T[];
@@ -30,7 +30,7 @@ export class List<T = any> {
         count = 0;
     }
 
-    this.entities = convertToModelsArray(items, entityClass);
+    this.entities = convertToModelsArrayFunction(items, entityClass);
     this.total = count;
   }
 }

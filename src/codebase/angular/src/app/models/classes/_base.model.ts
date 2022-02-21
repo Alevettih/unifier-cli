@@ -1,4 +1,5 @@
-import { Exclude, Expose, Transform, TransformFnParams } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
+import { transformToDate } from '@misc/helpers/model-conversion/transform-helpers/transform-to-date.function';
 
 @Exclude()
 export abstract class BaseModel {
@@ -7,10 +8,10 @@ export abstract class BaseModel {
   @Expose()
   id: string;
   @Expose()
-  @Transform(({ value }: TransformFnParams): Date => (value ? new Date(value) : null))
+  @Transform(transformToDate)
   createdAt: Date;
   @Expose()
-  @Transform(({ value }: TransformFnParams): Date => (value ? new Date(value) : null))
+  @Transform(transformToDate)
   date: Date;
 
   [Symbol.toPrimitive](hint: 'number' | 'string' | 'default') {

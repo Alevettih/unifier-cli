@@ -1,11 +1,10 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { COMPONENT_CONTEXT, IModalComponentContext, ModalComponent } from '@shared/modal/modal.component';
+import { Component, Input, OnInit } from '@angular/core';
+import { IModalComponentContext, ModalComponent } from '@shared/modal/modal.component';
 import { User } from '@models/classes/user.model';
 import { BaseFormAbstractComponent } from '@misc/abstracts/base-form.abstract.component';
 import { FormBuilder, Validators } from '@angular/forms';
 import { UserRole } from '@models/enums/user-role.enum';
 import { IOption } from '@models/interfaces/forms/option.interface';
-import { IModalAction } from '@shared/modal/modal-actions/modal-actions.component';
 import { VALIDATORS_SET } from '@misc/constants/validators-set.constant';
 import { TranslateService } from '@ngx-translate/core';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -24,26 +23,21 @@ interface IFormValues {
   styleUrls: ['./user-modal.component.scss']
 })
 export class UserModalComponent extends BaseFormAbstractComponent implements OnInit {
+  @Input() context: IModalComponentContext<User>;
   private _availableRoles: UserRole[] = [UserRole.admin];
-  actions: IModalAction<boolean>[];
   roleOptions: IOption[] = [];
 
-  constructor(
-    @Inject(COMPONENT_CONTEXT) private _context: IModalComponentContext<User>,
-    private _translate: TranslateService,
-    private _fb: FormBuilder
-  ) {
+  constructor(private _translate: TranslateService, private _fb: FormBuilder) {
     super();
   }
 
   ngOnInit(): void {
-    this._initActions();
     this._initOptions();
     this._initForm();
   }
 
   get user(): User {
-    return this._context.entity;
+    return this.context?.entity;
   }
 
   get defaultValues(): IFormValues {
@@ -56,7 +50,7 @@ export class UserModalComponent extends BaseFormAbstractComponent implements OnI
   }
 
   get dialog(): MatDialogRef<ModalComponent<User>> {
-    return this._context.dialog;
+    return this.context?.dialog;
   }
 
   getModalResult(): IFormValues {
@@ -84,12 +78,5 @@ export class UserModalComponent extends BaseFormAbstractComponent implements OnI
     this.roleOptions = this._availableRoles.map(
       (role: UserRole): IOption => ({ value: role, label: this._translate.instant(`SERVICE_ROLE.${role.toUpperCase()}`), disabled: false })
     );
-  }
-
-  private _initActions(): void {
-    this.actions = [
-      { value: false, type: 'close', name: 'BUTTON_NAME.CANCEL', color: 'accent' },
-      { value: true, type: 'submit', name: `BUTTON_NAME.${this.user ? 'SAVE' : 'CREATE'}`, color: 'primary' }
-    ];
   }
 }

@@ -2,12 +2,12 @@
   <ng-container *ngFor="let action of actions">
     <ng-container [ngSwitch]="action.type">
       <ng-container *ngSwitchCase="'submit'">
-        <button mat-flat-button class="modal-actions__button" [color]="action.color">
+        <button mat-flat-button class="modal-actions__button" [color]="action.color" (click)="submitted.emit()">
           {{ action.name | translate }}
         </button>
       </ng-container>
       <ng-container *ngSwitchCase="'close'">
-        <button mat-flat-button class="modal-actions__button" [mat-dialog-close]="action.value" [color]="action.color">
+        <button mat-flat-button type="button" class="modal-actions__button" [mat-dialog-close]="action?.value" [color]="action.color">
           {{ action.name | translate }}
         </button>
       </ng-container>

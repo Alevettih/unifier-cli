@@ -1,8 +1,9 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { IAction } from '@shared/components/data-table/table-actions/table-actions.component';
 
-export interface IModalAction<T> extends IAction<T> {
+export interface IModalAction extends Omit<IAction<boolean>, 'value'> {
   type: 'submit' | 'close';
+  value?: boolean;
 }
 
 @Component({
@@ -10,6 +11,7 @@ export interface IModalAction<T> extends IAction<T> {
   templateUrl: './modal-actions.component.html',
   styleUrls: ['./modal-actions.component.scss']
 })
-export class ModalActionsComponent<T> {
-  @Input() actions: IModalAction<T>[];
+export class ModalActionsComponent {
+  @Input() actions: IModalAction[];
+  @Output() submitted: EventEmitter<void> = new EventEmitter<void>();
 }

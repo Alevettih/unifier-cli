@@ -2,15 +2,12 @@
   <header class="dialog__header">
     <mat-icon>{{ icon }}</mat-icon>
   </header>
-  <div class="dialog__body">
+  <div #modalBody class="dialog__body">
     <h3 mat-dialog-title class="dialog__title">{{ data?.title | translate }}</h3>
     <p class="dialog__text" *ngIf="data?.message" [innerHTML]="data?.message | translate"></p>
     <div class="dialog__template" *ngIf="data?.template">
       <ng-container *ngTemplateOutlet="data.template; context: context"></ng-container>
     </div>
-    <ng-container *ngIf="data?.component">
-      <ng-container *ngComponentOutlet="data.component; injector: injector"></ng-container>
-    </ng-container>
   </div>
-  <modal-actions *ngIf="data?.actions" [actions]="data?.actions"></modal-actions>
+  <modal-actions *ngIf="data?.actions" [actions]="data?.actions" (submitted)="onSubmit()"></modal-actions>
 </div>
