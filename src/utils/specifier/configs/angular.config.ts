@@ -4,9 +4,11 @@ import { ConfigPaths } from '@utils/specifier';
 export default {
   modules: [
     '@types/lodash.get',
+    '@types/lodash.set',
     '@types/lodash.transform',
     '@types/lodash.isequal',
     'lodash.get',
+    'lodash.set',
     'lodash.transform',
     'lodash.isequal',
 
@@ -46,13 +48,15 @@ export default {
         'config:to-base64': 'node ./bin/to-base64.js',
         'config:from-base64': 'node ./bin/from-base64.js',
         lint: 'ng lint --fix',
-        build: 'ng build --prod',
+        build: 'ng build',
         'lint:scss': 'stylelint "./src/**/*.scss" --fix',
         'lint:all': 'npm run lint && npm run lint:scss',
         prettier: 'prettier --write "src/**/*.*(ts|js|json|html)"',
         'pretty-quick': 'pretty-quick --staged --pattern "src/**/*.*(ts|js|json|html)"',
         'deploy:dev': 'run-s build update-env:dev',
-        'update-env:dev': `bash bin/update-env/ssh-deploy.sh .env.dev ${projectName}/`
+        'update-env:dev': `bash bin/update-env/ssh-deploy.sh .env.dev ${projectName}/`,
+        'hook:pre-commit': 'npm run pretty-quick',
+        prepare: 'husky install && husky set .husky/pre-commit "npm run hook:pre-commit"'
       },
       husky: {
         hooks: {
