@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from '@services/auth/auth.service';
-import { User } from '@models/classes/user.model';
+import { User } from '@models/classes/user/user.model';
 import { INavLink } from '@models/interfaces/nav-link.interface';
 import { TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';

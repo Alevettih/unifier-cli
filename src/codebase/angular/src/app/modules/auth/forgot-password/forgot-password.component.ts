@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from '@services/auth/auth.service';
 import { ActivatedRoute, Params } from '@angular/router';
-import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'forgot-password',
@@ -24,17 +23,10 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._auth.clearTokens();
-    this._auth
-      .getTemporaryToken()
-      .pipe(catchError(this.onSubscribeError.bind(this)))
-      .subscribe();
+    this._auth.getTemporaryToken().subscribe();
   }
 
   ngOnDestroy(): void {
     this._auth.clearTokens();
-  }
-
-  onSubscribeError(error: Error): void {
-    console.error(error);
   }
 }

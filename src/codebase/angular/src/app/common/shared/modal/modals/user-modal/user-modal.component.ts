@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { IModalComponentContext, ModalComponent } from '@shared/modal/modal.component';
-import { User } from '@models/classes/user.model';
+import { User } from '@models/classes/user/user.model';
 import { BaseFormAbstractComponent } from '@misc/abstracts/base-form.abstract.component';
 import { FormBuilder, Validators } from '@angular/forms';
 import { UserRole } from '@models/enums/user-role.enum';

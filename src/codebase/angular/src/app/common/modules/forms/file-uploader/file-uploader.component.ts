@@ -18,7 +18,7 @@ export class FileUploaderComponent extends BaseFormFieldAbstractComponent implem
   @ViewChild('fileInput') fileInput: ElementRef<HTMLInputElement>;
   @Output() fileDragover: EventEmitter<DragEvent> = new EventEmitter<DragEvent>();
   @Output() fileDragleave: EventEmitter<DragEvent> = new EventEmitter<DragEvent>();
-  @Input() control: FormControl;
+  @Input() override control: FormControl;
   @Input() fileType: FileType[] = [FileType.any];
   @Input() multiple: boolean = true;
   @Input() maxCountFile: number = 10;
@@ -36,8 +36,8 @@ export class FileUploaderComponent extends BaseFormFieldAbstractComponent implem
   constructor(
     private _fileApi: FileApiService,
     private _sanitizer: DomSanitizer,
-    protected cdr: ChangeDetectorRef,
-    protected translate: TranslateService
+    protected override cdr: ChangeDetectorRef,
+    protected override translate: TranslateService
   ) {
     super(cdr, translate);
   }
@@ -70,7 +70,7 @@ export class FileUploaderComponent extends BaseFormFieldAbstractComponent implem
   }
 
   getFiles(event: Event): File[] {
-    return Array.prototype.map.call((event.target as HTMLInputElement).files, (file: File): File => file);
+    return Array.from((event.target as HTMLInputElement).files ?? []).map((file: File): File => file);
   }
 
   fileChangeHandler(files: File[]): void {
@@ -124,7 +124,7 @@ export class FileUploaderComponent extends BaseFormFieldAbstractComponent implem
     event.stopPropagation();
     event.preventDefault();
     const haveBeenErrored: boolean = Boolean(this.fileError);
-    this.filesWithError.delete(this.selectFile?.find?.((file: ApiFile, index: number): boolean => idx === index)?.originalName);
+    this.filesWithError.delete(this.selectFile?.find?.((file: ApiFile, index: number): boolean => idx === index)?.originalName as string);
     this.selectFile = (this.selectFile as ApiFile[]).filter((file: ApiFile, index: number): boolean => idx !== index);
     this.control.setValue(
       this.control.value?.length ? this.control.value.filter((file: File, index: number): boolean => idx !== index) : null
@@ -149,7 +149,7 @@ export class FileUploaderComponent extends BaseFormFieldAbstractComponent implem
 
   getNativeFileUrl(file: ApiFile | File): string {
     if (file instanceof ApiFile) {
-      return this._sanitizer.bypassSecurityTrustResourceUrl(file.uri) as string;
+      return this._sanitizer.bypassSecurityTrustResourceUrl(file.path) as string;
     }
 
     return this._sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(file)) as string;

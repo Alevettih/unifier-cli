@@ -25,7 +25,7 @@ export class DndFileDirective {
     event.preventDefault();
     event.stopPropagation();
     this.fileOver = false;
-    const files: File[] = Array.prototype.map.call(event.dataTransfer.files, (file: File): File => file);
+    const files: File[] = Array.from(event.dataTransfer.files).map((file: File): File => file);
     if (files.length > 0) {
       this.fileDropped.emit(files);
     }

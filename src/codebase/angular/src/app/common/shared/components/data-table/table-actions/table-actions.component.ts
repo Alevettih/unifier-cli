@@ -14,7 +14,7 @@ export interface IAction<T = string> {
   templateUrl: './table-actions.component.html',
   styleUrls: ['./table-actions.component.scss']
 })
-export class TableActionsComponent {
-  @Input() actions: IAction[];
-  @Output() actionClick: EventEmitter<string> = new EventEmitter<string>();
+export class TableActionsComponent<T = string> {
+  @Input() actions: IAction<T>[];
+  @Output() actionClick: EventEmitter<T> = new EventEmitter<T>();
 }

@@ -5,7 +5,7 @@ import { map, switchMap, tap } from 'rxjs/operators';
 import { Token } from '@models/classes/tokens.model';
 import { IApiTokens } from '@models/interfaces/api-tokens.interface';
 import { APP_CONFIG, IAppConfig } from '@misc/constants/app-config.constant';
-import { User } from '@models/classes/user.model';
+import { User } from '@models/classes/user/user.model';
 import { UserRole } from '@models/enums/user-role.enum';
 import { HttpService, IServicesConfig } from '@services/http/http.service';
 import { StorageService } from '@services/storage/storage.service';
@@ -118,8 +118,8 @@ export class AuthService {
     return role;
   }
 
-  getMe(services?: IServicesConfig): Observable<User> {
-    return this._userApi.getMe({ skipErrorNotification: true, ...services }).pipe(
+  getMe(): Observable<User> {
+    return this._userApi.getMe({ skipErrorNotification: true }).pipe(
       map((user: User): User => {
         this.me$.next(user);
         this.setRole(user.role);

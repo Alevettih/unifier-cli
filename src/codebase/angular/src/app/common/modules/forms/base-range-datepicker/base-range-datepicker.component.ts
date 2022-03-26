@@ -15,7 +15,7 @@ export class BaseRangeDatepickerComponent extends BaseFormFieldAbstractComponent
   @Output() dateChange: EventEmitter<Date> = new EventEmitter<Date>();
   range: FormGroup;
 
-  constructor(protected cdr: ChangeDetectorRef, protected translate: TranslateService, protected fb: FormBuilder) {
+  constructor(protected override cdr: ChangeDetectorRef, protected override translate: TranslateService, protected fb: FormBuilder) {
     super(cdr, translate);
 
     this.range = this.fb.group({

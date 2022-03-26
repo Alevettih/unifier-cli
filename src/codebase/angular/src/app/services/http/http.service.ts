@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHandler, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 import { NotificationService } from '@services/notification/notification.service';
 import { catchError, finalize, tap } from 'rxjs/operators';
 import { LoaderService } from '@services/loader/loader.service';
@@ -28,7 +28,7 @@ export class HttpService extends HttpClient {
     super(handler);
   }
 
-  get(url: string, options?: any, services?: IServicesConfig | null): Observable<any> {
+  override get(url: string, options?: any, services?: IServicesConfig | null): Observable<any> {
     this._startLoader(services);
     const httpOptions: { headers: HttpHeaders } = {
       headers: new HttpHeaders({
@@ -45,7 +45,7 @@ export class HttpService extends HttpClient {
       );
   }
 
-  post(url: string, body: any | null, options?: any, services?: IServicesConfig | null): Observable<any> {
+  override post(url: string, body: any | null, options?: any, services?: IServicesConfig | null): Observable<any> {
     this._startLoader(services);
 
     return super
@@ -57,7 +57,7 @@ export class HttpService extends HttpClient {
       );
   }
 
-  patch(url: string, body: any | null, options?: any, services?: IServicesConfig | null): Observable<any> {
+  override patch(url: string, body: any | null, options?: any, services?: IServicesConfig | null): Observable<any> {
     this._startLoader(services);
     const httpOptions: { headers: HttpHeaders } = {
       headers: new HttpHeaders({
@@ -73,7 +73,7 @@ export class HttpService extends HttpClient {
       );
   }
 
-  delete(url: string, options?: any, services?: IServicesConfig | null): Observable<any> {
+  override delete(url: string, options?: any, services?: IServicesConfig | null): Observable<any> {
     this._startLoader(services);
 
     return super
@@ -85,7 +85,7 @@ export class HttpService extends HttpClient {
       );
   }
 
-  put(url: string, body: any | null, options?: any, services?: IServicesConfig | null): Observable<any> {
+  override put(url: string, body: any | null, options?: any, services?: IServicesConfig | null): Observable<any> {
     this._startLoader(services);
 
     return super
@@ -122,7 +122,7 @@ export class HttpService extends HttpClient {
       });
     }
 
-    return throwError(customError);
+    throw customError;
   }
 
   private _onEveryCase(config: IServicesConfig): void {

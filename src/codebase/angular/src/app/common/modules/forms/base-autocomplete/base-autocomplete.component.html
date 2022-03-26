@@ -1,0 +1,39 @@
+<label>
+  <mat-form-field [appearance]="appearance">
+    <mat-label *ngIf="placeholder">{{ placeholder }}</mat-label>
+    <mat-icon matPrefix *ngIf="icon" [svgIcon]="icon"></mat-icon>
+    <input
+      matInput
+      [formControl]="formControl"
+      [placeholder]="placeholder"
+      [required]="required"
+      [readonly]="readonly"
+      [autocomplete]="autocomplete"
+      [matAutocomplete]="auto"
+      matAutocompletePosition="below"
+    />
+    <button
+      *ngIf="formControl.value"
+      mat-icon-button
+      matSuffix
+      type="button"
+      aria-label="Clear"
+      tabindex="-1"
+      (click)="onClear()"
+      class="form-field__close"
+    >
+      <mat-icon svgIcon="cross"></mat-icon>
+    </button>
+    <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayWith">
+      <mat-option *ngFor="let item of options; index as i" [value]="item">
+        <ng-container *ngIf="optionTemplate; else base">
+          <ng-container *ngTemplateOutlet="optionTemplate; context: { $implicit: item }"></ng-container>
+        </ng-container>
+        <ng-template #base>
+          {{ displayWith(item) }}
+        </ng-template>
+      </mat-option>
+    </mat-autocomplete>
+    <mat-error *ngIf="control?.invalid && errorMessage">{{ errorMessage }}</mat-error>
+  </mat-form-field>
+</label>

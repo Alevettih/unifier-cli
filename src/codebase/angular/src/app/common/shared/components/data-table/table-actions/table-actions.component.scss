@@ -1,0 +1,12 @@
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:host::ng-deep {
+  .action.mat-button-base.mat-button-base {
+    --size: 4rem;
+    --fill: var(--color-teki-faded-blue);
+  }
+}

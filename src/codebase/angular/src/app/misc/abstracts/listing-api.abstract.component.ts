@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { merge, Observable } from 'rxjs';
-import { ActivatedRoute, Params, Router } from '@angular/router';
-import { catchError, filter, map, pairwise, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { ActivatedRoute, Params } from '@angular/router';
+import { catchError, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { ModalService } from '@shared/modal/modal.service';
 import { TranslateService } from '@ngx-translate/core';
 import { HttpServiceError } from '@services/http/http-service-error.class';
@@ -22,8 +22,8 @@ export abstract class ListingApiAbstractComponent<T = any> extends CrudHelpersAb
   constructor(
     protected queryParams: QueryParamsService,
     protected activatedRoute: ActivatedRoute,
-    protected modal: ModalService,
-    protected translate: TranslateService
+    protected override modal: ModalService,
+    protected override translate: TranslateService
   ) {
     super(modal, translate);
     queryParams.shouldTranslateParamsToURL = false;

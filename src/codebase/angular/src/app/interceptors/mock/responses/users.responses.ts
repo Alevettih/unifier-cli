@@ -1,4 +1,4 @@
-import { User } from '@models/classes/user.model';
+import { User } from '@models/classes/user/user.model';
 import { UserRole } from '@models/enums/user-role.enum';
 import { convertToModel } from '@misc/helpers/model-conversion/convert-to-model.function';
 import { Responses } from '@interceptors/mock/responses/_responses.class';
@@ -9,7 +9,7 @@ import { Params } from '@angular/router';
 
 class UserResponses extends Responses<User> {
   protected readonly MODEL: ClassConstructor<User> = User;
-  readonly ENTITIES: User[] = [
+  override readonly ENTITIES: User[] = [
     convertToModel(
       {
         id: 'vkvggvc9-33g3-vk0p-v90c-g9g9ggp8v453',
@@ -31,7 +31,7 @@ class UserResponses extends Responses<User> {
     };
   }
 
-  protected _oneById([id]: string[], body: Params, headers: HttpHeaders): Observable<HttpResponse<Partial<User>>> {
+  protected override _oneById([id]: string[], body: Params, headers: HttpHeaders): Observable<HttpResponse<Partial<User>>> {
     const token: string = headers.get('Authorization');
     const role: UserRole = token ? (atob(token.replace('Bearer ', '')) as UserRole) : null;
     if (id && id !== 'me') {

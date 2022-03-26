@@ -1,7 +1,6 @@
 import { Component, Input, ViewChild } from '@angular/core';
 import { BaseFormFieldAbstractComponent } from '@misc/abstracts/base-form-field.abstract.component';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
-import { FormGroupDirective } from '@angular/forms';
 
 @Component({
   selector: 'base-textarea',

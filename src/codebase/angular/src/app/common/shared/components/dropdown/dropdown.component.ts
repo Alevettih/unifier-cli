@@ -8,9 +8,6 @@ import { IDropdownItem } from '@models/interfaces/dropdown-item.interface';
 })
 export class DropdownComponent {
   @Input() items: IDropdownItem<any>[] = [];
-  @Input() isActive: boolean = false;
-  @Input() disablePadding: boolean = false;
-  @Input() isDivider: boolean = true;
   @Input() iconName: string;
   @Input() panelClass: string;
   @Input() isTranslateY: boolean = false;

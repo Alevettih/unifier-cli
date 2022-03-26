@@ -1,6 +1,6 @@
 import { ClassConstructor } from 'class-transformer';
 import { convertToModel } from '@misc/helpers/model-conversion/convert-to-model.function';
-import { HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpHeaders, HttpParams, HttpResponse } from "@angular/common/http";
 import { Observable, of } from 'rxjs';
 import { IListEntry } from '@models/classes/_list.model';
 import { getRandomIdentifier } from '@misc/helpers/get-random-identifier.function';
@@ -9,7 +9,7 @@ import { QueryParamsService } from '@services/query-params/query-params.service'
 
 export abstract class Responses<T extends { id: string }> {
   protected abstract readonly MODEL: ClassConstructor<T>;
-  readonly ENTITIES: T[] = [];
+  readonly ENTITIES: (T | Partial<T>)[] = [];
 
   protected abstract entitiesFn(index: number): Partial<T>;
 
@@ -19,7 +19,11 @@ export abstract class Responses<T extends { id: string }> {
     }
   }
 
-  get list(): (params: string[], body: Params, headers: HttpHeaders) => Observable<HttpResponse<IListEntry<Partial<T>>>> {
+  get list(): (
+    params: string[],
+    body: HttpParams,
+    headers: HttpHeaders,
+    entities?: Partial<T>[]) => Observable<HttpResponse<IListEntry<Partial<T>>>> {
     return this._list.bind(this);
   }
 
@@ -63,15 +67,21 @@ export abstract class Responses<T extends { id: string }> {
   }
 
   protected _oneById([id]: string[], body: Params, headers: HttpHeaders): Observable<HttpResponse<Partial<T>>> {
-    return of(
-      new HttpResponse({
-        status: 200,
-        body: this.ENTITIES.find((entity: T): boolean => entity.id === id)
-      })
-    );
+    const entity: Partial<T> = this.ENTITIES.find((entity: Partial<T>): boolean => entity.id === id);
+
+    if (entity) {
+      return of(
+        new HttpResponse({
+          status: 200,
+          body: entity
+        })
+      );
+    } else {
+      throw new HttpErrorResponse({ status: 404, error: { message: 'Not Found' } });
+    }
   }
 
-  protected _create(routeParams: string[], body: T): Observable<HttpResponse<Partial<T>>> {
+  protected _create(routeParams: string[], body: Partial<T>): Observable<HttpResponse<Partial<T>>> {
     body.id = getRandomIdentifier();
     this.ENTITIES.push(body);
 
@@ -84,7 +94,7 @@ export abstract class Responses<T extends { id: string }> {
   }
 
   protected _update([id]: string[], body: Partial<T>): Observable<HttpResponse<Partial<T>>> {
-    const entityIndex: number = this.ENTITIES.findIndex((entity: T): boolean => entity?.id === id);
+    const entityIndex: number = this.ENTITIES.findIndex((entity: Partial<T>): boolean => entity?.id === id);
 
     this.ENTITIES.splice(entityIndex, 1, { ...this.ENTITIES[entityIndex], ...body });
 
@@ -97,7 +107,7 @@ export abstract class Responses<T extends { id: string }> {
   }
 
   protected _delete([id]: string[]): Observable<HttpResponse<void>> {
-    const entityIndex: number = this.ENTITIES.findIndex((user: T): boolean => user?.id === id);
+    const entityIndex: number = this.ENTITIES.findIndex((user: Partial<T>): boolean => user?.id === id);
     if (entityIndex > -1) {
       this.ENTITIES.splice(entityIndex, 1);
     }

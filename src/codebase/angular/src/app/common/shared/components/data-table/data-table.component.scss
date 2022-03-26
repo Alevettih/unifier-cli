@@ -8,13 +8,18 @@
   flex-direction: column;
   flex-grow: 1;
 
+  &__table-card {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 1rem 3rem 0;
+  }
+
   &__table-wrap {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    min-height: 50rem;
     overflow: auto;
-    padding: 1rem 3.6rem 0;
   }
 
   &__empty-block {

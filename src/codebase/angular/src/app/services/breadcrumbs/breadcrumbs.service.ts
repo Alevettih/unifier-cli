@@ -1,14 +1,14 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { ActivatedRouteSnapshot, ActivationEnd, NavigationEnd, Router, RouterEvent, UrlSegment } from '@angular/router';
-import { buffer, filter, map, pluck } from 'rxjs/operators';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { ActivatedRouteSnapshot, ActivationEnd, Event, NavigationEnd, Router, UrlSegment } from "@angular/router";
+import { buffer, filter, map } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from "rxjs";
 import { Subscription } from 'rxjs/internal/Subscription';
 import { IBreadcrumb } from '@models/interfaces/breadcrumbs/breadcrumb.interface';
 import { IBreadcrumbDataWithId } from '@models/interfaces/breadcrumbs/breadcrumb-data-with-id.interface';
 
-type CheckFunction = (event: RouterEvent) => boolean;
-const isNavigationEnd: CheckFunction = (ev: RouterEvent): boolean => ev instanceof NavigationEnd;
-const isActivationEnd: CheckFunction = (ev: RouterEvent): boolean => ev instanceof ActivationEnd;
+type CheckFunction<T extends Event> = (event: Event) => event is T;
+const isNavigationEnd: CheckFunction<NavigationEnd> = (ev: Event): ev is NavigationEnd => ev instanceof NavigationEnd;
+const isActivationEnd: CheckFunction<ActivationEnd> = (ev: Event): ev is ActivationEnd => ev instanceof ActivationEnd;
 
 @Injectable({
   providedIn: 'root'
@@ -21,12 +21,12 @@ export class BreadcrumbsService implements OnDestroy {
 
   constructor(private _router: Router) {
     this._bcForDisplay$ = new BehaviorSubject([]);
-    const navigationEnd$: Observable<RouterEvent> = this._router.events.pipe(filter(isNavigationEnd));
+    const navigationEnd$: Observable<NavigationEnd> = this._router.events.pipe(filter(isNavigationEnd));
 
     this._routerEventsSubscription = this._router.events
       .pipe(
-        filter<RouterEvent>(isActivationEnd),
-        pluck<RouterEvent>('snapshot'),
+        filter<Event, ActivationEnd>(isActivationEnd),
+        map(({ snapshot }: ActivationEnd): ActivatedRouteSnapshot => snapshot),
         buffer<ActivatedRouteSnapshot>(navigationEnd$),
         map<ActivatedRouteSnapshot[], ActivatedRouteSnapshot[]>((bcData: ActivatedRouteSnapshot[]): ActivatedRouteSnapshot[] =>
           bcData.reverse()

@@ -1,6 +1,6 @@
 import { Injectable, TemplateRef } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { NavigationEnd, Router, RouterEvent } from '@angular/router';
+import { Event, NavigationEnd, Router } from "@angular/router";
 import { filter, pairwise } from 'rxjs/operators';
 
 export interface IToolbarData<T = any> {
@@ -16,9 +16,9 @@ export class ToolbarHelperService {
   constructor(private _router: Router) {
     this._router.events
       .pipe(
-        filter((event: RouterEvent): boolean => event instanceof NavigationEnd),
+        filter((event: Event): boolean => event instanceof NavigationEnd),
         pairwise(),
-        filter(([a, b]: RouterEvent[]): boolean => {
+        filter(([a, b]: Event[]): boolean => {
           const routeA: string = (a as NavigationEnd).urlAfterRedirects?.replace(/\?.*/gi, '');
           const routeB: string = (b as NavigationEnd).urlAfterRedirects?.replace(/\?.*/gi, '');
 

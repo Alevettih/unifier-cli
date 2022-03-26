@@ -45,7 +45,7 @@ export class LogInComponent extends BaseFormAbstractComponent implements OnInit 
     const { username, password, shouldRemember }: { username: string; password: string; shouldRemember: boolean } =
       this.formGroup.getRawValue();
 
-    this._auth.login({ username, password }, shouldRemember, { skipErrorNotification: true }).subscribe((): void => {
+    this._auth.login({ username, password }, shouldRemember).subscribe((): void => {
       this._router.navigate(['']);
     });
   }

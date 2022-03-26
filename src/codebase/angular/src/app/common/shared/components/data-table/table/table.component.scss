@@ -1,13 +1,20 @@
 .table {
-  &__row {
+  &_hoverable &__row {
     cursor: pointer;
 
     &:hover {
-      background-color: rgb(var(--value-grey) 0.78);
+      background-color: rgb(var(--value-teki-dark-blue) / 12%);
     }
   }
 
   &::ng-deep {
+    [class*="mat-column-"] {
+      --size: unset;
+      min-width: var(--size);
+      max-width: var(--size);
+      width: var(--size);
+    }
+
     .mat-column-createdAt,
     .mat-column-lastUpdatedAt {
       max-width: 14rem;

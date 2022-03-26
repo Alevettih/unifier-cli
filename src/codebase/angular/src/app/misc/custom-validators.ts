@@ -37,12 +37,13 @@ export class CustomValidators {
   }
 
   static mustMatch(controlName: string, matchingControlName: string): ValidatorFn {
-    return (formGroup: FormGroup): ValidationErrors | null => {
-      const control: AbstractControl = formGroup.controls[controlName];
-      const matchingControl: AbstractControl = formGroup.controls[matchingControlName];
+    return (formGroup: AbstractControl): ValidationErrors | null => {
+      const group: FormGroup = formGroup as FormGroup;
+      const control: AbstractControl = group.controls[controlName];
+      const matchingControl: AbstractControl = group.controls[matchingControlName];
 
       if (!control.value && matchingControl.errors && !matchingControl.errors.mustMatch) {
-        return;
+        return null;
       }
 
       if (control.value !== matchingControl.value) {
@@ -55,6 +56,8 @@ export class CustomValidators {
       } else {
         matchingControl.setErrors(null);
       }
+
+      return null;
     };
   }
 

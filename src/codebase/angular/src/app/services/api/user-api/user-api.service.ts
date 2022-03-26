@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ApiBaseAbstractService, ITransitData } from '@misc/abstracts/api-base.abstract.service';
-import { User } from '@models/classes/user.model';
+import { ApiBaseAbstractService } from '@misc/abstracts/api-base.abstract.service';
+import { User } from '@models/classes/user/user.model';
 import { IServicesConfig } from '@services/http/http.service';
 import { Observable } from 'rxjs';
 import { Params } from '@angular/router';

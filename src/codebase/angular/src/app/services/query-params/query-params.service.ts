@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, from, Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, from, Observable, of } from 'rxjs';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { auditTime, filter, map, pairwise } from 'rxjs/operators';
+import { auditTime } from 'rxjs/operators';
 import { PER_PAGE_DEFAULT } from '@misc/constants/_base.constant';
 import { Sort, SortDirection } from '@angular/material/sort';
-import { difference } from '@misc/helpers/difference.function';
 
 export interface IQueryBuilderBaseKeys {
   PAGE: string;
@@ -60,7 +59,7 @@ export class QueryParamsService {
 
   sort(field: string, direction: SortDirection): QueryParamsService {
     if (!field || !['asc', 'desc', ''].includes(direction)) {
-      return;
+      return null;
     }
     this.clearSort();
 

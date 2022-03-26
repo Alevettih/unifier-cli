@@ -49,7 +49,8 @@ export class MockInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const endpoint: { params: string[]; path: string } = this._getEndpoint(request);
     const currentMockEndpoint: IMockHandler =
-      this.endpoints?.[request.method]?.[request.url] ?? this.endpoints?.[request.method]?.[endpoint?.path];
+      this.endpoints?.[request.method as keyof IMockEndpoints]?.[request.url] ??
+      this.endpoints?.[request.method as keyof IMockEndpoints]?.[endpoint?.path];
 
     if (currentMockEndpoint) {
       console.warn('Intercepted by API mock service: ', endpoint);
@@ -71,7 +72,7 @@ export class MockInterceptor implements HttpInterceptor {
   private _getEndpoint(request: HttpRequest<any>): { params: string[]; path: string } {
     let res: { params: string[]; path: string };
 
-    Object.keys(this.endpoints?.[request.method] ?? {}).forEach((path: string): void => {
+    Object.keys(this.endpoints?.[request.method as keyof IMockEndpoints] ?? {}).forEach((path: string): void => {
       const params: string[] = this._findDiff(path, request.url);
       let updatedPath: string = path;
 

@@ -5,7 +5,7 @@ import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { MatDrawerMode } from '@angular/material/sidenav';
 import { isPlatformBrowser } from '@angular/common';
 import { Params } from '@angular/router';
-import { User } from '@models/classes/user.model';
+import { User } from '@models/classes/user/user.model';
 import { UserRole } from '@models/enums/user-role.enum';
 import { AuthService } from '@services/auth/auth.service';
 

@@ -1,18 +1,20 @@
-<loader-container [isLoading]="isLoading" class="data-table">
-  <mat-card class="data-table__table-wrap">
-    <table
-      [queryParams]="queryParams"
-      [paginatePipeArgs]="paginatePipeArgs"
-      [dataSource]="dataSource"
-      [minWidth]="minWidth"
-      [columns]="columns"
-      [displayedColumns]="displayedColumns"
-      (rowClick)="rowClick.emit($event)"
-    ></table>
-    <div class="data-table__empty-block" *ngIf="!dataSource.length && !isLoading">
-      <mat-icon class="data-table__empty-icon" [svgIcon]="emptyIcon"></mat-icon>
-      <h4 class="data-table__empty-message">{{ emptyMessage | translate }}</h4>
+<loader-container [isLoading]="isLoading" class="data-table" [style.min-height.rem]="isLoading ? 50 : null">
+  <mat-card class="data-table__table-card" [style.min-height.rem]="isEmpty ? 50 : null" [style.flex-grow]="+!isLoading">
+    <div class="data-table__table-wrap">
+      <table
+        [queryParams]="queryParams"
+        [paginatePipeArgs]="paginatePipeArgs"
+        [dataSource]="dataSource"
+        [minWidth]="minWidth"
+        [columns]="columns"
+        [displayedColumns]="displayedColumns"
+        [rowClick]="rowClick"
+      ></table>
+      <div class="data-table__empty-block" *ngIf="isEmpty">
+        <mat-icon class="data-table__empty-icon" [svgIcon]="emptyIcon"></mat-icon>
+        <h4 class="data-table__empty-message">{{ emptyMessage | translate }}</h4>
+      </div>
     </div>
+    <paginator class="data-table__pagination" [queryParams]="queryParams" [(paginatePipeArgs)]="paginatePipeArgs"></paginator>
   </mat-card>
-  <paginator class="data-table__pagination" [queryParams]="queryParams" [(paginatePipeArgs)]="paginatePipeArgs"></paginator>
 </loader-container>

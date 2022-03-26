@@ -5,6 +5,7 @@ export interface IDataTableColumn {
   columnName: string;
   title?: string;
   template?: TemplateRef<any>;
+  headerTemplate?: TemplateRef<any>;
   sort?: {
     name?: string;
     defaultDirection?: SortDirection;

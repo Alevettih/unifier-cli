@@ -9,10 +9,35 @@ import { LoaderContainerModule } from '@shared/components/loader-container/loade
 import { CroppedTextModule } from '../cropped-text/cropped-text.module';
 import { TableActionsComponent } from './table-actions/table-actions.component';
 import { TableComponent } from './table/table.component';
+import { DirectivesModule } from '@directives/directives.module';
+import { DateComponent } from './cell-components/date/date.component';
+import { SwitchToggleComponent } from './cell-components/switch-toggle/switch-toggle.component';
+import { AppFormsModule } from '@forms/forms.module';
 
 @NgModule({
-  declarations: [DataTableComponent, TableActionsComponent, TableComponent],
-  imports: [CommonModule, PipesModule, TranslateModule, MaterialModule, PaginatorModule, LoaderContainerModule, CroppedTextModule],
-  exports: [DataTableComponent, TableActionsComponent]
+  declarations: [
+    DataTableComponent,
+    TableActionsComponent,
+    TableComponent,
+    DateComponent,
+    SwitchToggleComponent
+  ],
+  imports: [
+    CommonModule,
+    PipesModule,
+    TranslateModule,
+    MaterialModule,
+    PaginatorModule,
+    LoaderContainerModule,
+    CroppedTextModule,
+    DirectivesModule,
+    AppFormsModule
+  ],
+  exports: [
+    DataTableComponent,
+    TableActionsComponent,
+    DateComponent,
+    SwitchToggleComponent
+  ]
 })
 export class DataTableModule {}
