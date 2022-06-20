@@ -57,7 +57,7 @@ export class AngularSpecifier extends Specifier {
 
   installMaterial(): Promise<ExecaReturnValue> {
     return command(
-      `npx --package @angular/cli ng add @angular/material@latest --skip-confirmation --verbose`,
+      `npx --package @angular/cli ng add @angular/material@13 --skip-confirmation --verbose`,
       this.childProcessOptions
     ).catch(({ message }) => {
       throw new Error(red(`Material installing error: ${message}`));
@@ -66,7 +66,7 @@ export class AngularSpecifier extends Specifier {
 
   installEsLint(): Promise<ExecaReturnValue> {
     return command(
-      `npx --package @angular/cli ng add @angular-eslint/schematics@latest --skip-confirmation --verbose`,
+      `npx --package @angular/cli ng add @angular-eslint/schematics@13 --skip-confirmation --verbose`,
       this.childProcessOptions
     ).catch(({ message }) => {
       throw new Error(red(`ESLint installing error: ${message}`));

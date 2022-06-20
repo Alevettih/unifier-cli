@@ -8,9 +8,7 @@ export const angularProject = ({ title }: Answer = { title: '' } as Answer): Lis
     {
       title: 'Install Angular project',
       task: () =>
-        command(
-          `npx --package @angular/cli@latest ng new ${title} --style=scss --routing=true --skip-install --verbose`
-        )
+        command(`npx --package @angular/cli@13 ng new ${title} --style=scss --routing=true --skip-install --verbose`)
     },
     {
       title: 'Specify it...',
