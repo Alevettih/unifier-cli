@@ -1,5 +1,5 @@
 import { Specifier } from '@specifier/index';
-import * as Listr from 'listr';
+import { Listr } from 'listr2';
 import { blue } from 'colors/safe';
 
 export class EmailSpecifier extends Specifier {

@@ -6,10 +6,9 @@ import { remove } from 'fs-extra';
 import { join } from 'path';
 import * as minimist from 'minimist';
 import { ParsedArgs } from 'minimist';
-import { red } from 'colors/safe';
-import * as Listr from 'listr';
+import { red, green } from 'colors/safe';
+import { Listr } from 'listr2';
 import { selectProjectType } from '@src/project-types';
-import { ListrOptions } from 'listr';
 import { title } from '@utils/validators';
 
 export type ProjectType = 'email' | 'plain-js' | 'angular';
@@ -59,10 +58,44 @@ export default (): Promise<void> => {
               task: () => selectProjectType(answers)
             }
           ],
-          { collapse: false } as ListrOptions
+          {
+            rendererOptions: {
+              showErrorMessage: false,
+              collapseErrors: false,
+              collapse: false
+            }
+          }
         );
 
         return task.run().catch(error => {
+          if (error) {
+            console.log();
+            console.log('Project creation failed: ');
+            if (typeof error.exitCode === 'number') {
+              console.log(
+                'Error: ',
+                red(
+                  `Command failed with exit code ${error.exitCode} ${
+                    error.exitCodeName ? `(${error.exitCodeName})` : ''
+                  }`
+                )
+              );
+            }
+
+            if (Boolean(error.command)) {
+              console.log('Command: ', green(error.command));
+            }
+
+            if (Boolean(error.stderr)) {
+              console.log('Error log: ');
+              console.log(red(error.stderr));
+            }
+
+            if (!Boolean(error.command) || !Boolean(error.exitCode) || !Boolean(error.stderr)) {
+              console.log('Plain error: ');
+              console.dir(error);
+            }
+          }
           throw new Error(`Project creation failed: ${error}`);
         });
       }

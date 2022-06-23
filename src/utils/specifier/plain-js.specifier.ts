@@ -1,5 +1,5 @@
 import { Specifier } from '@specifier/index';
-import * as Listr from 'listr';
+import { Listr } from 'listr2';
 import config from '@specifier/configs/plain-js.config';
 import { blue } from 'colors/safe';
 

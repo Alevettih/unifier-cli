@@ -1,6 +1,6 @@
 import { Answer, ProjectType } from '@src/main';
 import { red } from 'colors/safe';
-import * as Listr from 'listr';
+import { Listr } from 'listr2';
 
 interface Types {
   [key: string]: ProjectType;

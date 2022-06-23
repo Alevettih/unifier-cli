@@ -4,7 +4,7 @@ import * as angularJsonAdditions from '@specification/files/angular/angular.json
 import { ConfigPaths, Specifier } from '@utils/specifier';
 import { blue, red } from 'colors/safe';
 import config from '@utils/specifier/configs/angular.config';
-import * as Listr from 'listr';
+import { Listr } from 'listr2';
 import { command, ExecaReturnValue } from 'execa';
 
 export class AngularSpecifier extends Specifier {
@@ -57,20 +57,16 @@ export class AngularSpecifier extends Specifier {
 
   installMaterial(): Promise<ExecaReturnValue> {
     return command(
-      `npx --package @angular/cli ng add @angular/material@13 --skip-confirmation --verbose`,
+      `npx --package @angular/cli ng add @angular/material@latest --skip-confirmation --verbose`,
       this.childProcessOptions
-    ).catch(({ message }) => {
-      throw new Error(red(`Material installing error: ${message}`));
-    });
+    );
   }
 
   installEsLint(): Promise<ExecaReturnValue> {
     return command(
-      `npx --package @angular/cli ng add @angular-eslint/schematics@13 --skip-confirmation --verbose`,
+      `npx --package @angular/cli ng add @angular-eslint/schematics@latest --skip-confirmation --verbose`,
       this.childProcessOptions
-    ).catch(({ message }) => {
-      throw new Error(red(`ESLint installing error: ${message}`));
-    });
+    );
   }
 
   copyConfigs(...configPaths: ConfigPaths[]): Listr {

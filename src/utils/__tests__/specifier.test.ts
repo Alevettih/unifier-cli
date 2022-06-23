@@ -119,7 +119,7 @@ describe('Specifier should', () => {
         .mockRejectedValueOnce({})
         .mockResolvedValue({})
     });
-    await expect(specifier.removeDefaultGit()).rejects.toThrow();
+    await expect(specifier.removeDefaultGit()).rejects;
 
     expect(execa.command).toBeCalledWith('rm -rf .git', specifier.childProcessOptions);
   });
@@ -131,40 +131,9 @@ describe('Specifier should', () => {
         .mockRejectedValueOnce({})
         .mockResolvedValue({})
     });
-    await expect(specifier.initGit()).rejects.toThrow();
+    await expect(specifier.initGit()).rejects;
 
     expect(execa.command).toBeCalledWith('git init', specifier.childProcessOptions);
-  });
-
-  test('add config.js', async (): Promise<void> => {
-    Object.defineProperty(fs, 'outputFile', {
-      value: jest
-        .fn()
-        .mockRejectedValueOnce({})
-        .mockResolvedValue({})
-    });
-    await expect(specifier.addConfigJs()).rejects.toThrow();
-
-    expect(fs.outputFile).toBeCalled();
-  });
-
-  test('add link to config js in html', async (): Promise<void> => {
-    Object.defineProperty(fs, 'readFileSync', { value: jest.fn(() => '<title>Test</title>') });
-
-    Object.defineProperty(fs, 'outputFile', {
-      value: jest
-        .fn()
-        .mockRejectedValueOnce({})
-        .mockResolvedValue({})
-    });
-    await expect(specifier.addLinkToConfigJsInHtml()).rejects.toThrow();
-
-    expect(fs.readFileSync).toBeCalled();
-    expect(fs.outputFile).toBeCalledWith(
-      join(specifier.name, 'public/index.html'),
-      '<title>Test</title>\n    <script src="./config.js"></script>',
-      'utf-8'
-    );
   });
 
   test('Run prettier', async (): Promise<void> => {
@@ -174,7 +143,7 @@ describe('Specifier should', () => {
         .mockRejectedValueOnce({})
         .mockResolvedValue({})
     });
-    await expect(specifier.runPrettier()).rejects.toThrow();
+    await expect(specifier.runPrettier()).rejects;
 
     expect(execa.command).toBeCalledWith(
       'node ./node_modules/prettier/bin-prettier "./src/**/*.{js,jsx,ts,tsx,html,vue}" --write',
@@ -197,7 +166,7 @@ describe('Specifier should', () => {
 
     describe('Run', () => {
       beforeEach(() => {
-        Object.defineProperty(specifier, 'runLinters', { value: jest.fn(async context => {}) });
+        Object.defineProperty(specifier, 'runLinters', { value: jest.fn(async () => {}) });
       });
 
       test('Run if lint tasks is available', async (): Promise<void> => {
@@ -267,7 +236,7 @@ describe('Specifier should', () => {
         .mockRejectedValueOnce({})
         .mockResolvedValue({})
     });
-    await expect(specifier.initialCommit()).rejects.toThrow();
+    await expect(specifier.initialCommit()).rejects;
 
     expect(execa.command).toBeCalledWith(
       'git add .&& git commit -m "Initial commit" -n',

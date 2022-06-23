@@ -4,8 +4,7 @@ import { blue, red } from 'colors/safe';
 import { command, ExecaReturnValue, Options } from 'execa';
 import { newlineSeparatedValue, arrayMerge } from '@utils/helpers';
 import * as deepMerge from 'deepmerge';
-import * as Listr from 'listr';
-import { ListrTask } from 'listr';
+import { Listr, ListrTask } from 'listr2';
 
 export interface ConfigPaths {
   src: string;
@@ -100,46 +99,15 @@ export class Specifier {
   }
 
   async removeDefaultGit(): Promise<ExecaReturnValue> {
-    return command('rm -rf .git', this.childProcessOptions).catch(({ message }) => {
-      throw new Error(red(`Default Git removing error: ${message}`));
-    });
+    return command('rm -rf .git', this.childProcessOptions);
   }
 
   async initGit(): Promise<ExecaReturnValue> {
-    return command('git init', Object.assign({ shell: true }, this.childProcessOptions)).catch(({ message }) => {
-      throw new Error(red(`Git init error: ${message}`));
-    });
+    return command('git init', Object.assign({ shell: true }, this.childProcessOptions));
   }
 
   async initialCommit(amend?: boolean): Promise<ExecaReturnValue> {
-    return command(
-      `git add .&& git commit -m "Initial commit" -n${amend ? ` --amend` : ''}`,
-      this.childProcessOptions
-    ).catch(({ message }) => {
-      throw new Error(red(`Initial commit error: ${message}`));
-    });
-  }
-
-  addConfigJs(): Promise<void> {
-    return outputFile(
-      join(this.name, 'public/config.js'),
-      '// eslint-disable-next-line no-underscore-dangle\n(window || global).__ENV__ = Object.freeze({\n\n});',
-      'utf-8'
-    ).catch(err => {
-      throw new Error(red(`config.js creation failed: ${err}`));
-    });
-  }
-
-  addLinkToConfigJsInHtml(): Promise<void> {
-    const html: string = readFileSync(join(this.name, 'public/index.html'), 'utf-8');
-
-    return outputFile(
-      join(this.name, 'public/index.html'),
-      html.replace('</title>', '</title>\n    <script src="./config.js"></script>'),
-      'utf-8'
-    ).catch(err => {
-      throw new Error(red(`index.html update failed: ${err}`));
-    });
+    return command(`git add .&& git commit -m "Initial commit" -n${amend ? ` --amend` : ''}`, this.childProcessOptions);
   }
 
   isYarnAvailable(ctx): Promise<void> {
@@ -169,9 +137,7 @@ export class Specifier {
     return command(
       'node ./node_modules/prettier/bin-prettier "./src/**/*.{js,jsx,ts,tsx,html,vue}" --write',
       Object.assign({ preferLocal: true }, this.childProcessOptions)
-    ).catch(({ message }) => {
-      throw new Error(red(`Prettier execution failed: ${message}`));
-    });
+    );
   }
 
   lintersTask(): Listr {

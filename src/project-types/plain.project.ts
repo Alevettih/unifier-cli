@@ -1,5 +1,5 @@
 import { Answer } from '@src/main';
-import * as Listr from 'listr';
+import { Listr } from 'listr2';
 import { PlainJSSpecifier } from '@specifier/plain-js.specifier';
 import { join } from 'path';
 import { command } from 'execa';
