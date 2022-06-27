@@ -13,14 +13,16 @@ export interface ConfigPaths {
 
 export class Specifier {
   readonly project: string;
+  readonly version: string;
   readonly childProcessOptions: Options;
 
-  constructor(project: string) {
+  constructor(project: string, version?: string) {
     if (!project) {
       throw new Error('Target directory is required!');
     }
 
     this.project = project;
+    this.version = version;
     this.childProcessOptions = { shell: true, cwd: join(project) };
   }
 

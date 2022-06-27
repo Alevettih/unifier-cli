@@ -4,6 +4,8 @@ import * as inquirer from 'inquirer';
 import * as projects from '@src/project-types';
 import { isDirectoryExistsAndNotEmpty } from '../utils/helpers';
 
+jest.mock('@src/project-types/angular.project');
+jest.mock('@src/project-types/plain.project');
 jest.mock('inquirer');
 jest.mock('fs-extra');
 jest.mock('@utils/helpers');
@@ -18,13 +20,6 @@ describe('User answers', () => {
   describe('can select correct project type', () => {
     const title = 'test-test';
 
-    beforeAll(() => {
-      Object.defineProperty(projects, 'plainProject', { value: jest.fn(async () => {}) });
-      Object.defineProperty(projects, 'angularProject', { value: jest.fn(async () => {}) });
-      Object.defineProperty(projects, 'reactProject', { value: jest.fn(async () => {}) });
-      Object.defineProperty(projects, 'vueProject', { value: jest.fn(async () => {}) });
-    });
-
     test('Plain JS', async () => {
       Object.defineProperty(inquirer, 'prompt', {
         value: jest.fn(async () => ({ title, type: projects.types.PLAIN }))
@@ -32,16 +27,18 @@ describe('User answers', () => {
 
       await main();
 
+      expect(inquirer.prompt).toHaveBeenCalled();
       expect(projects.plainProject).toHaveBeenCalled();
     });
 
     test('Angular', async () => {
       Object.defineProperty(inquirer, 'prompt', {
-        value: jest.fn(async () => ({ title, type: projects.types.ANGULAR }))
+        value: jest.fn(async () => ({ title, type: projects.types.ANGULAR, version: 'latest' }))
       });
 
       await main();
 
+      expect(inquirer.prompt).toHaveBeenCalled();
       expect(projects.angularProject).toHaveBeenCalled();
     });
 

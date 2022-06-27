@@ -6,6 +6,7 @@ import { blue, red } from 'colors/safe';
 import config from '@utils/specifier/configs/angular.config';
 import { Listr } from 'listr2';
 import { command, ExecaReturnValue } from 'execa';
+import { major } from 'semver';
 
 export class AngularSpecifier extends Specifier {
   specify(): Listr {
@@ -15,8 +16,8 @@ export class AngularSpecifier extends Specifier {
         task: () => this.mergeWithJson(join(this.name, 'package.json'), config.packageJson(this.name))
       },
       { title: 'Install dependencies', task: () => this.installPackages(config.modules) },
-      { title: 'Add Material', task: () => this.installMaterial() },
-      { title: 'Add ESLint', task: () => this.installEsLint() },
+      { title: 'Add Material', task: () => this.installMaterial(this.version) },
+      { title: 'Add ESLint', task: () => this.installEsLint(this.version) },
       {
         title: 'Do some magic...',
         task: () =>
@@ -55,16 +56,20 @@ export class AngularSpecifier extends Specifier {
     ]);
   }
 
-  installMaterial(): Promise<ExecaReturnValue> {
+  installMaterial(version: string): Promise<ExecaReturnValue> {
     return command(
-      `npx --package @angular/cli ng add @angular/material@latest --skip-confirmation --verbose`,
+      `npx --package @angular/cli ng add @angular/material@${
+        version ? major(version) : 'latest'
+      } --skip-confirmation --verbose`,
       this.childProcessOptions
     );
   }
 
-  installEsLint(): Promise<ExecaReturnValue> {
+  installEsLint(version: string): Promise<ExecaReturnValue> {
     return command(
-      `npx --package @angular/cli ng add @angular-eslint/schematics@latest --skip-confirmation --verbose`,
+      `npx --package @angular/cli ng add @angular-eslint/schematics@${
+        version ? major(version) : 'latest'
+      } --skip-confirmation --verbose`,
       this.childProcessOptions
     );
   }

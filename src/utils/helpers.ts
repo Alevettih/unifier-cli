@@ -2,6 +2,12 @@ import { sep } from 'path';
 import { pathExistsSync } from 'fs-extra';
 import { readdirSync } from 'fs';
 import * as deepMerge from 'deepmerge';
+import { command } from 'execa';
+
+export async function getAngularInfo(): Promise<{ [key: string]: any }> {
+  const commandRes = await command(`npm view @angular/cli --json`);
+  return JSON.parse(commandRes.stdout);
+}
 
 export function isDirectoryExistsAndNotEmpty(input?: string): boolean {
   return !!(pathExistsSync(input) && readdirSync(input).length);

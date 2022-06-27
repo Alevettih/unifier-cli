@@ -1,7 +1,7 @@
 import 'module-alias/register';
 import * as inquirer from 'inquirer';
 import { questions } from '@utils/questions';
-import { isDirectoryExistsAndNotEmpty } from '@utils/helpers';
+import { getAngularInfo, isDirectoryExistsAndNotEmpty } from '@utils/helpers';
 import { remove } from 'fs-extra';
 import { join } from 'path';
 import * as minimist from 'minimist';
@@ -17,11 +17,12 @@ export interface Answer {
   title: string;
   description: string;
   type: ProjectType;
+  version: string;
 }
 
 export const args: ParsedArgs = minimist(process.argv.slice(2));
 
-export default (): Promise<void> => {
+export default async (): Promise<void> => {
   if (args && args._ && args._[0]) {
     args.title = args._[0];
   }
@@ -35,12 +36,13 @@ export default (): Promise<void> => {
     args.title = null;
     console.error(red(`>> ${titleValidationResult}`));
   }
+  const angularInfo = await getAngularInfo();
 
   return inquirer
-    .prompt(questions)
+    .prompt(questions(angularInfo))
     .then(
       (answers: Answer): Promise<void> => {
-        answers = Object.assign(answers, args);
+        answers = Object.assign(args, answers);
 
         if (!answers.title) {
           throw new Error(red('Title is required!'));

@@ -2,11 +2,11 @@ import { getCWD } from '@utils/helpers';
 import { title } from '@utils/validators';
 import { isDirectoryExistsAndNotEmpty } from '@utils/helpers';
 import { types } from '@src/project-types';
-import { Questions } from 'inquirer';
 import { args } from '@src/main';
-import { yellow } from 'colors/safe';
+import { grey, yellow } from 'colors/safe';
+import { major, satisfies } from 'semver';
 
-export const questions: Questions = [
+export const questions = angularInfo => [
   {
     name: 'title',
     type: 'input',
@@ -49,5 +49,32 @@ export const questions: Questions = [
       { name: 'Email Template', value: types.EMAIL },
       { name: 'Angular', value: types.ANGULAR }
     ]
+  },
+  {
+    name: 'version',
+    type: 'list',
+    message: 'version:',
+    when(answers) {
+      const { ['dist-tags']: distTags, versions } = angularInfo;
+      if (answers.type !== types.ANGULAR) {
+        return false;
+      }
+
+      if (!args.version) {
+        return true;
+      } else {
+        const isVersionAvailable = Boolean(distTags[args.version] || versions.includes(args.version));
+        if (isVersionAvailable) {
+          answers.version = distTags[args.version] || args.version;
+        }
+        return !isVersionAvailable;
+      }
+    },
+    choices() {
+      const { ['dist-tags']: distTags } = angularInfo;
+      return Object.entries(distTags)
+        .filter(([, value]: [string, string]): boolean => satisfies(value, `>=${major(distTags.latest) - 1}.x`))
+        .map(([name, value]: [string, string]) => ({ name: `${name}: ${grey(value)}`, value }));
+    }
   }
 ];
