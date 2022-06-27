@@ -4,7 +4,9 @@ import { isDirectoryExistsAndNotEmpty } from '@utils/helpers';
 import { types } from '@src/project-types';
 import { Questions } from 'inquirer';
 import { args } from '@src/main';
-import { yellow } from 'colors/safe';
+import { grey, yellow } from 'colors/safe';
+import { command } from 'execa';
+import { major, satisfies } from 'semver';
 
 export const questions: Questions = [
   {
@@ -49,5 +51,30 @@ export const questions: Questions = [
       { name: 'Email Template', value: types.EMAIL },
       { name: 'Angular', value: types.ANGULAR }
     ]
+  },
+  {
+    name: 'version',
+    type: 'list',
+    message: 'version:',
+    when(answers) {
+      if (args.type === types.ANGULAR && !args.version) {
+        return true;
+      } else {
+        answers.version = args.version;
+        return false;
+      }
+    },
+    choices: async () => {
+      const commandRes = await command(`npm view @angular/cli --json`, this.childProcessOptions);
+      const angularInfo = JSON.parse(commandRes.stdout);
+      const distTags = angularInfo['dist-tags'];
+
+      return Object.entries(distTags)
+        .filter(([, value]: [string, string]): boolean => satisfies(value, `>=${major(distTags.latest) - 1}.x`))
+        .map(([name, value]: [string, string]) => ({
+          name: `${name.replace(/^v\d{1,2}-(lts)$/gi, '$1')}: ${grey(value)}`,
+          value
+        }));
+    }
   }
 ];

@@ -17,6 +17,7 @@ export interface Answer {
   title: string;
   description: string;
   type: ProjectType;
+  version: string;
 }
 
 export const args: ParsedArgs = minimist(process.argv.slice(2));
