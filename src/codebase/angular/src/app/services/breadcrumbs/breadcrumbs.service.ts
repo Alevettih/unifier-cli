@@ -1,10 +1,9 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { ActivatedRouteSnapshot, ActivationEnd, Event, NavigationEnd, Router, UrlSegment } from "@angular/router";
+import { ActivatedRouteSnapshot, ActivationEnd, Event, NavigationEnd, Router, UrlSegment } from '@angular/router';
 import { buffer, filter, map } from 'rxjs/operators';
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { IBreadcrumb } from '@models/interfaces/breadcrumbs/breadcrumb.interface';
-import { IBreadcrumbDataWithId } from '@models/interfaces/breadcrumbs/breadcrumb-data-with-id.interface';
 
 type CheckFunction<T extends Event> = (event: Event) => event is T;
 const isNavigationEnd: CheckFunction<NavigationEnd> = (ev: Event): ev is NavigationEnd => ev instanceof NavigationEnd;
@@ -17,7 +16,7 @@ export class BreadcrumbsService implements OnDestroy {
   private _routerEventsSubscription: Subscription;
   private _collection: IBreadcrumb[];
   private readonly _bcForDisplay$: BehaviorSubject<IBreadcrumb[]>;
-  private readonly _ID_MASK: string = ':id';
+  private readonly _DYNAMIC_BREADCRUMB_PREFIX: string = ':';
 
   constructor(private _router: Router) {
     this._bcForDisplay$ = new BehaviorSubject([]);
@@ -30,25 +29,18 @@ export class BreadcrumbsService implements OnDestroy {
         buffer<ActivatedRouteSnapshot>(navigationEnd$),
         map<ActivatedRouteSnapshot[], ActivatedRouteSnapshot[]>((bcData: ActivatedRouteSnapshot[]): ActivatedRouteSnapshot[] =>
           bcData.reverse()
-        ),
-        map<ActivatedRouteSnapshot[], IBreadcrumbDataWithId>((bcData: ActivatedRouteSnapshot[]): IBreadcrumbDataWithId => {
-          const foundParams: string[] = bcData
-            .filter((data: ActivatedRouteSnapshot): string => data.params?.id)
-            .map((data: ActivatedRouteSnapshot): string => data.params.id);
-
-          return {
-            bcData,
-            id: foundParams[0]
-          };
-        })
+        )
       )
-      .subscribe(({ bcData, id }: IBreadcrumbDataWithId): void => {
+      .subscribe((bcData: ActivatedRouteSnapshot[]): void => {
         const bcLoadedData: ActivatedRouteSnapshot[] = bcData.filter(({ data }: ActivatedRouteSnapshot): string => data.breadcrumb);
         this._collection = bcLoadedData.reduce((rootAcc: IBreadcrumb[], { data, pathFromRoot }: ActivatedRouteSnapshot): IBreadcrumb[] => {
           let breadcrumb: IBreadcrumb;
+          const dynamicKey: string = data.breadcrumb.startsWith(this._DYNAMIC_BREADCRUMB_PREFIX)
+            ? data.breadcrumb.replace(this._DYNAMIC_BREADCRUMB_PREFIX, '')
+            : null;
 
-          if (data.breadcrumb === this._ID_MASK && id !== undefined) {
-            data.breadcrumb = id;
+          if (dynamicKey && data?.entity?.[dynamicKey]) {
+            data.breadcrumb = data?.entity?.[dynamicKey];
           }
 
           if (data.breadcrumb && !rootAcc.some((item: IBreadcrumb): boolean => data.breadcrumb === item.name)) {

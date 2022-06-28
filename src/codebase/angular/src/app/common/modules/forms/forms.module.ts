@@ -7,7 +7,7 @@ import { BaseRangeDatepickerModule } from './base-range-datepicker/base-range-da
 import { BaseInputModule } from './base-input/base-input.module';
 import { BaseSelectModule } from './base-select/base-select.module';
 import { FileUploaderModule } from '@forms/file-uploader/file-uploader.module';
-import { BaseAutocompleteModule } from "@forms/base-autocomplete/base-autocomplete.module";
+import { BaseAutocompleteModule } from '@forms/base-autocomplete/base-autocomplete.module';
 
 @NgModule({
   exports: [

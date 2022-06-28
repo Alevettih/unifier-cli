@@ -1,6 +1,6 @@
 import { ClassConstructor } from 'class-transformer';
 import { convertToModel } from '@misc/helpers/model-conversion/convert-to-model.function';
-import { HttpErrorResponse, HttpHeaders, HttpParams, HttpResponse } from "@angular/common/http";
+import { HttpErrorResponse, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { IListEntry } from '@models/classes/_list.model';
 import { getRandomIdentifier } from '@misc/helpers/get-random-identifier.function';
@@ -23,7 +23,8 @@ export abstract class Responses<T extends { id: string }> {
     params: string[],
     body: HttpParams,
     headers: HttpHeaders,
-    entities?: Partial<T>[]) => Observable<HttpResponse<IListEntry<Partial<T>>>> {
+    entities?: Partial<T>[]
+  ) => Observable<HttpResponse<IListEntry<Partial<T>>>> {
     return this._list.bind(this);
   }
 

@@ -15,13 +15,7 @@ import { SwitchToggleComponent } from './cell-components/switch-toggle/switch-to
 import { AppFormsModule } from '@forms/forms.module';
 
 @NgModule({
-  declarations: [
-    DataTableComponent,
-    TableActionsComponent,
-    TableComponent,
-    DateComponent,
-    SwitchToggleComponent
-  ],
+  declarations: [DataTableComponent, TableActionsComponent, TableComponent, DateComponent, SwitchToggleComponent],
   imports: [
     CommonModule,
     PipesModule,
@@ -33,11 +27,6 @@ import { AppFormsModule } from '@forms/forms.module';
     DirectivesModule,
     AppFormsModule
   ],
-  exports: [
-    DataTableComponent,
-    TableActionsComponent,
-    DateComponent,
-    SwitchToggleComponent
-  ]
+  exports: [DataTableComponent, TableActionsComponent, DateComponent, SwitchToggleComponent]
 })
 export class DataTableModule {}

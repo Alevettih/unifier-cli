@@ -1,6 +1,6 @@
 import { Injectable, TemplateRef } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Event, NavigationEnd, Router } from "@angular/router";
+import { Event, NavigationEnd, Router } from '@angular/router';
 import { filter, pairwise } from 'rxjs/operators';
 
 export interface IToolbarData<T = any> {

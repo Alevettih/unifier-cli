@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router, Resolve } from '@angular/router';
-import { UserApiService } from "@services/api/user-api/user-api.service";
-import { User } from "@models/classes/user/user.model";
+import { UserApiService } from '@services/api/user-api/user-api.service';
+import { User } from '@models/classes/user/user.model';
 import { DetailsInfoAbstractResolver } from '@misc/abstracts/details-info.abstract.resolver';
 
 @Injectable({

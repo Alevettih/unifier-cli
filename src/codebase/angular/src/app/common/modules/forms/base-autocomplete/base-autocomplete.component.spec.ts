@@ -8,9 +8,8 @@ describe('BaseAutocompleteComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BaseAutocompleteComponent ]
-    })
-    .compileComponents();
+      declarations: [BaseAutocompleteComponent]
+    }).compileComponents();
   });
 
   beforeEach(() => {
