@@ -9,6 +9,8 @@ import { command, ExecaReturnValue } from 'execa';
 import { major } from 'semver';
 
 export class AngularSpecifier extends Specifier {
+  private readonly _NG_COMMAND = 'node ./node_modules/@angular/cli/bin/ng';
+
   specify(): Listr {
     return new Listr([
       {
@@ -58,16 +60,14 @@ export class AngularSpecifier extends Specifier {
 
   installMaterial(version: string): Promise<ExecaReturnValue> {
     return command(
-      `npx --package @angular/cli ng add @angular/material@${
-        version ? major(version) : 'latest'
-      } --skip-confirmation --verbose`,
+      `${this._NG_COMMAND} add @angular/material@${version ? major(version) : 'latest'} --skip-confirmation --verbose`,
       this.childProcessOptions
     );
   }
 
   installEsLint(version: string): Promise<ExecaReturnValue> {
     return command(
-      `npx --package @angular/cli ng add @angular-eslint/schematics@${
+      `${this._NG_COMMAND} add @angular-eslint/schematics@${
         version ? major(version) : 'latest'
       } --skip-confirmation --verbose`,
       this.childProcessOptions
