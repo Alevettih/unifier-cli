@@ -1,4 +1,4 @@
-import { existsSync, copy, outputFile, readFileSync, readJsonSync, writeJson, removeSync } from 'fs-extra';
+import { existsSync, copy, outputFile, readFileSync, readJsonSync, writeJson } from 'fs-extra';
 import { join } from 'path';
 import { blue, red } from 'colors/safe';
 import { command, ExecaReturnValue, Options } from 'execa';
@@ -73,8 +73,9 @@ export class Specifier {
     });
   }
 
-  installPackages(modules = [] as string[]): Listr {
-    const modulesString = modules && modules.length ? modules.join(' ') : '';
+  installPackages(dependencies = [] as string[], devDependencies = [] as string[]): Listr {
+    const dependenciesString = dependencies && dependencies.length ? dependencies.join(' ') : '';
+    const devDependenciesString = devDependencies && devDependencies.length ? devDependencies.join(' ') : '';
     return new Listr([
       {
         title: 'Check currently used package manager',
@@ -89,13 +90,26 @@ export class Specifier {
         title: 'Install dependencies by yarn',
         enabled: ctx => ctx.usedPackageManager !== 'npm' && ctx.yarn,
         task: () =>
-          command(`yarn ${modulesString.length ? `add ${modulesString} --dev` : 'install'}`, this.childProcessOptions)
+          command(
+            `yarn ${devDependenciesString.length ? `add ${devDependenciesString} --dev` : 'install'}`,
+            this.childProcessOptions
+          ).then(() =>
+            command(
+              `yarn ${dependenciesString.length ? `add ${dependenciesString}` : 'install'}`,
+              this.childProcessOptions
+            )
+          )
       },
       {
         title: 'Install dependencies by npm',
         enabled: ctx => ctx.npm || !ctx.yarn,
         task: () =>
-          command(`npm ${modulesString.length ? `i ${modulesString} --save-dev` : 'i'}`, this.childProcessOptions)
+          command(
+            `npm ${devDependenciesString.length ? `i ${devDependenciesString} --save-dev` : 'i'}`,
+            this.childProcessOptions
+          ).then(() =>
+            command(`npm ${dependenciesString.length ? `i ${dependenciesString}` : 'i'}`, this.childProcessOptions)
+          )
       }
     ]);
   }

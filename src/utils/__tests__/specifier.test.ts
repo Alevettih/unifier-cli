@@ -44,8 +44,9 @@ describe('Specifier should', () => {
           await specifier.installPackages().run();
           expect(execa.command).toBeCalledWith('yarn install', specifier.childProcessOptions);
 
-          await specifier.installPackages(['test']).run();
-          expect(execa.command).toBeCalledWith('yarn add test --dev', specifier.childProcessOptions);
+          await specifier.installPackages(['test'], ['dev-test']).run();
+          expect(execa.command).toBeCalledWith('yarn add test', specifier.childProcessOptions);
+          expect(execa.command).toBeCalledWith('yarn add dev-test --dev', specifier.childProcessOptions);
         }
       );
     });
@@ -73,8 +74,9 @@ describe('Specifier should', () => {
           await specifier.installPackages().run();
           expect(execa.command).toBeCalledWith('yarn install', specifier.childProcessOptions);
 
-          await specifier.installPackages(['test']).run();
-          expect(execa.command).toBeCalledWith('yarn add test --dev', specifier.childProcessOptions);
+          await specifier.installPackages(['test'], ['dev-test']).run();
+          expect(execa.command).toBeCalledWith('yarn add test', specifier.childProcessOptions);
+          expect(execa.command).toBeCalledWith('yarn add dev-test --dev', specifier.childProcessOptions);
         }
       );
     });

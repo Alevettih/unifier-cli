@@ -63,7 +63,7 @@ describe('Angular specifier should', () => {
     });
 
     test('install dependencies', async (): Promise<void> => {
-      expect(specifier.installPackages).toBeCalledWith(config.modules);
+      expect(specifier.installPackages).toBeCalledWith(config.dependencies, config.devDependencies);
     });
 
     test('Run Prettier', async (): Promise<void> => {

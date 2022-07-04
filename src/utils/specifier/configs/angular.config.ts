@@ -2,25 +2,14 @@ import { join } from 'path';
 import { ConfigPaths } from '@utils/specifier';
 
 export default {
-  modules: [
+  devDependencies: [
     '@types/lodash.get',
     '@types/lodash.set',
     '@types/lodash.transform',
     '@types/lodash.isequal',
-    'lodash.get',
-    'lodash.set',
-    'lodash.transform',
-    'lodash.isequal',
-
-    '@ngx-translate/core',
-    '@ngx-translate/http-loader',
-    'ngx-pagination',
-    'ngx-infinite-scroll',
 
     'eslint-plugin-prettier',
     'eslint-config-prettier',
-
-    'class-transformer',
 
     'husky',
 
@@ -29,7 +18,6 @@ export default {
     'prettier',
     'pretty-quick',
 
-    'reset-css',
     'postcss',
     'postcss-scss',
 
@@ -40,6 +28,21 @@ export default {
     'stylelint-scss',
 
     'tslint-config-prettier'
+  ],
+  dependencies: [
+    'lodash.get',
+    'lodash.set',
+    'lodash.transform',
+    'lodash.isequal',
+
+    '@ngx-translate/core',
+    '@ngx-translate/http-loader',
+    'ngx-pagination',
+    'ngx-infinite-scroll',
+
+    'class-transformer',
+
+    'reset-css'
   ],
   packageJson(projectName: string) {
     return {

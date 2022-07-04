@@ -17,7 +17,7 @@ export class AngularSpecifier extends Specifier {
         title: `Update ${blue('package.json')}`,
         task: () => this.mergeWithJson(join(this.name, 'package.json'), config.packageJson(this.name))
       },
-      { title: 'Install dependencies', task: () => this.installPackages(config.modules) },
+      { title: 'Install dependencies', task: () => this.installPackages(config.dependencies, config.devDependencies) },
       { title: 'Add Material', task: () => this.installMaterial(this.version) },
       { title: 'Add ESLint', task: () => this.installEsLint(this.version) },
       {
