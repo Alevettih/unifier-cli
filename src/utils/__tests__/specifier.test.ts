@@ -2,6 +2,7 @@ import { Specifier } from '../specifier';
 import * as fs from 'fs-extra';
 import * as execa from 'execa';
 import { join } from 'path';
+import { IS_WINDOWS } from '../helpers';
 
 jest.mock('fs-extra');
 
@@ -23,7 +24,10 @@ describe('Specifier should', () => {
 
   describe('install dependencies', () => {
     describe('by yarn', () => {
-      test.each([[null, true], ['yarn', true]])(
+      test.each([
+        [null, true],
+        ['yarn', true]
+      ])(
         'if usedPackageManager is %s and isYarnAvailable is %s',
         async (usedPackageManager, yarn): Promise<void> => {
           const context = {
@@ -47,7 +51,12 @@ describe('Specifier should', () => {
     });
 
     describe('by npm', () => {
-      test.each([[null, false], ['npm', false], ['npm', true], ['yarn', false]])(
+      test.each([
+        [null, false],
+        ['npm', false],
+        ['npm', true],
+        ['yarn', false]
+      ])(
         'if usedPackageManager === %s and isYarnAvailable === %s',
         async (usedPackageManager, yarn): Promise<void> => {
           const context = {
@@ -121,7 +130,8 @@ describe('Specifier should', () => {
     });
     await expect(specifier.removeDefaultGit()).rejects;
 
-    expect(execa.command).toBeCalledWith('rm -rf .git', specifier.childProcessOptions);
+    const rmCommand: string = IS_WINDOWS ? 'del' : 'rm -rf';
+    expect(execa.command).toBeCalledWith(`${rmCommand} .git`, specifier.childProcessOptions);
   });
 
   test('init Git repo', async (): Promise<void> => {
@@ -255,20 +265,27 @@ describe('Specifier should', () => {
     const ctx = {};
     await specifier.isYarnAvailable(ctx);
 
-    expect(execa.command).toBeCalledWith('npm list -g --depth=0 | grep yarn', specifier.childProcessOptions);
+    expect(execa.command).toBeCalledWith('npm list -g --json', specifier.childProcessOptions);
     expect(ctx).toHaveProperty('yarn');
 
     Object.defineProperty(execa, 'command', { value: jest.fn(async () => Promise.reject()) });
     await specifier.isYarnAvailable(ctx);
     expect(ctx).toMatchObject({ yarn: false });
 
-    Object.defineProperty(execa, 'command', { value: jest.fn(async () => Promise.resolve()) });
+    Object.defineProperty(execa, 'command', {
+      value: jest.fn(async () => Promise.resolve({ stdout: '{ "dependencies": { "yarn": {} } }' }))
+    });
     await specifier.isYarnAvailable(ctx);
     expect(ctx).toMatchObject({ yarn: true });
   });
 
   describe('should handle currently used package manager', () => {
-    test.each([[true, false, 'npm'], [false, true, 'yarn'], [true, true, 'yarn'], [false, false, null]])(
+    test.each([
+      [true, false, 'npm'],
+      [false, true, 'yarn'],
+      [true, true, 'yarn'],
+      [false, false, null]
+    ])(
       'if package-lock.json exists === %s and yarn.lock exists === %s, should return %s',
       (npm, yarn, result): void => {
         const ctx = {};

@@ -46,7 +46,6 @@ export const questions = angularInfo => [
     },
     choices: [
       { name: 'Plain JS', value: types.PLAIN },
-      { name: 'Email Template', value: types.EMAIL },
       { name: 'Angular', value: types.ANGULAR }
     ]
   },

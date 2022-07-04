@@ -1,8 +1,8 @@
-import { existsSync, copy, outputFile, readFileSync, readJsonSync, writeJson } from 'fs-extra';
+import { existsSync, copy, outputFile, readFileSync, readJsonSync, writeJson, removeSync } from 'fs-extra';
 import { join } from 'path';
 import { blue, red } from 'colors/safe';
 import { command, ExecaReturnValue, Options } from 'execa';
-import { newlineSeparatedValue, arrayMerge } from '@utils/helpers';
+import { newlineSeparatedValue, arrayMerge, IS_WINDOWS } from '@utils/helpers';
 import * as deepMerge from 'deepmerge';
 import { Listr, ListrTask } from 'listr2';
 
@@ -101,7 +101,8 @@ export class Specifier {
   }
 
   async removeDefaultGit(): Promise<ExecaReturnValue> {
-    return command('rm -rf .git', this.childProcessOptions);
+    const rmCommand: string = IS_WINDOWS ? 'del' : 'rm -rf';
+    return command(`${rmCommand} .git`, this.childProcessOptions);
   }
 
   async initGit(): Promise<ExecaReturnValue> {
@@ -113,9 +114,11 @@ export class Specifier {
   }
 
   isYarnAvailable(ctx): Promise<void> {
-    return command(`npm list -g --depth=0 | grep yarn`, this.childProcessOptions).then(
-      () => {
-        ctx.yarn = true;
+    return command(`npm list -g --json`, this.childProcessOptions).then(
+      (result: ExecaReturnValue<any>) => {
+        const jsonStr: string = result?.stdout;
+        const json: any = jsonStr ? JSON.parse(jsonStr) : { dependencies: {} };
+        ctx.yarn = Object.keys(json.dependencies).includes('yarn');
       },
       () => {
         ctx.yarn = false;

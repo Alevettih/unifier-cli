@@ -4,6 +4,8 @@ import { readdirSync } from 'fs';
 import * as deepMerge from 'deepmerge';
 import { command } from 'execa';
 
+export const IS_WINDOWS: boolean = process.platform === 'win32';
+
 export async function getAngularInfo(): Promise<{ [key: string]: any }> {
   const commandRes = await command(`npm view @angular/cli --json`);
   return JSON.parse(commandRes.stdout);

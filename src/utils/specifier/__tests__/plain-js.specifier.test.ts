@@ -2,8 +2,10 @@ import { PlainJSSpecifier } from '@utils/specifier/plain-js.specifier';
 import { Specifier } from '@utils/specifier';
 import { mockClassMethods } from '../../helpers';
 import * as child_process from 'child_process';
+import * as fs from 'fs-extra';
 
 jest.mock('child_process');
+jest.mock('fs-extra');
 
 describe('Plain JS specifier should', () => {
   const testDir = 'target-tmp';
@@ -35,7 +37,7 @@ describe('Plain JS specifier should', () => {
     });
 
     test('remove default Git repo', async (): Promise<void> => {
-      expect(specifier.removeDefaultGit).toBeCalled();
+      expect(fs.removeSync).toBeCalled();
     });
 
     test('init Git repo', async (): Promise<void> => {

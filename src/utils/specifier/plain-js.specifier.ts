@@ -2,6 +2,8 @@ import { Specifier } from '@specifier/index';
 import { Listr } from 'listr2';
 import config from '@specifier/configs/plain-js.config';
 import { blue } from 'colors/safe';
+import { removeSync } from 'fs-extra';
+import { join } from 'path';
 
 export class PlainJSSpecifier extends Specifier {
   specify(): Listr {
@@ -10,7 +12,7 @@ export class PlainJSSpecifier extends Specifier {
         title: 'Git',
         task: () =>
           new Listr([
-            { title: 'Remove default', task: () => this.removeDefaultGit() },
+            { title: 'Remove default', task: () => removeSync(join(this.name, '.git')) },
             { title: 'Init new repository', task: () => this.initGit() }
           ])
       },
