@@ -71,39 +71,39 @@ export default {
   getConfigsPaths(name: string): ConfigPaths[] {
     return [
       {
-        src: join(__dirname, '../../../specification/files/.prettierrc'),
+        src: join(__dirname, '../files/.prettierrc'),
         dist: join(name, '.prettierrc')
       },
       {
-        src: join(__dirname, '../../../specification/files/.prettierignore'),
+        src: join(__dirname, '../files/.prettierignore'),
         dist: join(name, '.prettierignore')
       },
       {
-        src: join(__dirname, '../../../specification/files/angular/.htaccess'),
+        src: join(__dirname, '../files/angular/.htaccess'),
         dist: join(name, 'src/.htaccess')
       },
       {
-        src: join(__dirname, '../../../specification/files/angular/default.conf'),
+        src: join(__dirname, '../files/angular/default.conf'),
         dist: join(name, 'src/default.conf')
       },
       {
-        src: join(__dirname, '../../../specification/files/angular/.eslintrc.json'),
+        src: join(__dirname, '../files/angular/.eslintrc.json'),
         dist: join(name, '.eslintrc.json')
       },
       {
-        src: join(__dirname, '../../../specification/files/angular/tsconfig.json'),
+        src: join(__dirname, '../files/angular/tsconfig.json'),
         dist: join(name, 'tsconfig.json')
       },
       {
-        src: join(__dirname, '../../../specification/files/.browserslistrc'),
+        src: join(__dirname, '../files/.browserslistrc'),
         dist: join(name, '.browserslistrc')
       },
       {
-        src: join(__dirname, '../../../specification/files/.editorconfig'),
+        src: join(__dirname, '../files/.editorconfig'),
         dist: join(name, '.editorconfig')
       },
       {
-        src: join(__dirname, '../../../specification/files/angular/.stylelintrc'),
+        src: join(__dirname, '../files/angular/.stylelintrc'),
         dist: join(name, '.stylelintrc')
       }
     ];

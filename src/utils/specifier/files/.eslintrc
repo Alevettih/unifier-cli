@@ -1,0 +1,26 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "extends": ["airbnb-base/legacy", "plugin:compat/recommended", "prettier"],
+  "parser": "babel-eslint",
+  "plugins": ["compat"],
+  "rules": {
+    "compat/compat": "warn",
+    "no-plusplus": "off",
+    "semi": [
+      "error",
+      "always"
+    ],
+    "no-param-reassign": "off",
+    "no-use-before-define": ["error", {
+      "functions": false,
+      "classes": false
+    }],
+    "class-methods-use-this": "warn",
+    "no-mixed-operators": ["error", {
+      "allowSamePrecedence": true
+    }]
+  }
+}

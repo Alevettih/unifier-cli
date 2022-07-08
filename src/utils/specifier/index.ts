@@ -61,7 +61,7 @@ export class Specifier {
   updateGitignoreRules(): Promise<void> {
     const projectGitignore: object = newlineSeparatedValue.parse(readFileSync(join(this.name, '.gitignore'), 'utf-8'));
     const specificationGitignore: object = newlineSeparatedValue.parse(
-      readFileSync(join(__dirname, '../../specification/files/.gitignore.example'), 'utf-8')
+      readFileSync(join(__dirname, './files/.gitignore.example'), 'utf-8')
     );
 
     return outputFile(
@@ -73,7 +73,7 @@ export class Specifier {
     });
   }
 
-  installPackages(dependencies = [] as string[], devDependencies = [] as string[]): Listr {
+  installPackages(dependencies: string[] = [], devDependencies: string[] = []): Listr {
     const dependenciesString = dependencies && dependencies.length ? dependencies.join(' ') : '';
     const devDependenciesString = devDependencies && devDependencies.length ? devDependencies.join(' ') : '';
     return new Listr([

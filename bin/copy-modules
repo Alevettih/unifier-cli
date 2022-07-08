@@ -4,7 +4,7 @@ const { copySync } = require('fs-extra');
 const { join }  = require('path');
 
 (function () {
-  const modules = ['specification', 'codebase'];
+  const modules = ['utils/specifier/files', 'codebase'];
 
   for (const module of modules) {
     copySync(

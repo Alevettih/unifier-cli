@@ -1,6 +1,6 @@
 import { copy, outputFile, removeSync } from 'fs-extra';
 import { join } from 'path';
-import * as angularJsonAdditions from '@specification/files/angular/angular.json';
+import * as angularJsonAdditions from '@specifier/files/angular/angular.json';
 import { ConfigPaths, Specifier } from '@utils/specifier';
 import { blue, red } from 'colors/safe';
 import config from '@utils/specifier/configs/angular.config';

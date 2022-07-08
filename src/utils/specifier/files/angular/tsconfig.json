@@ -1,0 +1,54 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "sourceRoot": "./",
+    "outDir": "./dist/out-tsc",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "strictPropertyInitialization": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "target": "es2017",
+    "module": "es2020",
+    "lib": ["es2020", "dom"],
+    "typeRoots": ["node_modules/@types"],
+    "paths": {
+      "@base/*": ["src/app/*"],
+      "@misc/*": ["src/app/misc/*"],
+      "@env/*": ["src/environments/*"],
+      "@shared/*": ["src/app/common/shared/*"],
+      "@layouts/*": ["src/app/common/modules/layouts/*"],
+      "@forms/*": ["src/app/common/modules/forms/*"],
+      "@modals/*": ["src/app/common/modules/modals/*"],
+      "@pipes/*": ["src/app/pipes/*"],
+      "@models/*": ["src/app/models/*"],
+      "@directives/*": ["src/app/directives/*"],
+      "@interceptors/*": ["src/app/interceptors/*"],
+      "@services/*": ["src/app/services/*"],
+      "@resolvers/*": ["src/app/resolvers/*"],
+      "@guards/*": ["src/app/guards/*"],
+      "@matchers/*": ["src/app/matchers/*"],
+      "@modules/*": ["src/app/modules/*"]
+    }
+  },
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
+}
