@@ -5,6 +5,7 @@ import { command, ExecaReturnValue, Options } from 'execa';
 import { newlineSeparatedValue, arrayMerge, IS_WINDOWS } from '@utils/helpers';
 import * as deepMerge from 'deepmerge';
 import { Listr, ListrTask } from 'listr2';
+import { Answer } from '@src/main';
 
 export interface ConfigPaths {
   src: string;
@@ -12,18 +13,20 @@ export interface ConfigPaths {
 }
 
 export class Specifier {
+  readonly skipGit: boolean;
   readonly project: string;
   readonly version: string;
   readonly childProcessOptions: Options;
 
-  constructor(project: string, version?: string) {
-    if (!project) {
+  constructor({ title, version, 'skip-git': skipGit }: Answer) {
+    if (!title) {
       throw new Error('Target directory is required!');
     }
 
-    this.project = project;
+    this.project = title;
     this.version = version;
-    this.childProcessOptions = { shell: true, cwd: join(project) };
+    this.skipGit = skipGit ?? false;
+    this.childProcessOptions = { shell: true, cwd: join(title) };
   }
 
   get name(): string {

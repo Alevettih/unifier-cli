@@ -18,6 +18,7 @@ export interface Answer {
   description: string;
   type: ProjectType;
   version: string;
+  'skip-git': boolean;
 }
 
 export const args: ParsedArgs = minimist(process.argv.slice(2));

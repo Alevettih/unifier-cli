@@ -4,6 +4,7 @@ import { mockClassMethods } from '../../helpers';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import config from '@utils/specifier/configs/angular.config';
+import { Answer } from '../../../main';
 
 jest.mock('child_process');
 jest.mock('fs-extra');
@@ -13,7 +14,7 @@ describe('Angular specifier should', () => {
   let specifier: AngularSpecifier;
 
   beforeEach(() => {
-    specifier = new AngularSpecifier(testDir);
+    specifier = new AngularSpecifier({ title: testDir } as Answer);
   });
 
   test('extends from Specifier', () => {

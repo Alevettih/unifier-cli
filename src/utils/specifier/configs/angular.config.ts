@@ -2,33 +2,38 @@ import { join } from 'path';
 import { ConfigPaths } from '@utils/specifier';
 
 export default {
-  devDependencies: [
-    '@types/lodash.get',
-    '@types/lodash.set',
-    '@types/lodash.transform',
-    '@types/lodash.isequal',
+  devDependencies(skipGit: boolean = false) {
+    const devDependencies = [
+      '@types/lodash.get',
+      '@types/lodash.set',
+      '@types/lodash.transform',
+      '@types/lodash.isequal',
 
-    'eslint-plugin-prettier',
-    'eslint-config-prettier',
+      'eslint-plugin-prettier',
+      'eslint-config-prettier',
 
-    'husky',
+      'npm-run-all',
 
-    'npm-run-all',
+      'prettier',
 
-    'prettier',
-    'pretty-quick',
+      'postcss',
+      'postcss-scss',
 
-    'postcss',
-    'postcss-scss',
+      'stylelint',
+      'stylelint-config-standard',
+      'stylelint-declaration-strict-value',
+      'stylelint-no-unsupported-browser-features',
+      'stylelint-scss',
 
-    'stylelint',
-    'stylelint-config-standard',
-    'stylelint-declaration-strict-value',
-    'stylelint-no-unsupported-browser-features',
-    'stylelint-scss',
+      'tslint-config-prettier'
+    ];
 
-    'tslint-config-prettier'
-  ],
+    if (!skipGit) {
+      devDependencies.push('pretty-quick', 'husky');
+    }
+
+    return devDependencies;
+  },
   dependencies: [
     'lodash.get',
     'lodash.set',
@@ -44,8 +49,8 @@ export default {
 
     'reset-css'
   ],
-  packageJson(projectName: string) {
-    return {
+  packageJson(projectName: string, skipGit: boolean = false) {
+    const packageJson = {
       scripts: {
         'start:ssl': 'ng serve --ssl',
         'config:to-base64': 'node ./bin/to-base64.js',
@@ -67,6 +72,15 @@ export default {
         }
       }
     };
+
+    if (skipGit) {
+      delete packageJson.husky;
+      delete packageJson.scripts.prepare;
+      delete packageJson.scripts['pretty-quick'];
+      delete packageJson.scripts['hook:pre-commit'];
+    }
+
+    return packageJson;
   },
   getConfigsPaths(name: string): ConfigPaths[] {
     return [

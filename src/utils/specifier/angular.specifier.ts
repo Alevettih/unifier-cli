@@ -12,12 +12,15 @@ export class AngularSpecifier extends Specifier {
   private readonly _NG_COMMAND = 'node ./node_modules/@angular/cli/bin/ng';
 
   specify(): Listr {
-    return new Listr([
+    const tasks = [
       {
         title: `Update ${blue('package.json')}`,
-        task: () => this.mergeWithJson(join(this.name, 'package.json'), config.packageJson(this.name))
+        task: () => this.mergeWithJson(join(this.name, 'package.json'), config.packageJson(this.name, this.skipGit))
       },
-      { title: 'Install dependencies', task: () => this.installPackages(config.dependencies, config.devDependencies) },
+      {
+        title: 'Install dependencies',
+        task: () => this.installPackages(config.dependencies, config.devDependencies(this.skipGit))
+      },
       { title: 'Add Material', task: () => this.installMaterial(this.version) },
       { title: 'Add ESLint', task: () => this.installEsLint(this.version) },
       {
@@ -50,12 +53,17 @@ export class AngularSpecifier extends Specifier {
       {
         title: 'Linters',
         task: () => this.lintersTask()
-      },
-      {
+      }
+    ];
+
+    if (!this.skipGit) {
+      tasks.push({
         title: 'Do initial commit',
         task: () => this.initialCommit(true)
-      }
-    ]);
+      });
+    }
+
+    return new Listr(tasks);
   }
 
   installMaterial(version: string): Promise<ExecaReturnValue> {

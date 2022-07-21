@@ -3,6 +3,7 @@ import * as fs from 'fs-extra';
 import * as execa from 'execa';
 import { join } from 'path';
 import { IS_WINDOWS } from '../helpers';
+import { Answer } from '../../main';
 
 jest.mock('fs-extra');
 
@@ -11,12 +12,12 @@ describe('Specifier should', () => {
   let specifier: Specifier;
 
   beforeEach(() => {
-    specifier = new Specifier(testDir);
+    specifier = new Specifier({ title: testDir } as Answer);
   });
 
   test('init an instance', (): void => {
-    expect(() => new Specifier('')).toThrow();
-    expect(() => new Specifier(testDir)).not.toThrow();
+    expect(() => new Specifier({ title: '' } as Answer)).toThrow();
+    expect(() => new Specifier({ title: testDir } as Answer)).not.toThrow();
     expect(specifier).toBeInstanceOf(Specifier);
     expect(specifier.project).toBe(testDir);
     expect(specifier.childProcessOptions).toBeInstanceOf(Object);

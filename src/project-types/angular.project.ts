@@ -3,16 +3,22 @@ import { command } from 'execa';
 import { Listr } from 'listr2';
 import { Answer } from '@src/main';
 
-export const angularProject = ({ title, version }: Answer = { title: '', version: 'latest' } as Answer): Listr => {
+export const angularProject = (answers: Answer = { title: '', version: 'latest' } as Answer): Listr => {
+  const { title, version, 'skip-git': skipGit } = answers;
+
   return new Listr([
     {
       title: 'Install Angular project',
       task: () =>
-        command(`npx --package @angular/cli@${version} ng new ${title} --style=scss --routing=true --skip-install`)
+        command(
+          `npx --package @angular/cli@${version} ng new ${title} --style=scss --routing=true --skip-install ${
+            skipGit ? '--skip-git' : ''
+          }`.trim()
+        )
     },
     {
       title: 'Specify it...',
-      task: () => new AngularSpecifier(title, version).specify()
+      task: () => new AngularSpecifier(answers).specify()
     }
   ]);
 };
