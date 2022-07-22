@@ -49,7 +49,7 @@ export default {
 
     'reset-css'
   ],
-  packageJson(projectName: string, skipGit: boolean = false) {
+  packageJson(projectName: string, skipGit = false) {
     const packageJson = {
       scripts: {
         'start:ssl': 'ng serve --ssl',

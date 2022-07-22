@@ -1,9 +1,9 @@
-import { Specifier } from '../specifier';
 import * as fs from 'fs-extra';
 import * as execa from 'execa';
 import { join } from 'path';
-import { IS_WINDOWS } from '../helpers';
-import { Answer } from '../../main';
+import { IS_WINDOWS } from '@utils/helpers';
+import { Specifier } from '@utils/specifier';
+import { Answer } from '@src/main';
 
 jest.mock('fs-extra');
 
@@ -28,28 +28,25 @@ describe('Specifier should', () => {
       test.each([
         [null, true],
         ['yarn', true]
-      ])(
-        'if usedPackageManager is %s and isYarnAvailable is %s',
-        async (usedPackageManager, yarn): Promise<void> => {
-          const context = {
-            usedPackageManager,
-            yarn
-          };
-          Object.defineProperty(specifier, 'usedPackageManager', {
-            value: jest.fn(async ctx => Object.assign(ctx, context))
-          });
-          Object.defineProperty(specifier, 'isYarnAvailable', {
-            value: jest.fn(async ctx => Object.assign(ctx, context))
-          });
+      ])('if usedPackageManager is %s and isYarnAvailable is %s', async (usedPackageManager, yarn): Promise<void> => {
+        const context = {
+          usedPackageManager,
+          yarn
+        };
+        Object.defineProperty(specifier, 'usedPackageManager', {
+          value: jest.fn(async ctx => Object.assign(ctx, context))
+        });
+        Object.defineProperty(specifier, 'isYarnAvailable', {
+          value: jest.fn(async ctx => Object.assign(ctx, context))
+        });
 
-          await specifier.installPackages().run();
-          expect(execa.command).toBeCalledWith('yarn install', specifier.childProcessOptions);
+        await specifier.installPackages().run();
+        expect(execa.command).toBeCalledWith('yarn install', specifier.childProcessOptions);
 
-          await specifier.installPackages(['test'], ['dev-test']).run();
-          expect(execa.command).toBeCalledWith('yarn add test', specifier.childProcessOptions);
-          expect(execa.command).toBeCalledWith('yarn add dev-test --dev', specifier.childProcessOptions);
-        }
-      );
+        await specifier.installPackages(['test'], ['dev-test']).run();
+        expect(execa.command).toBeCalledWith('yarn add test', specifier.childProcessOptions);
+        expect(execa.command).toBeCalledWith('yarn add dev-test --dev', specifier.childProcessOptions);
+      });
     });
 
     describe('by npm', () => {
@@ -58,28 +55,25 @@ describe('Specifier should', () => {
         ['npm', false],
         ['npm', true],
         ['yarn', false]
-      ])(
-        'if usedPackageManager === %s and isYarnAvailable === %s',
-        async (usedPackageManager, yarn): Promise<void> => {
-          const context = {
-            usedPackageManager,
-            yarn
-          };
-          Object.defineProperty(specifier, 'usedPackageManager', {
-            value: jest.fn(async ctx => Object.assign(ctx, context))
-          });
-          Object.defineProperty(specifier, 'isYarnAvailable', {
-            value: jest.fn(async ctx => Object.assign(ctx, context))
-          });
+      ])('if usedPackageManager === %s and isYarnAvailable === %s', async (usedPackageManager, yarn): Promise<void> => {
+        const context = {
+          usedPackageManager,
+          yarn
+        };
+        Object.defineProperty(specifier, 'usedPackageManager', {
+          value: jest.fn(async ctx => Object.assign(ctx, context))
+        });
+        Object.defineProperty(specifier, 'isYarnAvailable', {
+          value: jest.fn(async ctx => Object.assign(ctx, context))
+        });
 
-          await specifier.installPackages().run();
-          expect(execa.command).toBeCalledWith('yarn install', specifier.childProcessOptions);
+        await specifier.installPackages().run();
+        expect(execa.command).toBeCalledWith('yarn install', specifier.childProcessOptions);
 
-          await specifier.installPackages(['test'], ['dev-test']).run();
-          expect(execa.command).toBeCalledWith('yarn add test', specifier.childProcessOptions);
-          expect(execa.command).toBeCalledWith('yarn add dev-test --dev', specifier.childProcessOptions);
-        }
-      );
+        await specifier.installPackages(['test'], ['dev-test']).run();
+        expect(execa.command).toBeCalledWith('yarn add test', specifier.childProcessOptions);
+        expect(execa.command).toBeCalledWith('yarn add dev-test --dev', specifier.childProcessOptions);
+      });
     });
   });
 
@@ -87,10 +81,7 @@ describe('Specifier should', () => {
     const fakePath = join(specifier.name, 'fake/path/to.json');
     Object.defineProperty(fs, 'readJsonSync', { value: jest.fn(() => ({ a: 1, c: [1, 2] })) });
     Object.defineProperty(fs, 'writeJson', {
-      value: jest
-        .fn()
-        .mockRejectedValueOnce({})
-        .mockResolvedValue({})
+      value: jest.fn().mockRejectedValueOnce({}).mockResolvedValue({})
     });
     await expect(specifier.mergeWithJson(fakePath, { b: 2, c: [3, 4] })).rejects.toThrow();
 
@@ -99,16 +90,10 @@ describe('Specifier should', () => {
 
   test('update .gitignore rules', async (): Promise<void> => {
     Object.defineProperty(fs, 'readFileSync', {
-      value: jest
-        .fn()
-        .mockReturnValueOnce('node_modules/\ndist/')
-        .mockReturnValueOnce('fake_directory/\ndist/')
+      value: jest.fn().mockReturnValueOnce('node_modules/\ndist/').mockReturnValueOnce('fake_directory/\ndist/')
     });
     Object.defineProperty(fs, 'outputFile', {
-      value: jest
-        .fn()
-        .mockRejectedValueOnce({})
-        .mockResolvedValue({})
+      value: jest.fn().mockRejectedValueOnce({}).mockResolvedValue({})
     });
     await expect(specifier.updateGitignoreRules()).rejects.toThrow();
 
@@ -126,10 +111,7 @@ describe('Specifier should', () => {
 
   test('remove default Git', async (): Promise<void> => {
     Object.defineProperty(execa, 'command', {
-      value: jest
-        .fn()
-        .mockRejectedValueOnce({})
-        .mockResolvedValue({})
+      value: jest.fn().mockRejectedValueOnce({}).mockResolvedValue({})
     });
     await expect(specifier.removeDefaultGit()).rejects;
 
@@ -139,10 +121,7 @@ describe('Specifier should', () => {
 
   test('init Git repo', async (): Promise<void> => {
     Object.defineProperty(execa, 'command', {
-      value: jest
-        .fn()
-        .mockRejectedValueOnce({})
-        .mockResolvedValue({})
+      value: jest.fn().mockRejectedValueOnce({}).mockResolvedValue({})
     });
     await expect(specifier.initGit()).rejects;
 
@@ -151,10 +130,7 @@ describe('Specifier should', () => {
 
   test('Run prettier', async (): Promise<void> => {
     Object.defineProperty(execa, 'command', {
-      value: jest
-        .fn()
-        .mockRejectedValueOnce({})
-        .mockResolvedValue({})
+      value: jest.fn().mockRejectedValueOnce({}).mockResolvedValue({})
     });
     await expect(specifier.runPrettier()).rejects;
 
@@ -244,10 +220,7 @@ describe('Specifier should', () => {
 
   test('Do initial commit', async (): Promise<void> => {
     Object.defineProperty(execa, 'command', {
-      value: jest
-        .fn()
-        .mockRejectedValueOnce({})
-        .mockResolvedValue({})
+      value: jest.fn().mockRejectedValueOnce({}).mockResolvedValue({})
     });
     await expect(specifier.initialCommit()).rejects;
 
@@ -298,10 +271,7 @@ describe('Specifier should', () => {
         expect(fs.existsSync).toBeCalledWith(join(specifier.name, 'yarn.lock'));
 
         Object.defineProperty(fs, 'existsSync', {
-          value: jest
-            .fn()
-            .mockReturnValueOnce(npm)
-            .mockReturnValueOnce(yarn)
+          value: jest.fn().mockReturnValueOnce(npm).mockReturnValueOnce(yarn)
         });
 
         specifier.usedPackageManager(ctx);

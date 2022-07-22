@@ -1,9 +1,8 @@
 import * as path from 'path';
-import { outputFile } from 'fs-extra';
 
 interface FsExtra {
   __setMockFiles: (newMockFiles: any) => void;
-  readdirSync: (directoryPath: any) => void;
+  readdirSync: (directoryPath: string) => void;
   copy: (from: string, to: string) => Promise<void>;
   remove: (from: string) => Promise<void>;
   removeSync: (from: string) => void;
@@ -20,14 +19,12 @@ let mockFiles = Object.create(null);
 function __setMockFiles(newMockFiles) {
   mockFiles = Object.create(null);
   for (const file in newMockFiles) {
-    if (newMockFiles.hasOwnProperty(file)) {
-      const dir = path.dirname(file);
+    const dir = path.dirname(file);
 
-      if (!mockFiles[dir]) {
-        mockFiles[dir] = [];
-      }
-      mockFiles[dir].push(path.basename(file));
+    if (!mockFiles[dir]) {
+      mockFiles[dir] = [];
     }
+    mockFiles[dir].push(path.basename(file));
   }
 }
 

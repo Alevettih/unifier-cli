@@ -35,16 +35,14 @@ export class Specifier {
 
   copyConfigs(...paths: ConfigPaths[]): Listr {
     return new Listr(
-      paths.map(
-        (path: ConfigPaths): ListrTask => {
-          const pathArray = path.src.split('/');
-          const file = pathArray[pathArray.length - 1];
-          return {
-            title: `Copy ${blue(file)} file`,
-            task: () => copy(path.src, path.dist)
-          };
-        }
-      )
+      paths.map((path: ConfigPaths): ListrTask => {
+        const pathArray = path.src.split('/');
+        const file = pathArray[pathArray.length - 1];
+        return {
+          title: `Copy ${blue(file)} file`,
+          task: () => copy(path.src, path.dist)
+        };
+      })
     );
   }
 

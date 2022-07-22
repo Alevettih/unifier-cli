@@ -1,16 +1,12 @@
 #!/usr/bin/env node
 
 const { copySync } = require('fs-extra');
-const { join }  = require('path');
+const { join } = require('path');
 
 (function () {
   const modules = ['utils/specifier/files', 'codebase'];
 
   for (const module of modules) {
-    copySync(
-      join(__dirname, `../src/${module}`),
-      join(__dirname, `../dist/${module}`)
-    );
+    copySync(join(__dirname, `../src/${module}`), join(__dirname, `../dist/${module}`));
   }
-
 })();

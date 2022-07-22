@@ -4,7 +4,7 @@ import { mockClassMethods } from '../../helpers';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import config from '@utils/specifier/configs/angular.config';
-import { Answer } from '../../../main';
+import { Answer } from '@src/main';
 
 jest.mock('child_process');
 jest.mock('fs-extra');
@@ -47,13 +47,11 @@ describe('Angular specifier should', () => {
   });
 
   describe('specify Angular project', () => {
-    beforeEach(
-      async (): Promise<void> => {
-        mockClassMethods(specifier, [Specifier, AngularSpecifier], ['specify']);
+    beforeEach(async (): Promise<void> => {
+      mockClassMethods(specifier, [Specifier, AngularSpecifier], ['specify']);
 
-        await specifier.specify().run();
-      }
-    );
+      await specifier.specify().run();
+    });
 
     test('copy configs', async (): Promise<void> => {
       expect(specifier.copyConfigs).toBeCalled();
@@ -64,7 +62,7 @@ describe('Angular specifier should', () => {
     });
 
     test('install dependencies', async (): Promise<void> => {
-      expect(specifier.installPackages).toBeCalledWith(config.dependencies, config.devDependencies);
+      expect(specifier.installPackages).toBeCalledWith(config.dependencies, config.devDependencies(specifier.skipGit));
     });
 
     test('Run Prettier', async (): Promise<void> => {

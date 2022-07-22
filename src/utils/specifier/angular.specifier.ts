@@ -9,7 +9,7 @@ import { command, ExecaReturnValue } from 'execa';
 import { major } from 'semver';
 
 export class AngularSpecifier extends Specifier {
-  private readonly _NG_COMMAND = 'node ./node_modules/@angular/cli/bin/ng';
+  private readonly _NG_COMMAND: string = 'node ./node_modules/@angular/cli/bin/ng';
 
   specify(): Listr {
     const tasks = [

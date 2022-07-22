@@ -24,5 +24,5 @@
     "lib": ["es2018", "dom"]
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["**/__mocks__/*.ts", "src/codebase/**/*.*", "**/*.test.ts"]
+  "exclude": ["src/codebase/**/*.*"]
 }

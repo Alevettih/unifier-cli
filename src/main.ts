@@ -41,67 +41,63 @@ export default async (): Promise<void> => {
 
   return inquirer
     .prompt(questions(angularInfo))
-    .then(
-      (answers: Answer): Promise<void> => {
-        answers = Object.assign(args, answers);
+    .then((answers: Answer): Promise<void> => {
+      answers = Object.assign(args, answers);
 
-        if (!answers.title) {
-          throw new Error(red('Title is required!'));
-        }
-
-        const task = new Listr(
-          [
-            {
-              title: 'Erase existing project directory',
-              enabled: () => isDirectoryExistsAndNotEmpty(answers.title),
-              task: () => remove(join(answers.title))
-            },
-            {
-              title: 'Generate Project',
-              task: () => selectProjectType(answers)
-            }
-          ],
-          {
-            rendererOptions: {
-              showErrorMessage: false,
-              collapseErrors: false,
-              collapse: false
-            }
-          }
-        );
-
-        return task.run().catch(error => {
-          if (error) {
-            console.log();
-            console.log('Project creation failed: ');
-            if (typeof error.exitCode === 'number') {
-              console.log(
-                'Error: ',
-                red(
-                  `Command failed with exit code ${error.exitCode} ${
-                    error.exitCodeName ? `(${error.exitCodeName})` : ''
-                  }`
-                )
-              );
-            }
-
-            if (Boolean(error.command)) {
-              console.log('Command: ', green(error.command));
-            }
-
-            if (Boolean(error.stderr)) {
-              console.log('Error log: ');
-              console.log(red(error.stderr));
-            }
-
-            if (!Boolean(error.command) || !Boolean(error.exitCode) || !Boolean(error.stderr)) {
-              console.log('Plain error: ');
-              console.dir(error);
-            }
-          }
-          throw new Error(`Project creation failed: ${error}`);
-        });
+      if (!answers.title) {
+        throw new Error(red('Title is required!'));
       }
-    )
+
+      const task = new Listr(
+        [
+          {
+            title: 'Erase existing project directory',
+            enabled: () => isDirectoryExistsAndNotEmpty(answers.title),
+            task: () => remove(join(answers.title))
+          },
+          {
+            title: 'Generate Project',
+            task: () => selectProjectType(answers)
+          }
+        ],
+        {
+          rendererOptions: {
+            showErrorMessage: false,
+            collapseErrors: false,
+            collapse: false
+          }
+        }
+      );
+
+      return task.run().catch(error => {
+        if (error) {
+          console.log();
+          console.log('Project creation failed: ');
+          if (typeof error.exitCode === 'number') {
+            console.log(
+              'Error: ',
+              red(
+                `Command failed with exit code ${error.exitCode} ${error.exitCodeName ? `(${error.exitCodeName})` : ''}`
+              )
+            );
+          }
+
+          if (error.command) {
+            console.log('Command: ', green(error.command));
+          }
+
+          if (error.stderr) {
+            console.log('Error log: ');
+            console.log(red(error.stderr));
+          }
+
+          if (!error.command || !error.exitCode || !error.stderr) {
+            console.log('Plain error: ');
+            console.dir(error);
+          }
+        }
+        throw new Error(`Project creation failed: ${error}`);
+      });
+    })
     .catch(e => e);
 };
