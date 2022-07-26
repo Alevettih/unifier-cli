@@ -1,5 +1,6 @@
 import { join } from 'path';
-import { ConfigPaths } from '@utils/specifier';
+import { IConfigPaths } from '@utils/specifier';
+import { configsDir } from '@utils/specifier';
 
 export default {
   devDependencies(skipGit: boolean = false) {
@@ -49,7 +50,7 @@ export default {
 
     'reset-css'
   ],
-  packageJson(projectName: string, skipGit = false) {
+  packageJson(projectName: string, skipGit: boolean = false) {
     const packageJson = {
       scripts: {
         'start:ssl': 'ng serve --ssl',
@@ -82,42 +83,42 @@ export default {
 
     return packageJson;
   },
-  getConfigsPaths(name: string): ConfigPaths[] {
+  getConfigsPaths(name: string): IConfigPaths[] {
     return [
       {
-        src: join(__dirname, '../files/.prettierrc'),
+        src: join(__dirname, configsDir, '.prettierrc'),
         dist: join(name, '.prettierrc')
       },
       {
-        src: join(__dirname, '../files/.prettierignore'),
+        src: join(__dirname, configsDir, '.prettierignore'),
         dist: join(name, '.prettierignore')
       },
       {
-        src: join(__dirname, '../files/angular/.htaccess'),
+        src: join(__dirname, configsDir, 'angular/.htaccess'),
         dist: join(name, 'src/.htaccess')
       },
       {
-        src: join(__dirname, '../files/angular/default.conf'),
+        src: join(__dirname, configsDir, 'angular/default.conf'),
         dist: join(name, 'src/default.conf')
       },
       {
-        src: join(__dirname, '../files/angular/.eslintrc.json'),
+        src: join(__dirname, configsDir, 'angular/.eslintrc.json'),
         dist: join(name, '.eslintrc.json')
       },
       {
-        src: join(__dirname, '../files/angular/tsconfig.json'),
+        src: join(__dirname, configsDir, 'angular/tsconfig.json'),
         dist: join(name, 'tsconfig.json')
       },
       {
-        src: join(__dirname, '../files/.browserslistrc'),
+        src: join(__dirname, configsDir, '.browserslistrc'),
         dist: join(name, '.browserslistrc')
       },
       {
-        src: join(__dirname, '../files/.editorconfig'),
+        src: join(__dirname, configsDir, '.editorconfig'),
         dist: join(name, '.editorconfig')
       },
       {
-        src: join(__dirname, '../files/angular/.stylelintrc'),
+        src: join(__dirname, configsDir, 'angular/.stylelintrc'),
         dist: join(name, '.stylelintrc')
       }
     ];

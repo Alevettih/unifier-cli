@@ -1,19 +1,19 @@
-import { Answer, ProjectType } from '@src/main';
+import { IAnswer, ProjectType } from '@src/main';
 import { red } from 'colors/safe';
 import { Listr } from 'listr2';
 import { plainProject } from './plain.project';
 import { angularProject } from './angular.project';
 
-interface Types {
+interface ITypes {
   [key: string]: ProjectType;
 }
 
-export const types: Types = {
+export const types: ITypes = {
   PLAIN: 'plain-js',
   ANGULAR: 'angular'
 };
 
-export function selectProjectType(answers: Answer): Listr {
+export function selectProjectType(answers: IAnswer): Listr {
   switch (answers && answers.type) {
     case types.PLAIN: {
       return plainProject(answers);

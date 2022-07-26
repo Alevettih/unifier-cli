@@ -1,9 +1,9 @@
 import { PlainJSSpecifier } from '@utils/specifier/plain-js.specifier';
 import { Specifier } from '@utils/specifier';
-import { mockClassMethods } from '../../helpers';
+import { mockClassMethods } from '@utils/helpers';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
-import { Answer } from '@src/main';
+import { IAnswer } from '@src/main';
 
 jest.mock('child_process');
 jest.mock('fs-extra');
@@ -13,7 +13,7 @@ describe('Plain JS specifier should', () => {
   let specifier: PlainJSSpecifier;
 
   beforeEach(() => {
-    specifier = new PlainJSSpecifier({ title: testDir } as Answer);
+    specifier = new PlainJSSpecifier({ title: testDir } as IAnswer);
   });
 
   test('extends from Specifier', () => {

@@ -1,17 +1,14 @@
 {
-  "extends": [
-    "stylelint-config-standard"
-  ],
-  "plugins": [
-    "stylelint-scss",
-    "stylelint-no-unsupported-browser-features",
-    "stylelint-declaration-strict-value"
-  ],
+  "extends": ["stylelint-config-standard"],
+  "plugins": ["stylelint-scss", "stylelint-no-unsupported-browser-features", "stylelint-declaration-strict-value"],
   "rules": {
-    "plugin/no-unsupported-browser-features": [true, {
-      "severity": "warning",
-      "ignorePartialSupport": true
-    }],
+    "plugin/no-unsupported-browser-features": [
+      true,
+      {
+        "severity": "warning",
+        "ignorePartialSupport": true
+      }
+    ],
     "color-no-invalid-hex": true,
     "font-family-no-duplicate-names": true,
     "font-family-no-missing-generic-family-keyword": true,
@@ -87,10 +84,7 @@
     "selector-no-qualifying-type": [
       true,
       {
-        "ignore": [
-          "attribute",
-          "class"
-        ]
+        "ignore": ["attribute", "class"]
       }
     ],
     "selector-no-vendor-prefix": true,
@@ -121,10 +115,7 @@
     "custom-property-empty-line-before": [
       "always",
       {
-        "except": [
-          "after-custom-property",
-          "first-nested"
-        ]
+        "except": ["after-custom-property", "first-nested"]
       }
     ],
     "property-case": "lower",
@@ -143,10 +134,7 @@
     "block-closing-brace-newline-after": [
       "always",
       {
-        "ignoreAtRules": [
-          "if",
-          "else"
-        ]
+        "ignoreAtRules": ["if", "else"]
       }
     ],
     "block-closing-brace-space-after": "always-single-line",
@@ -174,10 +162,7 @@
     "rule-empty-line-before": [
       "always",
       {
-        "except": [
-          "after-single-line-comment",
-          "first-nested"
-        ]
+        "except": ["after-single-line-comment", "first-nested"]
       }
     ],
     "media-feature-colon-space-after": "always",
@@ -190,14 +175,8 @@
     "at-rule-empty-line-before": [
       "always",
       {
-        "except": [
-          "first-nested"
-        ],
-        "ignoreAtRules": [
-          "import",
-          "include",
-          "extend"
-        ]
+        "except": ["first-nested"],
+        "ignoreAtRules": ["import", "include", "extend"]
       }
     ],
     "at-rule-name-case": "lower",
@@ -225,12 +204,7 @@
     "scss/declaration-nested-properties": "never",
     "scss/selector-no-redundant-nesting-selector": true,
     "scale-unlimited/declaration-strict-value": [
-      [
-        "/color/",
-        "fill",
-        "stroke",
-        "font-family"
-      ],
+      ["/color/", "fill", "stroke", "font-family"],
       {
         "disableFix": true,
         "ignoreKeywords": ["currentColor", "transparent", "inherit", "none"]

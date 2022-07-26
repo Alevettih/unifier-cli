@@ -8,7 +8,7 @@
     "declaration": false,
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
-    "module": "commonjs",
+    "module": "esnext",
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -19,6 +19,8 @@
     "paths": {
       "@src/*": ["src/*"],
       "@utils/*": ["src/utils/*"],
+      "@configs/*": ["src/configs/*"],
+      "@codebase/*": ["src/codebase/*"],
       "@specifier/*": ["src/utils/specifier/*"]
     },
     "lib": ["es2018", "dom"]

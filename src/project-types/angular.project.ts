@@ -1,9 +1,9 @@
 import { AngularSpecifier } from '@specifier/angular.specifier';
 import { command } from 'execa';
 import { Listr } from 'listr2';
-import { Answer } from '@src/main';
+import { IAnswer } from '@src/main';
 
-export const angularProject = (answers: Answer = { title: '', version: 'latest' } as Answer): Listr => {
+export const angularProject = (answers: IAnswer = { title: '', version: 'latest' } as IAnswer): Listr => {
   const { title, version, 'skip-git': skipGit } = answers;
 
   return new Listr([

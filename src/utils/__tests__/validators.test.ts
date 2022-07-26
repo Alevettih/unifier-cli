@@ -1,4 +1,4 @@
-import { title } from '../validators';
+import { title } from '@utils/validators';
 import { red } from 'colors/safe';
 
 describe('Validators can', () => {

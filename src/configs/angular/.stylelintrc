@@ -1,19 +1,16 @@
 {
-  "extends": [
-    "stylelint-config-standard"
-  ],
+  "extends": ["stylelint-config-standard"],
   "customSyntax": "postcss-scss",
   "ignoreFiles": ["./src/**/*.(js|ts|html)"],
-  "plugins": [
-    "stylelint-scss",
-    "stylelint-no-unsupported-browser-features",
-    "stylelint-declaration-strict-value"
-  ],
+  "plugins": ["stylelint-scss", "stylelint-no-unsupported-browser-features", "stylelint-declaration-strict-value"],
   "rules": {
-    "plugin/no-unsupported-browser-features": [true, {
-      "severity": "warning",
-      "ignorePartialSupport": true
-    }],
+    "plugin/no-unsupported-browser-features": [
+      true,
+      {
+        "severity": "warning",
+        "ignorePartialSupport": true
+      }
+    ],
     "color-no-invalid-hex": true,
     "color-function-notation": null,
     "font-family-no-duplicate-names": true,
@@ -34,7 +31,7 @@
     "declaration-block-no-shorthand-property-overrides": true,
     "block-no-empty": true,
     "selector-pseudo-class-no-unknown": true,
-    "selector-pseudo-element-no-unknown": [true, {"ignorePseudoElements": ["/ng/"]}],
+    "selector-pseudo-element-no-unknown": [true, { "ignorePseudoElements": ["/ng/"] }],
     "selector-type-no-unknown": true,
     "media-feature-name-no-unknown": true,
     "at-rule-no-unknown": [
@@ -84,10 +81,7 @@
     "selector-no-qualifying-type": [
       true,
       {
-        "ignore": [
-          "attribute",
-          "class"
-        ]
+        "ignore": ["attribute", "class"]
       }
     ],
     "selector-no-vendor-prefix": true,
@@ -114,14 +108,11 @@
     "value-list-comma-space-after": "always-single-line",
     "value-list-comma-space-before": "never",
     "value-list-max-empty-lines": 0,
-    "value-keyword-case": ["lower", {"ignoreKeywords": ["/^A[0-9]{1,3}$/"], "camelCaseSvgKeywords": true}],
+    "value-keyword-case": ["lower", { "ignoreKeywords": ["/^A[0-9]{1,3}$/"], "camelCaseSvgKeywords": true }],
     "custom-property-empty-line-before": [
       "always",
       {
-        "except": [
-          "after-custom-property",
-          "first-nested"
-        ]
+        "except": ["after-custom-property", "first-nested"]
       }
     ],
     "property-case": "lower",
@@ -140,10 +131,7 @@
     "block-closing-brace-newline-after": [
       "always",
       {
-        "ignoreAtRules": [
-          "if",
-          "else"
-        ]
+        "ignoreAtRules": ["if", "else"]
       }
     ],
     "block-closing-brace-space-after": "always-single-line",
@@ -171,10 +159,7 @@
     "rule-empty-line-before": [
       "always",
       {
-        "except": [
-          "after-single-line-comment",
-          "first-nested"
-        ]
+        "except": ["after-single-line-comment", "first-nested"]
       }
     ],
     "media-feature-colon-space-after": "always",
@@ -187,15 +172,8 @@
     "at-rule-empty-line-before": [
       "always",
       {
-        "except": [
-          "first-nested"
-        ],
-        "ignoreAtRules": [
-          "import",
-          "include",
-          "extend",
-          "use"
-        ]
+        "except": ["first-nested"],
+        "ignoreAtRules": ["import", "include", "extend", "use"]
       }
     ],
     "at-rule-name-case": "lower",
@@ -224,12 +202,7 @@
     "scss/declaration-nested-properties": "never",
     "scss/selector-no-redundant-nesting-selector": true,
     "scale-unlimited/declaration-strict-value": [
-      [
-        "/color/",
-        "fill",
-        "stroke",
-        "font-family"
-      ],
+      ["/color/", "fill", "stroke", "font-family"],
       {
         "disableFix": true,
         "ignoreKeywords": ["currentColor", "transparent", "inherit", "none", "unset"]

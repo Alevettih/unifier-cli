@@ -76,7 +76,7 @@ export const newlineSeparatedValue = {
 
     return [...new Set(resArr)].join('\n').trim();
   },
-  parse(data = ''): object {
+  parse(data: string = ''): object {
     const dataArr: string[] = data.split('\n');
     const res: object = {};
 

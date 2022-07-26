@@ -2,7 +2,7 @@ import { getCWD } from '@utils/helpers';
 import { title } from '@utils/validators';
 import { isDirectoryExistsAndNotEmpty } from '@utils/helpers';
 import { types } from '@src/project-types';
-import { args } from '@src/main';
+import { args, IAnswer } from '@src/main';
 import { grey, yellow } from 'colors/safe';
 import { major, satisfies } from 'semver';
 
@@ -13,7 +13,7 @@ export const questions = angularInfo => [
     message: 'Project name:',
     default: getCWD(),
     validate: title,
-    when(answers) {
+    when(answers: IAnswer) {
       if (!args.title) {
         return true;
       } else {
@@ -36,7 +36,7 @@ export const questions = angularInfo => [
     name: 'type',
     type: 'list',
     message: 'Project type:',
-    when(answers) {
+    when(answers: IAnswer) {
       if (!args.type) {
         return true;
       } else {
@@ -53,7 +53,7 @@ export const questions = angularInfo => [
     name: 'version',
     type: 'list',
     message: 'version:',
-    when(answers) {
+    when(answers: IAnswer) {
       const { ['dist-tags']: distTags, versions } = angularInfo;
       if (answers.type !== types.ANGULAR) {
         return false;

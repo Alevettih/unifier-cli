@@ -1,7 +1,7 @@
 import { copy, outputFile, removeSync } from 'fs-extra';
 import { join } from 'path';
-import * as angularJsonAdditions from '@specifier/files/angular/angular.json';
-import { ConfigPaths, Specifier } from '@utils/specifier';
+import * as angularJsonAdditions from '@configs/angular/angular.json';
+import { IConfigPaths, Specifier } from '@utils/specifier';
 import { blue, red } from 'colors/safe';
 import config from '@utils/specifier/configs/angular.config';
 import { Listr } from 'listr2';
@@ -15,14 +15,14 @@ export class AngularSpecifier extends Specifier {
     const tasks = [
       {
         title: `Update ${blue('package.json')}`,
-        task: () => this.mergeWithJson(join(this.name, 'package.json'), config.packageJson(this.name, this.skipGit))
+        task: () => this.mergeWithJson(join(this.name, 'package.json'), config.packageJson(this.name, this.SKIP_GIT))
       },
       {
         title: 'Install dependencies',
-        task: () => this.installPackages(config.dependencies, config.devDependencies(this.skipGit))
+        task: () => this.installPackages(config.dependencies, config.devDependencies(this.SKIP_GIT))
       },
-      { title: 'Add Material', task: () => this.installMaterial(this.version) },
-      { title: 'Add ESLint', task: () => this.installEsLint(this.version) },
+      { title: 'Add Material', task: () => this.installMaterial(this.VERSION) },
+      { title: 'Add ESLint', task: () => this.installEsLint(this.VERSION) },
       {
         title: 'Do some magic...',
         task: () =>
@@ -39,7 +39,7 @@ export class AngularSpecifier extends Specifier {
                 title: `Edit ${blue('angular.json')}`,
                 task: () =>
                   this.mergeWithJson(join(this.name, 'angular.json'), {
-                    projects: { [this.name]: angularJsonAdditions }
+                    projects: { [this.name]: { ...angularJsonAdditions } }
                   })
               }
             ],
@@ -56,7 +56,7 @@ export class AngularSpecifier extends Specifier {
       }
     ];
 
-    if (!this.skipGit) {
+    if (!this.SKIP_GIT) {
       tasks.push({
         title: 'Do initial commit',
         task: () => this.initialCommit(true)
@@ -69,7 +69,7 @@ export class AngularSpecifier extends Specifier {
   installMaterial(version: string): Promise<ExecaReturnValue> {
     return command(
       `${this._NG_COMMAND} add @angular/material@${version ? major(version) : 'latest'} --skip-confirmation --verbose`,
-      this.childProcessOptions
+      this.CHILD_PROCESS_OPTIONS
     );
   }
 
@@ -78,17 +78,17 @@ export class AngularSpecifier extends Specifier {
       `${this._NG_COMMAND} add @angular-eslint/schematics@${
         version ? major(version) : 'latest'
       } --skip-confirmation --verbose`,
-      this.childProcessOptions
+      this.CHILD_PROCESS_OPTIONS
     );
   }
 
-  copyConfigs(...configPaths: ConfigPaths[]): Listr {
+  copyConfigs(...configPaths: IConfigPaths[]): Listr {
     removeSync(join(this.name, '/browserslist'));
     return super.copyConfigs(...configPaths);
   }
 
   copyBaseStructure(): Promise<void> {
-    return copy(join(__dirname, '../../codebase/angular'), join(this.name)).catch(err => {
+    return copy(join(__dirname, './codebase/angular'), join(this.name)).catch(err => {
       throw new Error(red(`Base structure copying failed: ${err}`));
     });
   }

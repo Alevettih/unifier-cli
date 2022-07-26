@@ -1,4 +1,3 @@
-import 'module-alias/register';
 import * as inquirer from 'inquirer';
 import { questions } from '@utils/questions';
 import { getAngularInfo, isDirectoryExistsAndNotEmpty } from '@utils/helpers';
@@ -13,7 +12,7 @@ import { title } from '@utils/validators';
 
 export type ProjectType = 'email' | 'plain-js' | 'angular';
 
-export interface Answer {
+export interface IAnswer {
   title: string;
   description: string;
   type: ProjectType;
@@ -41,7 +40,7 @@ export default async (): Promise<void> => {
 
   return inquirer
     .prompt(questions(angularInfo))
-    .then((answers: Answer): Promise<void> => {
+    .then((answers: IAnswer): Promise<void> => {
       answers = Object.assign(args, answers);
 
       if (!answers.title) {

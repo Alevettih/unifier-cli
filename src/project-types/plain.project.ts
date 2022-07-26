@@ -1,10 +1,10 @@
-import { Answer } from '@src/main';
+import { IAnswer } from '@src/main';
 import { Listr } from 'listr2';
 import { PlainJSSpecifier } from '@specifier/plain-js.specifier';
 import { join } from 'path';
 import { command } from 'execa';
 
-export const plainProject = (answers: Answer = { title: '' } as Answer): Listr => {
+export const plainProject = (answers: IAnswer = { title: '' } as IAnswer): Listr => {
   const { title } = answers;
 
   return new Listr([

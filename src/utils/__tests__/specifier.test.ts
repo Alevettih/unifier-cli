@@ -2,8 +2,8 @@ import * as fs from 'fs-extra';
 import * as execa from 'execa';
 import { join } from 'path';
 import { IS_WINDOWS } from '@utils/helpers';
-import { Specifier } from '@utils/specifier';
-import { Answer } from '@src/main';
+import { IContext, Specifier } from '@utils/specifier';
+import { IAnswer } from '@src/main';
 
 jest.mock('fs-extra');
 
@@ -12,15 +12,15 @@ describe('Specifier should', () => {
   let specifier: Specifier;
 
   beforeEach(() => {
-    specifier = new Specifier({ title: testDir } as Answer);
+    specifier = new Specifier({ title: testDir } as IAnswer);
   });
 
   test('init an instance', (): void => {
-    expect(() => new Specifier({ title: '' } as Answer)).toThrow();
-    expect(() => new Specifier({ title: testDir } as Answer)).not.toThrow();
+    expect(() => new Specifier({ title: '' } as IAnswer)).toThrow();
+    expect(() => new Specifier({ title: testDir } as IAnswer)).not.toThrow();
     expect(specifier).toBeInstanceOf(Specifier);
-    expect(specifier.project).toBe(testDir);
-    expect(specifier.childProcessOptions).toBeInstanceOf(Object);
+    expect(specifier.PROJECT).toBe(testDir);
+    expect(specifier.CHILD_PROCESS_OPTIONS).toBeInstanceOf(Object);
   });
 
   describe('install dependencies', () => {
@@ -41,11 +41,11 @@ describe('Specifier should', () => {
         });
 
         await specifier.installPackages().run();
-        expect(execa.command).toBeCalledWith('yarn install', specifier.childProcessOptions);
+        expect(execa.command).toBeCalledWith('yarn install', specifier.CHILD_PROCESS_OPTIONS);
 
         await specifier.installPackages(['test'], ['dev-test']).run();
-        expect(execa.command).toBeCalledWith('yarn add test', specifier.childProcessOptions);
-        expect(execa.command).toBeCalledWith('yarn add dev-test --dev', specifier.childProcessOptions);
+        expect(execa.command).toBeCalledWith('yarn add test', specifier.CHILD_PROCESS_OPTIONS);
+        expect(execa.command).toBeCalledWith('yarn add dev-test --dev', specifier.CHILD_PROCESS_OPTIONS);
       });
     });
 
@@ -68,11 +68,11 @@ describe('Specifier should', () => {
         });
 
         await specifier.installPackages().run();
-        expect(execa.command).toBeCalledWith('yarn install', specifier.childProcessOptions);
+        expect(execa.command).toBeCalledWith('yarn install', specifier.CHILD_PROCESS_OPTIONS);
 
         await specifier.installPackages(['test'], ['dev-test']).run();
-        expect(execa.command).toBeCalledWith('yarn add test', specifier.childProcessOptions);
-        expect(execa.command).toBeCalledWith('yarn add dev-test --dev', specifier.childProcessOptions);
+        expect(execa.command).toBeCalledWith('yarn add test', specifier.CHILD_PROCESS_OPTIONS);
+        expect(execa.command).toBeCalledWith('yarn add dev-test --dev', specifier.CHILD_PROCESS_OPTIONS);
       });
     });
   });
@@ -116,7 +116,7 @@ describe('Specifier should', () => {
     await expect(specifier.removeDefaultGit()).rejects;
 
     const rmCommand: string = IS_WINDOWS ? 'del' : 'rm -rf';
-    expect(execa.command).toBeCalledWith(`${rmCommand} .git`, specifier.childProcessOptions);
+    expect(execa.command).toBeCalledWith(`${rmCommand} .git`, specifier.CHILD_PROCESS_OPTIONS);
   });
 
   test('init Git repo', async (): Promise<void> => {
@@ -125,7 +125,7 @@ describe('Specifier should', () => {
     });
     await expect(specifier.initGit()).rejects;
 
-    expect(execa.command).toBeCalledWith('git init', specifier.childProcessOptions);
+    expect(execa.command).toBeCalledWith('git init', specifier.CHILD_PROCESS_OPTIONS);
   });
 
   test('Run prettier', async (): Promise<void> => {
@@ -136,7 +136,7 @@ describe('Specifier should', () => {
 
     expect(execa.command).toBeCalledWith(
       'node ./node_modules/prettier/bin-prettier "./src/**/*.{js,jsx,ts,tsx,html,vue}" --write',
-      Object.assign({ preferLocal: true }, specifier.childProcessOptions)
+      Object.assign({ preferLocal: true }, specifier.CHILD_PROCESS_OPTIONS)
     );
   });
 
@@ -185,7 +185,7 @@ describe('Specifier should', () => {
   });
 
   test('Get linters tasks names', async (): Promise<void> => {
-    const ctx = {};
+    const ctx = {} as IContext;
     Object.defineProperty(fs, 'readJsonSync', {
       value: jest.fn().mockReturnValue({
         scripts: {
@@ -203,7 +203,7 @@ describe('Specifier should', () => {
   });
 
   test('Run linters', async (): Promise<void> => {
-    const ctx = { lintersKeys: ['lint:scss', 'lint:es'] };
+    const ctx = { lintersKeys: ['lint:scss', 'lint:es'] } as IContext;
     Object.defineProperty(execa, 'command', {
       value: jest.fn().mockRejectedValueOnce({})
     });
@@ -226,22 +226,22 @@ describe('Specifier should', () => {
 
     expect(execa.command).toBeCalledWith(
       'git add .&& git commit -m "Initial commit" -n',
-      specifier.childProcessOptions
+      specifier.CHILD_PROCESS_OPTIONS
     );
 
     await specifier.initialCommit(true);
 
     expect(execa.command).toBeCalledWith(
       'git add .&& git commit -m "Initial commit" -n --amend',
-      specifier.childProcessOptions
+      specifier.CHILD_PROCESS_OPTIONS
     );
   });
 
   test('should check yarn availability', async (): Promise<void> => {
-    const ctx = {};
+    const ctx = {} as IContext;
     await specifier.isYarnAvailable(ctx);
 
-    expect(execa.command).toBeCalledWith('npm list -g --json', specifier.childProcessOptions);
+    expect(execa.command).toBeCalledWith('npm list -g --json', specifier.CHILD_PROCESS_OPTIONS);
     expect(ctx).toHaveProperty('yarn');
 
     Object.defineProperty(execa, 'command', { value: jest.fn(async () => Promise.reject()) });
@@ -264,7 +264,7 @@ describe('Specifier should', () => {
     ])(
       'if package-lock.json exists === %s and yarn.lock exists === %s, should return %s',
       (npm, yarn, result): void => {
-        const ctx = {};
+        const ctx = {} as IContext;
         specifier.usedPackageManager(ctx);
 
         expect(fs.existsSync).toBeCalledWith(join(specifier.name, 'package-lock.json'));

@@ -1,10 +1,10 @@
 import { AngularSpecifier } from '@utils/specifier/angular.specifier';
 import { Specifier } from '@utils/specifier';
-import { mockClassMethods } from '../../helpers';
+import { mockClassMethods } from '@utils/helpers';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import config from '@utils/specifier/configs/angular.config';
-import { Answer } from '@src/main';
+import { IAnswer } from '@src/main';
 
 jest.mock('child_process');
 jest.mock('fs-extra');
@@ -14,7 +14,7 @@ describe('Angular specifier should', () => {
   let specifier: AngularSpecifier;
 
   beforeEach(() => {
-    specifier = new AngularSpecifier({ title: testDir } as Answer);
+    specifier = new AngularSpecifier({ title: testDir } as IAnswer);
   });
 
   test('extends from Specifier', () => {
@@ -62,7 +62,7 @@ describe('Angular specifier should', () => {
     });
 
     test('install dependencies', async (): Promise<void> => {
-      expect(specifier.installPackages).toBeCalledWith(config.dependencies, config.devDependencies(specifier.skipGit));
+      expect(specifier.installPackages).toBeCalledWith(config.dependencies, config.devDependencies(specifier.SKIP_GIT));
     });
 
     test('Run Prettier', async (): Promise<void> => {

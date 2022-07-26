@@ -5,38 +5,46 @@ import { command, ExecaReturnValue, Options } from 'execa';
 import { newlineSeparatedValue, arrayMerge, IS_WINDOWS } from '@utils/helpers';
 import * as deepMerge from 'deepmerge';
 import { Listr, ListrTask } from 'listr2';
-import { Answer } from '@src/main';
+import { IAnswer } from '@src/main';
 
-export interface ConfigPaths {
+export interface IConfigPaths {
   src: string;
   dist: string;
 }
 
-export class Specifier {
-  readonly skipGit: boolean;
-  readonly project: string;
-  readonly version: string;
-  readonly childProcessOptions: Options;
+export interface IContext {
+  yarn: boolean;
+  usedPackageManager: 'yarn' | 'npm';
+  lintersKeys: string[];
+}
 
-  constructor({ title, version, 'skip-git': skipGit }: Answer) {
+export const configsDir: string = './configs/';
+
+export class Specifier {
+  readonly SKIP_GIT: boolean;
+  readonly PROJECT: string;
+  readonly VERSION: string;
+  readonly CHILD_PROCESS_OPTIONS: Options;
+
+  constructor({ title, version, 'skip-git': skipGit }: IAnswer) {
     if (!title) {
       throw new Error('Target directory is required!');
     }
 
-    this.project = title;
-    this.version = version;
-    this.skipGit = skipGit ?? false;
-    this.childProcessOptions = { shell: true, cwd: join(title) };
+    this.PROJECT = title;
+    this.VERSION = version;
+    this.SKIP_GIT = skipGit ?? false;
+    this.CHILD_PROCESS_OPTIONS = { shell: true, cwd: join(title) };
   }
 
   get name(): string {
-    return this.project;
+    return this.PROJECT;
   }
 
-  copyConfigs(...paths: ConfigPaths[]): Listr {
+  copyConfigs(...paths: IConfigPaths[]): Listr {
     return new Listr(
-      paths.map((path: ConfigPaths): ListrTask => {
-        const pathArray = path.src.split('/');
+      paths.map((path: IConfigPaths): ListrTask => {
+        const pathArray = path.src.split(IS_WINDOWS ? '\\' : '/');
         const file = pathArray[pathArray.length - 1];
         return {
           title: `Copy ${blue(file)} file`,
@@ -62,7 +70,7 @@ export class Specifier {
   updateGitignoreRules(): Promise<void> {
     const projectGitignore: object = newlineSeparatedValue.parse(readFileSync(join(this.name, '.gitignore'), 'utf-8'));
     const specificationGitignore: object = newlineSeparatedValue.parse(
-      readFileSync(join(__dirname, './files/.gitignore.example'), 'utf-8')
+      readFileSync(join(__dirname, './configs/.gitignore.example'), 'utf-8')
     );
 
     return outputFile(
@@ -93,11 +101,11 @@ export class Specifier {
         task: () =>
           command(
             `yarn ${devDependenciesString.length ? `add ${devDependenciesString} --dev` : 'install'}`,
-            this.childProcessOptions
+            this.CHILD_PROCESS_OPTIONS
           ).then(() =>
             command(
               `yarn ${dependenciesString.length ? `add ${dependenciesString}` : 'install'}`,
-              this.childProcessOptions
+              this.CHILD_PROCESS_OPTIONS
             )
           )
       },
@@ -107,9 +115,9 @@ export class Specifier {
         task: () =>
           command(
             `npm ${devDependenciesString.length ? `i ${devDependenciesString} --save-dev` : 'i'}`,
-            this.childProcessOptions
+            this.CHILD_PROCESS_OPTIONS
           ).then(() =>
-            command(`npm ${dependenciesString.length ? `i ${dependenciesString}` : 'i'}`, this.childProcessOptions)
+            command(`npm ${dependenciesString.length ? `i ${dependenciesString}` : 'i'}`, this.CHILD_PROCESS_OPTIONS)
           )
       }
     ]);
@@ -117,19 +125,22 @@ export class Specifier {
 
   async removeDefaultGit(): Promise<ExecaReturnValue> {
     const rmCommand: string = IS_WINDOWS ? 'del' : 'rm -rf';
-    return command(`${rmCommand} .git`, this.childProcessOptions);
+    return command(`${rmCommand} .git`, this.CHILD_PROCESS_OPTIONS);
   }
 
   async initGit(): Promise<ExecaReturnValue> {
-    return command('git init', Object.assign({ shell: true }, this.childProcessOptions));
+    return command('git init', Object.assign({ shell: true }, this.CHILD_PROCESS_OPTIONS));
   }
 
   async initialCommit(amend?: boolean): Promise<ExecaReturnValue> {
-    return command(`git add .&& git commit -m "Initial commit" -n${amend ? ` --amend` : ''}`, this.childProcessOptions);
+    return command(
+      `git add .&& git commit -m "Initial commit" -n${amend ? ` --amend` : ''}`,
+      this.CHILD_PROCESS_OPTIONS
+    );
   }
 
-  isYarnAvailable(ctx): Promise<void> {
-    return command(`npm list -g --json`, this.childProcessOptions).then(
+  isYarnAvailable(ctx: IContext): Promise<void> {
+    return command(`npm list -g --json`, this.CHILD_PROCESS_OPTIONS).then(
       (result: ExecaReturnValue<any>) => {
         const jsonStr: string = result?.stdout;
         const json: any = jsonStr ? JSON.parse(jsonStr) : { dependencies: {} };
@@ -141,7 +152,7 @@ export class Specifier {
     );
   }
 
-  usedPackageManager(ctx): void {
+  usedPackageManager(ctx: IContext): void {
     ctx.usedPackageManager = null;
 
     if (existsSync(join(this.name, 'package-lock.json'))) {
@@ -156,37 +167,37 @@ export class Specifier {
   runPrettier(): Promise<ExecaReturnValue<string>> {
     return command(
       'node ./node_modules/prettier/bin-prettier "./src/**/*.{js,jsx,ts,tsx,html,vue}" --write',
-      Object.assign({ preferLocal: true }, this.childProcessOptions)
+      Object.assign({ preferLocal: true }, this.CHILD_PROCESS_OPTIONS)
     );
   }
 
   lintersTask(): Listr {
     return new Listr(
       [
-        { title: 'Get Available linters', task: ctx => this.getLinters(ctx) },
+        { title: 'Get Available linters', task: (ctx: IContext) => this.getLinters(ctx) },
         {
           title: 'Fix linting errors, if possible',
-          skip: ctx => !ctx.lintersKeys.length,
-          task: ctx => this.runLinters(ctx)
+          skip: (ctx: IContext) => !ctx.lintersKeys.length,
+          task: (ctx: IContext) => this.runLinters(ctx)
         }
       ],
       { exitOnError: false }
     );
   }
 
-  getLinters(ctx): void {
+  getLinters(ctx: IContext): void {
     const json = readJsonSync(join(this.name, 'package.json'));
     ctx.lintersKeys = Object.keys(json.scripts).filter(
       (key: string): boolean => key.includes('lint') && !/:(all|watch)/g.test(key)
     );
   }
 
-  runLinters(ctx): Listr {
+  runLinters(ctx: IContext): Listr {
     return new Listr(
       ctx.lintersKeys.map(linter => ({
         title: `Run ${linter}`,
         task: () =>
-          command(`npm run ${linter}`, this.childProcessOptions).catch(() => {
+          command(`npm run ${linter}`, this.CHILD_PROCESS_OPTIONS).catch(() => {
             throw new Error(red('Linting failed, please fix linting problems manually'));
           })
       }))
