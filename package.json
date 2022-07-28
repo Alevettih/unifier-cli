@@ -33,7 +33,7 @@
   "author": "Alex Tykhonenko <alevettih@gmail.com>",
   "license": "MIT",
   "bin": {
-    "unifier-cli": "bin/cli"
+    "unifier-cli": "dist/cli.js"
   },
   "bugs": {
     "url": "https://github.com/requestum-team/unifier-cli/issues"
