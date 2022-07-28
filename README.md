@@ -49,7 +49,9 @@ unifier-cli <project name>
 
 Also you can use additional arguments:
 
-- `--type` - tells to CLI that it should create project with that type. Get `angular` or `plain-js` value.
+- `--type=<type>` - tells CLI that it should create a project with that type. Get `angular` or `plain-js` value.
+- `--skip-git` - tells CLI that it should create a project without initialisation of git repository.
+- `--force-npm` - tells CLI that it should create a project with force using `npm`, even if `yarn` is installed globally.
 
 ## Development
 

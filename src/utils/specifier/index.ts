@@ -21,12 +21,13 @@ export interface IContext {
 export const configsDir: string = './configs/';
 
 export class Specifier {
+  readonly FORCE_NPM: boolean;
   readonly SKIP_GIT: boolean;
   readonly PROJECT: string;
   readonly VERSION: string;
   readonly CHILD_PROCESS_OPTIONS: Options;
 
-  constructor({ title, version, 'skip-git': skipGit }: IAnswer) {
+  constructor({ title, version, 'skip-git': skipGit, 'force-npm': forceNpm }: IAnswer) {
     if (!title) {
       throw new Error('Target directory is required!');
     }
@@ -34,6 +35,7 @@ export class Specifier {
     this.PROJECT = title;
     this.VERSION = version;
     this.SKIP_GIT = skipGit ?? false;
+    this.FORCE_NPM = forceNpm ?? false;
     this.CHILD_PROCESS_OPTIONS = { shell: true, cwd: join(title) };
   }
 
@@ -97,7 +99,7 @@ export class Specifier {
       },
       {
         title: 'Install dependencies by yarn',
-        enabled: ctx => ctx.usedPackageManager !== 'npm' && ctx.yarn,
+        enabled: ctx => !this.FORCE_NPM && ctx.usedPackageManager !== 'npm' && ctx.yarn,
         task: () =>
           command(
             `yarn ${devDependenciesString.length ? `add ${devDependenciesString} --dev` : 'install'}`,
@@ -111,7 +113,7 @@ export class Specifier {
       },
       {
         title: 'Install dependencies by npm',
-        enabled: ctx => ctx.npm || !ctx.yarn,
+        enabled: ctx => this.FORCE_NPM || ctx.npm || !ctx.yarn,
         task: () =>
           command(
             `npm ${devDependenciesString.length ? `i ${devDependenciesString} --save-dev` : 'i'}`,

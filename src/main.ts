@@ -18,6 +18,7 @@ export interface IAnswer {
   type: ProjectType;
   version: string;
   'skip-git': boolean;
+  'force-npm': boolean;
 }
 
 export const args: ParsedArgs = minimist(process.argv.slice(2));
