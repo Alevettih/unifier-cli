@@ -1,6 +1,6 @@
-const inquirer: Inquirer = jest.genMockFromModule('inquirer');
+const inquirer: IInquirer = jest.genMockFromModule('inquirer');
 
-interface Inquirer {
+interface IInquirer {
   prompt: (questions: any) => Promise<void>;
 }
 

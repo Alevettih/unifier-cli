@@ -155,7 +155,7 @@ describe('Specifier should', () => {
 
     describe('Run', () => {
       beforeEach(() => {
-        Object.defineProperty(specifier, 'runLinters', { value: jest.fn(async () => {}) });
+        Object.defineProperty(specifier, 'runLinters', { value: jest.fn(async () => null) });
       });
 
       test('Run if lint tasks is available', async (): Promise<void> => {
@@ -210,7 +210,7 @@ describe('Specifier should', () => {
     await expect(specifier.runLinters(ctx).run()).rejects.toThrow();
 
     Object.defineProperty(execa, 'command', {
-      value: jest.fn(async () => {})
+      value: jest.fn(async () => null)
     });
 
     await specifier.runLinters(ctx).run();

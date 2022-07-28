@@ -12,7 +12,7 @@ jest.mock('@utils/helpers');
 
 describe('User answers', () => {
   test('can call inquirer', async (): Promise<void> => {
-    Object.defineProperty(inquirer, 'prompt', { value: jest.fn(async () => {}) });
+    Object.defineProperty(inquirer, 'prompt', { value: jest.fn(async () => null) });
     await main();
     expect(inquirer.prompt).toHaveBeenCalled();
   });

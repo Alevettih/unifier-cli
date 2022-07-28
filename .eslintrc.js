@@ -87,7 +87,11 @@ module.exports = {
       {
         selector: ['variable', 'function'],
         format: ['camelCase', 'UPPER_CASE', 'PascalCase'],
-        leadingUnderscore: 'allow'
+        leadingUnderscore: 'allow',
+        filter: {
+          regex: '^__',
+          match: false
+        }
       }
     ],
     'comma-dangle': ['error', 'never']
