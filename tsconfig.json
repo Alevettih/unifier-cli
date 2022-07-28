@@ -7,8 +7,9 @@
     "sourceMap": true,
     "declaration": false,
     "skipLibCheck": true,
+    "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "module": "commonjs",
+    "module": "esnext",
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -19,11 +20,12 @@
     "paths": {
       "@src/*": ["src/*"],
       "@utils/*": ["src/utils/*"],
-      "@specifier/*": ["src/utils/specifier/*"],
-      "@specification/*": ["src/specification/*"]
+      "@configs/*": ["src/configs/*"],
+      "@codebase/*": ["src/codebase/*"],
+      "@specifier/*": ["src/utils/specifier/*"]
     },
-    "lib": ["es2018", "dom"]
+    "lib": ["esnext", "dom"]
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["**/__mocks__/*.ts", "src/specification/**/*.*", "src/codebase/**/*.*", "**/*.test.ts"]
+  "exclude": ["src/codebase/**/*.*"]
 }

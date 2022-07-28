@@ -16,10 +16,7 @@ export function isDirectoryExistsAndNotEmpty(input?: string): boolean {
 }
 
 export function getCWD(): string {
-  return process
-    .cwd()
-    .split(sep)
-    .pop();
+  return process.cwd().split(sep).pop();
 }
 
 export function emptyTarget(value: any): any {
@@ -57,7 +54,7 @@ export function mockClassMethods(target: object, classes: any[], excludedMethods
   classes.forEach((classInstance: any): void => {
     Object.getOwnPropertyNames(classInstance.prototype).forEach((key: string): void => {
       if (isNotExcluded(key) && typeof target[key] === 'function') {
-        target[key] = jest.fn(async () => {});
+        target[key] = jest.fn(async () => undefined);
       }
     });
   });

@@ -8,7 +8,7 @@ module.exports = {
   roots: ['<rootDir>/src'],
   verbose: true,
   testRegex: '(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$',
-  testPathIgnorePatterns: ['/codebase/', '/specification/'],
+  testPathIgnorePatterns: ['/codebase/'],
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' }),
   moduleFileExtensions: ['js', 'json', 'jsx', 'node', 'ts', 'tsx'],
   silent: true,

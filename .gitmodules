@@ -1,3 +1,0 @@
-[submodule "specification"]
-	path = src/specification
-	url = https://github.com/requestum-team/front-end-specification.git

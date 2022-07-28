@@ -2,7 +2,7 @@ import main from '@src/main';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
 import * as projects from '@src/project-types';
-import { isDirectoryExistsAndNotEmpty } from '../utils/helpers';
+import { isDirectoryExistsAndNotEmpty } from '@utils/helpers';
 
 jest.mock('@src/project-types/angular.project');
 jest.mock('@src/project-types/plain.project');
@@ -12,7 +12,7 @@ jest.mock('@utils/helpers');
 
 describe('User answers', () => {
   test('can call inquirer', async (): Promise<void> => {
-    Object.defineProperty(inquirer, 'prompt', { value: jest.fn(async () => {}) });
+    Object.defineProperty(inquirer, 'prompt', { value: jest.fn(async () => null) });
     await main();
     expect(inquirer.prompt).toHaveBeenCalled();
   });

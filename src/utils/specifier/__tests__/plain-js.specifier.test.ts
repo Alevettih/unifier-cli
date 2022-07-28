@@ -1,8 +1,9 @@
 import { PlainJSSpecifier } from '@utils/specifier/plain-js.specifier';
 import { Specifier } from '@utils/specifier';
-import { mockClassMethods } from '../../helpers';
+import { mockClassMethods } from '@utils/helpers';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
+import { IAnswer } from '@src/main';
 
 jest.mock('child_process');
 jest.mock('fs-extra');
@@ -12,7 +13,7 @@ describe('Plain JS specifier should', () => {
   let specifier: PlainJSSpecifier;
 
   beforeEach(() => {
-    specifier = new PlainJSSpecifier(testDir);
+    specifier = new PlainJSSpecifier({ title: testDir } as IAnswer);
   });
 
   test('extends from Specifier', () => {
@@ -20,13 +21,11 @@ describe('Plain JS specifier should', () => {
   });
 
   describe('specify Plain JS project', () => {
-    beforeEach(
-      async (): Promise<void> => {
-        mockClassMethods(specifier, [Specifier], ['specify']);
+    beforeEach(async (): Promise<void> => {
+      mockClassMethods(specifier, [Specifier], ['specify']);
 
-        await specifier.specify().run();
-      }
-    );
+      await specifier.specify().run();
+    });
 
     test('copy configs', async (): Promise<void> => {
       expect(specifier.copyConfigs).toBeCalled();

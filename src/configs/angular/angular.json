@@ -1,0 +1,23 @@
+{
+  "sourceRoot": "src",
+  "prefix": "",
+  "architect": {
+    "build": {
+      "options": {
+        "assets": ["src/.htaccess", "src/default.conf", "src/favicon.ico", "src/assets"],
+        "stylePreprocessorOptions": {
+          "includePaths": ["src/scss", "node_modules"]
+        },
+        "allowedCommonJsDependencies": ["class-transformer"]
+      }
+    },
+    "test": {
+      "options": {
+        "assets": ["src/.htaccess", "src/default.conf", "src/favicon.ico", "src/assets"],
+        "stylePreprocessorOptions": {
+          "includePaths": ["src/scss", "node_modules"]
+        }
+      }
+    }
+  }
+}

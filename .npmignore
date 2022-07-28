@@ -1,1 +1,13 @@
+.husky
+bin
 node_modules
+src
+.editorconfig
+.eslintignore
+.eslintrc.js
+.gitignore
+.prettierignore
+.prettierrc
+jest.config.js
+tsconfig.json
+webpack.config.js

@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+
+const { copySync, removeSync } = require('fs-extra');
+const { join }  = require('path');
+
+(function () {
+  const items = ['.husky', 'bin', 'src'];
+
+  for (const item of items) {
+    removeSync(join(__dirname, `../src/codebase/angular/${item}`))
+    copySync(
+      `./${item}`,
+      join(__dirname, `../src/codebase/angular/${item}`),
+      {
+        filter(name) {
+          return !/(\.htaccess)|(default.conf)|(favicon.ico)|(index.html)|(polyfills.ts)|(test.ts)|(token.json)/gm.test(name);
+        }
+      }
+    );
+  }
+
+})();

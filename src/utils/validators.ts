@@ -1,7 +1,7 @@
-import { red } from 'colors/safe';
+import { red } from 'ansi-colors';
 
 export function title(input?: string): boolean | string {
-  if (input && /^([A-Za-z\-\_\d])+$/.test(input)) {
+  if (input && /^([A-Za-z\-_\d])+$/.test(input)) {
     if (input !== 'test') {
       return true;
     }

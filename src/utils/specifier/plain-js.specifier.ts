@@ -1,7 +1,7 @@
+import config from '@specifier/configs/plain-js.config';
 import { Specifier } from '@specifier/index';
 import { Listr } from 'listr2';
-import config from '@specifier/configs/plain-js.config';
-import { blue } from 'colors/safe';
+import { cyan } from 'ansi-colors';
 import { removeSync } from 'fs-extra';
 import { join } from 'path';
 
@@ -22,7 +22,7 @@ export class PlainJSSpecifier extends Specifier {
           new Listr(
             [
               { title: 'Copy configs...', task: () => this.copyConfigs(...config.getConfigsPaths(this.name)) },
-              { title: `Update ${blue('.gitignore')} rules`, task: () => this.updateGitignoreRules() },
+              { title: `Update ${cyan('.gitignore')} rules`, task: () => this.updateGitignoreRules() },
               { title: 'Install dependencies', task: () => this.installPackages() }
             ],
             { concurrent: true }
