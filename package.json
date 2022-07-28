@@ -6,7 +6,9 @@
   "scripts": {
     "prepare": "husky install && husky set .husky/pre-commit \"npm run hook:pre-commit\" && npm run build",
     "prepublishOnly": "npm run lint && npm run test && npm run build",
-    "build": "webpack --mode production",
+    "build": "run-s build:app build:cli",
+    "build:app": "webpack --mode production",
+    "build:cli": "node ./bin/generage-cli",
     "lint": "eslint src --fix",
     "dev": "webpack --watch --progress --mode production",
     "test": "jest",
@@ -31,7 +33,7 @@
   "author": "Alex Tykhonenko <alevettih@gmail.com>",
   "license": "MIT",
   "bin": {
-    "unifier-cli": "dist/cli.js"
+    "unifier-cli": "bin/cli"
   },
   "bugs": {
     "url": "https://github.com/requestum-team/unifier-cli/issues"

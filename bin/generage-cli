@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+const { readFileSync, writeFileSync, removeSync } = require('fs-extra');
+const { join } = require('path');
+
+(function () {
+  removeSync(join(__dirname, `./cli`));
+  const content = readFileSync(join(__dirname, `../dist/cli.js`));
+  writeFileSync(join(__dirname, `./cli`), `#!/usr/bin/env node\n${content}`);
+})();
