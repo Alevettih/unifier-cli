@@ -65,7 +65,8 @@ export default {
         'deploy:dev': 'run-s build update-env:dev',
         'update-env:dev': `bash bin/update-env/ssh-deploy.sh .env.dev ${projectName}/`,
         'hook:pre-commit': 'npm run pretty-quick',
-        prepare: 'husky install && husky set .husky/pre-commit "npm run hook:pre-commit"'
+        prepare: 'npm run husky install && npm run husky set .husky/pre-commit "npm run hook:pre-commit"',
+        husky: 'node node_modules/husky/lib/bin.js'
       },
       husky: {
         hooks: {
