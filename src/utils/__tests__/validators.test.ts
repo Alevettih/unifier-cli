@@ -1,5 +1,5 @@
 import { title } from '@utils/validators';
-import { red } from 'colors/safe';
+import { red } from 'ansi-colors';
 
 describe('Validators can', () => {
   test('check title correct', () => {

@@ -5,7 +5,7 @@ import { remove } from 'fs-extra';
 import { join } from 'path';
 import * as minimist from 'minimist';
 import { ParsedArgs } from 'minimist';
-import { red, green } from 'colors/safe';
+import { red, green } from 'ansi-colors';
 import { Listr } from 'listr2';
 import { selectProjectType } from '@src/project-types';
 import { title } from '@utils/validators';

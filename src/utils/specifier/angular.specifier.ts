@@ -2,7 +2,7 @@ import { copy, outputFile, removeSync } from 'fs-extra';
 import { join } from 'path';
 import * as angularJsonAdditions from '@configs/angular/angular.json';
 import { IConfigPaths, Specifier } from '@utils/specifier';
-import { blue, red } from 'colors/safe';
+import { cyan, red } from 'ansi-colors';
 import config from '@utils/specifier/configs/angular.config';
 import { Listr } from 'listr2';
 import { command, ExecaReturnValue } from 'execa';
@@ -14,7 +14,7 @@ export class AngularSpecifier extends Specifier {
   specify(): Listr {
     const tasks = [
       {
-        title: `Update ${blue('package.json')}`,
+        title: `Update ${cyan('package.json')}`,
         task: () => this.mergeWithJson(join(this.name, 'package.json'), config.packageJson(this.name, this.SKIP_GIT))
       },
       {
@@ -30,13 +30,13 @@ export class AngularSpecifier extends Specifier {
             [
               { title: 'Copy configs...', task: () => this.copyConfigs(...config.getConfigsPaths(this.name)) },
               { title: 'Copy the base structure of project', task: () => this.copyBaseStructure() },
-              { title: `Update ${blue('.gitignore')} rules`, task: () => this.updateGitignoreRules() },
+              { title: `Update ${cyan('.gitignore')} rules`, task: () => this.updateGitignoreRules() },
               {
-                title: `Add ${blue('token.json')} to assets directory. (Should be in ${blue('.gitignore')})`,
+                title: `Add ${cyan('token.json')} to assets directory. (Should be in ${cyan('.gitignore')})`,
                 task: () => this.addTokenJsonToAssets()
               },
               {
-                title: `Edit ${blue('angular.json')}`,
+                title: `Edit ${cyan('angular.json')}`,
                 task: () =>
                   this.mergeWithJson(join(this.name, 'angular.json'), {
                     projects: { [this.name]: { ...angularJsonAdditions } }

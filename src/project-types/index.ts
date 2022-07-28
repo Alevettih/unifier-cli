@@ -1,5 +1,5 @@
 import { IAnswer, ProjectType } from '@src/main';
-import { red } from 'colors/safe';
+import { red } from 'ansi-colors';
 import { Listr } from 'listr2';
 import { plainProject } from './plain.project';
 import { angularProject } from './angular.project';

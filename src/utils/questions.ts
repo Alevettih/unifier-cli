@@ -3,7 +3,7 @@ import { title } from '@utils/validators';
 import { isDirectoryExistsAndNotEmpty } from '@utils/helpers';
 import { types } from '@src/project-types';
 import { args, IAnswer } from '@src/main';
-import { grey, yellow } from 'colors/safe';
+import { grey, yellow } from 'ansi-colors';
 import { major, satisfies } from 'semver';
 
 export const questions = angularInfo => [

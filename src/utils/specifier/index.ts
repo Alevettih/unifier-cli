@@ -1,6 +1,6 @@
 import { existsSync, copy, outputFile, readFileSync, readJsonSync, writeJson } from 'fs-extra';
 import { join } from 'path';
-import { blue, red } from 'colors/safe';
+import { cyan, red } from 'ansi-colors';
 import { command, ExecaReturnValue, Options } from 'execa';
 import { newlineSeparatedValue, arrayMerge, IS_WINDOWS } from '@utils/helpers';
 import * as deepMerge from 'deepmerge';
@@ -47,7 +47,7 @@ export class Specifier {
         const pathArray = path.src.split(IS_WINDOWS ? '\\' : '/');
         const file = pathArray[pathArray.length - 1];
         return {
-          title: `Copy ${blue(file)} file`,
+          title: `Copy ${cyan(file)} file`,
           task: () => copy(path.src, path.dist)
         };
       })
