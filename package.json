@@ -17,6 +17,13 @@
     "pretty-quick": "pretty-quick --staged",
     "hook:pre-commit": "npm run pretty-quick"
   },
+  "files": [
+    "README.md",
+    "package.json",
+    "package-lock.json",
+    "LICENSE",
+    "dist/*"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/requestum-team/unifier-cli.git"

@@ -1,5 +1,4 @@
 # compiled output
-/bin/cli
 /dist
 /tmp
 *.map
