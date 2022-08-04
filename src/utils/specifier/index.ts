@@ -1,46 +1,28 @@
-import { existsSync, copy, outputFile, readFileSync, readJsonSync, writeJson } from 'fs-extra';
+import { copy, outputFile, readFileSync, readJsonSync, writeJson } from 'fs-extra';
 import { join } from 'path';
 import { cyan, red } from 'ansi-colors';
 import { command, ExecaReturnValue, Options } from 'execa';
 import { newlineSeparatedValue, arrayMerge, IS_WINDOWS } from '@utils/helpers';
 import * as deepMerge from 'deepmerge';
 import { Listr, ListrTask } from 'listr2';
-import { IAnswer } from '@src/main';
+import { IContext } from '@src/main';
 
 export interface IConfigPaths {
   src: string;
   dist: string;
 }
 
-export interface IContext {
-  yarn: boolean;
-  usedPackageManager: 'yarn' | 'npm';
-  lintersKeys: string[];
-}
-
 export const configsDir: string = './configs/';
 
 export class Specifier {
-  readonly FORCE_NPM: boolean;
-  readonly SKIP_GIT: boolean;
-  readonly PROJECT: string;
-  readonly VERSION: string;
   readonly CHILD_PROCESS_OPTIONS: Options;
 
-  constructor({ title, version, 'skip-git': skipGit, 'force-npm': forceNpm }: IAnswer) {
+  constructor({ title }: IContext) {
     if (!title) {
       throw new Error('Target directory is required!');
     }
 
-    this.PROJECT = title;
-    this.VERSION = version;
-    this.SKIP_GIT = skipGit ?? false;
-    this.FORCE_NPM = forceNpm ?? false;
     this.CHILD_PROCESS_OPTIONS = { shell: true, cwd: join(title) };
-  }
-
-  get name(): string {
-    return this.PROJECT;
   }
 
   copyConfigs(...paths: IConfigPaths[]): Listr {
@@ -69,14 +51,14 @@ export class Specifier {
     });
   }
 
-  updateGitignoreRules(): Promise<void> {
-    const projectGitignore: object = newlineSeparatedValue.parse(readFileSync(join(this.name, '.gitignore'), 'utf-8'));
+  updateGitignoreRules({ title }: IContext): Promise<void> {
+    const projectGitignore: object = newlineSeparatedValue.parse(readFileSync(join(title, '.gitignore'), 'utf-8'));
     const specificationGitignore: object = newlineSeparatedValue.parse(
       readFileSync(join(__dirname, './configs/.gitignore.example'), 'utf-8')
     );
 
     return outputFile(
-      join(this.name, '.gitignore'),
+      join(title, '.gitignore'),
       newlineSeparatedValue.stringify(deepMerge(projectGitignore, specificationGitignore, { arrayMerge })),
       'utf-8'
     ).catch(err => {
@@ -89,17 +71,7 @@ export class Specifier {
     const devDependenciesString = devDependencies && devDependencies.length ? devDependencies.join(' ') : '';
     return new Listr([
       {
-        title: 'Check currently used package manager',
-        task: ctx => this.usedPackageManager(ctx)
-      },
-      {
-        title: 'Check yarn availability',
-        skip: ctx => ctx.usedPackageManager === 'npm',
-        task: ctx => this.isYarnAvailable(ctx)
-      },
-      {
-        title: 'Install dependencies by yarn',
-        enabled: ctx => !this.FORCE_NPM && ctx.usedPackageManager !== 'npm' && ctx.yarn,
+        enabled: ({ packageManager, isYarnAvailable }: IContext) => isYarnAvailable && packageManager === 'yarn',
         task: () =>
           command(
             `yarn ${devDependenciesString.length ? `add ${devDependenciesString} --dev` : 'install'}`,
@@ -112,8 +84,7 @@ export class Specifier {
           )
       },
       {
-        title: 'Install dependencies by npm',
-        enabled: ctx => this.FORCE_NPM || ctx.npm || !ctx.yarn,
+        enabled: ({ packageManager, isYarnAvailable }: IContext) => isYarnAvailable && packageManager === 'npm',
         task: () =>
           command(
             `npm ${devDependenciesString.length ? `i ${devDependenciesString} --save-dev` : 'i'}`,
@@ -141,31 +112,6 @@ export class Specifier {
     );
   }
 
-  isYarnAvailable(ctx: IContext): Promise<void> {
-    return command(`npm list -g --json`, this.CHILD_PROCESS_OPTIONS).then(
-      (result: ExecaReturnValue<any>) => {
-        const jsonStr: string = result?.stdout;
-        const json: any = jsonStr ? JSON.parse(jsonStr) : { dependencies: {} };
-        ctx.yarn = Object.keys(json.dependencies).includes('yarn');
-      },
-      () => {
-        ctx.yarn = false;
-      }
-    );
-  }
-
-  usedPackageManager(ctx: IContext): void {
-    ctx.usedPackageManager = null;
-
-    if (existsSync(join(this.name, 'package-lock.json'))) {
-      ctx.usedPackageManager = 'npm';
-    }
-
-    if (existsSync(join(this.name, 'yarn.lock'))) {
-      ctx.usedPackageManager = 'yarn';
-    }
-  }
-
   runPrettier(): Promise<ExecaReturnValue<string>> {
     return command(
       'node ./node_modules/prettier/bin-prettier "./src/**/*.{js,jsx,ts,tsx,html,vue}" --write',
@@ -188,7 +134,7 @@ export class Specifier {
   }
 
   getLinters(ctx: IContext): void {
-    const json = readJsonSync(join(this.name, 'package.json'));
+    const json = readJsonSync(join(ctx.title, 'package.json'));
     ctx.lintersKeys = Object.keys(json.scripts).filter(
       (key: string): boolean => key.includes('lint') && !/:(all|watch)/g.test(key)
     );

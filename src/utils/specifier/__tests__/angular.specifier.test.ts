@@ -4,7 +4,7 @@ import { mockClassMethods } from '@utils/helpers';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import config from '@utils/specifier/configs/angular.config';
-import { IAnswer } from '@src/main';
+import { IContext } from '@src/main';
 
 jest.mock('child_process');
 jest.mock('fs-extra');
@@ -14,7 +14,7 @@ describe('Angular specifier should', () => {
   let specifier: AngularSpecifier;
 
   beforeEach(() => {
-    specifier = new AngularSpecifier({ title: testDir } as IAnswer);
+    specifier = new AngularSpecifier({ title: testDir } as IContext);
   });
 
   test('extends from Specifier', () => {
@@ -22,28 +22,27 @@ describe('Angular specifier should', () => {
   });
 
   test('remove default .browserslistrc before copy configs from specification', async (): Promise<void> => {
-    await specifier.copyConfigs(...config.getConfigsPaths(specifier.name)).run();
+    await specifier.copyConfigs(...config.getConfigsPaths(testDir)).run();
 
-    expect(fs.removeSync).toBeCalled();
-    expect(fs.copy).toBeCalledTimes(config.getConfigsPaths(specifier.name).length);
+    expect(fs.copy).toBeCalledTimes(config.getConfigsPaths(testDir).length);
   });
 
   test('copy base structure of Angular project', async (): Promise<void> => {
-    await specifier.copyBaseStructure();
+    await specifier.copyBaseStructure({ title: testDir } as IContext);
 
     expect(fs.copy).toBeCalled();
 
     Object.defineProperty(fs, 'copy', { value: jest.fn().mockRejectedValueOnce({}) });
-    expect(specifier.copyBaseStructure()).rejects.toThrow();
+    expect(specifier.copyBaseStructure({ title: testDir } as IContext)).rejects.toThrow();
   });
 
   test('add token.json to assets', async (): Promise<void> => {
-    await specifier.addTokenJsonToAssets();
+    await specifier.addTokenJsonToAssets({ title: testDir } as IContext);
 
     expect(fs.outputFile).toBeCalled();
 
     Object.defineProperty(fs, 'outputFile', { value: jest.fn().mockRejectedValueOnce({}) });
-    expect(specifier.addTokenJsonToAssets()).rejects.toThrow();
+    expect(specifier.addTokenJsonToAssets({ title: testDir } as IContext)).rejects.toThrow();
   });
 
   describe('specify Angular project', () => {
@@ -62,7 +61,7 @@ describe('Angular specifier should', () => {
     });
 
     test('install dependencies', async (): Promise<void> => {
-      expect(specifier.installPackages).toBeCalledWith(config.dependencies, config.devDependencies(specifier.SKIP_GIT));
+      expect(specifier.installPackages).toBeCalledWith(config.dependencies, config.devDependencies(false));
     });
 
     test('Run Prettier', async (): Promise<void> => {

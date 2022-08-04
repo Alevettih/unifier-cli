@@ -1,10 +1,10 @@
 import { AngularSpecifier } from '@specifier/angular.specifier';
 import { command } from 'execa';
 import { Listr } from 'listr2';
-import { IAnswer } from '@src/main';
+import { IContext } from '@src/main';
 
-export const angularProject = (answers: IAnswer = { title: '', version: 'latest' } as IAnswer): Listr => {
-  const { title, version, 'skip-git': skipGit } = answers;
+export const angularProject = (context: IContext): Listr => {
+  const { title, version, skipGit } = context;
 
   return new Listr([
     {
@@ -18,7 +18,7 @@ export const angularProject = (answers: IAnswer = { title: '', version: 'latest'
     },
     {
       title: 'Specify it...',
-      task: () => new AngularSpecifier(answers).specify()
+      task: () => new AngularSpecifier(context).specify()
     }
   ]);
 };
