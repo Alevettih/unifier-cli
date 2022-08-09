@@ -30,7 +30,10 @@ export class AngularSpecifier extends Specifier {
         title: 'Add Material',
         task: ({ version }: IContext): Promise<ExecaReturnValue> => this.installMaterial(version)
       },
-      { title: 'Add ESLint', task: ({ version }: IContext): Promise<ExecaReturnValue> => this.installEsLint(version) },
+      {
+        title: 'Add ESLint',
+        task: ({ version }: IContext): Promise<ExecaReturnValue> => this.installEsLint(version)
+      },
       {
         title: 'Do some magic...',
         task: () =>

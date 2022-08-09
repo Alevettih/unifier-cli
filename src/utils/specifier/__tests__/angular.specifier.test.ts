@@ -4,7 +4,7 @@ import { mockClassMethods } from '@utils/helpers';
 import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import config from '@utils/specifier/configs/angular.config';
-import { IContext } from '@src/main';
+import { args } from '@src/main';
 
 jest.mock('child_process');
 jest.mock('fs-extra');
@@ -14,7 +14,8 @@ describe('Angular specifier should', () => {
   let specifier: AngularSpecifier;
 
   beforeEach(() => {
-    specifier = new AngularSpecifier({ title: testDir } as IContext);
+    args.title = testDir;
+    specifier = new AngularSpecifier(args);
   });
 
   test('extends from Specifier', () => {
@@ -22,34 +23,34 @@ describe('Angular specifier should', () => {
   });
 
   test('remove default .browserslistrc before copy configs from specification', async (): Promise<void> => {
-    await specifier.copyConfigs(...config.getConfigsPaths(testDir)).run();
+    await specifier.copyConfigs(...config.getConfigsPaths(testDir)).run(args);
 
     expect(fs.copy).toBeCalledTimes(config.getConfigsPaths(testDir).length);
   });
 
   test('copy base structure of Angular project', async (): Promise<void> => {
-    await specifier.copyBaseStructure({ title: testDir } as IContext);
+    await specifier.copyBaseStructure(args);
 
     expect(fs.copy).toBeCalled();
 
     Object.defineProperty(fs, 'copy', { value: jest.fn().mockRejectedValueOnce({}) });
-    expect(specifier.copyBaseStructure({ title: testDir } as IContext)).rejects.toThrow();
+    await expect(specifier.copyBaseStructure(args)).rejects.toThrow();
   });
 
   test('add token.json to assets', async (): Promise<void> => {
-    await specifier.addTokenJsonToAssets({ title: testDir } as IContext);
+    await specifier.addTokenJsonToAssets(args);
 
     expect(fs.outputFile).toBeCalled();
 
     Object.defineProperty(fs, 'outputFile', { value: jest.fn().mockRejectedValueOnce({}) });
-    expect(specifier.addTokenJsonToAssets({ title: testDir } as IContext)).rejects.toThrow();
+    await expect(specifier.addTokenJsonToAssets(args)).rejects.toThrow();
   });
 
   describe('specify Angular project', () => {
     beforeEach(async (): Promise<void> => {
       mockClassMethods(specifier, [Specifier, AngularSpecifier], ['specify']);
 
-      await specifier.specify().run();
+      await specifier.specify().run(args);
     });
 
     test('copy configs', async (): Promise<void> => {

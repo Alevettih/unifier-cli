@@ -35,7 +35,7 @@ export default async function (): Promise<IContext> {
   const task = new Listr(
     [
       {
-        title: 'Checking dependencies info',
+        title: 'Checking dependencies data...',
         task: async (ctx: IContext) => {
           ctx.isYarnAvailable = await isYarnAvailable();
           ctx.angularInfo = await getAngularInfo();
@@ -43,6 +43,7 @@ export default async function (): Promise<IContext> {
         }
       },
       {
+        skip: () => process.env.NODE_ENV === 'test',
         title: 'Answer some questions',
         task: questions
       },
@@ -57,6 +58,7 @@ export default async function (): Promise<IContext> {
       }
     ],
     {
+      ctx: args,
       rendererOptions: {
         showErrorMessage: false,
         collapseErrors: false,
@@ -65,7 +67,7 @@ export default async function (): Promise<IContext> {
     }
   );
 
-  return task.run(args).catch(error => {
+  return task.run().catch(error => {
     if (error) {
       console.log();
       console.log('Project creation failed: ');

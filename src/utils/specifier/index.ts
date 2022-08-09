@@ -2,7 +2,7 @@ import { copy, outputFile, readFileSync, readJsonSync, writeJson } from 'fs-extr
 import { join } from 'path';
 import { cyan, red } from 'ansi-colors';
 import { command, ExecaReturnValue, Options } from 'execa';
-import { newlineSeparatedValue, arrayMerge, IS_WINDOWS } from '@utils/helpers';
+import { newlineSeparatedValue, arrayMerge, IS_WINDOWS, shouldUseYarn } from '@utils/helpers';
 import * as deepMerge from 'deepmerge';
 import { Listr, ListrTask } from 'listr2';
 import { IContext } from '@src/main';
@@ -15,14 +15,16 @@ export interface IConfigPaths {
 export const configsDir: string = './configs/';
 
 export class Specifier {
+  private _ctx: IContext;
   readonly CHILD_PROCESS_OPTIONS: Options;
 
-  constructor({ title }: IContext) {
-    if (!title) {
+  constructor(ctx: IContext) {
+    if (!ctx.title) {
       throw new Error('Target directory is required!');
     }
 
-    this.CHILD_PROCESS_OPTIONS = { shell: true, cwd: join(title) };
+    this._ctx = ctx;
+    this.CHILD_PROCESS_OPTIONS = { shell: true, cwd: join(ctx.title) };
   }
 
   copyConfigs(...paths: IConfigPaths[]): Listr {
@@ -71,7 +73,7 @@ export class Specifier {
     const devDependenciesString = devDependencies && devDependencies.length ? devDependencies.join(' ') : '';
     return new Listr([
       {
-        enabled: ({ packageManager, isYarnAvailable }: IContext) => isYarnAvailable && packageManager === 'yarn',
+        enabled: shouldUseYarn,
         task: () =>
           command(
             `yarn ${devDependenciesString.length ? `add ${devDependenciesString} --dev` : 'install'}`,
@@ -84,7 +86,7 @@ export class Specifier {
           )
       },
       {
-        enabled: ({ packageManager, isYarnAvailable }: IContext) => isYarnAvailable && packageManager === 'npm',
+        enabled: (ctx: IContext) => !shouldUseYarn(ctx),
         task: () =>
           command(
             `npm ${devDependenciesString.length ? `i ${devDependenciesString} --save-dev` : 'i'}`,
@@ -112,7 +114,7 @@ export class Specifier {
     );
   }
 
-  runPrettier(): Promise<ExecaReturnValue<string>> {
+  runPrettier(): Promise<ExecaReturnValue> {
     return command(
       'node ./node_modules/prettier/bin-prettier "./src/**/*.{js,jsx,ts,tsx,html,vue}" --write',
       Object.assign({ preferLocal: true }, this.CHILD_PROCESS_OPTIONS)

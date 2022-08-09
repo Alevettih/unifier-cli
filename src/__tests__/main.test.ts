@@ -33,7 +33,7 @@ describe('User answers', () => {
     test('Angular', async () => {
       args.title = title;
       args.type = projects.types.ANGULAR;
-      args.version = '14';
+      args.version = 'latest';
 
       await main();
 
@@ -42,8 +42,6 @@ describe('User answers', () => {
 
     test('if selected directory is already exists and not empty it should clean it', async () => {
       args.title = 'same';
-      args.isYarnAvailable = false;
-      args.packageManager = 'npm';
       args.type = projects.types.PLAIN;
 
       await main();

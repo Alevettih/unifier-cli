@@ -1,9 +1,9 @@
 import * as fs from 'fs-extra';
 import * as execa from 'execa';
 import { join } from 'path';
-import { IS_WINDOWS } from '@utils/helpers';
+import { IS_WINDOWS, shouldUseYarn } from '@utils/helpers';
 import { Specifier } from '@utils/specifier';
-import { IContext, PackageManager } from '@src/main';
+import { args, IContext, PackageManager } from '@src/main';
 
 jest.mock('fs-extra');
 
@@ -12,56 +12,50 @@ describe('Specifier should', () => {
   let specifier: Specifier;
 
   beforeEach(() => {
-    specifier = new Specifier({ title: testDir } as IContext);
+    args.title = testDir;
+    specifier = new Specifier(args);
   });
 
   test('init an instance', (): void => {
     expect(() => new Specifier({ title: '' } as IContext)).toThrow();
-    expect(() => new Specifier({ title: testDir } as IContext)).not.toThrow();
+    expect(() => new Specifier(args)).not.toThrow();
     expect(specifier).toBeInstanceOf(Specifier);
     expect(specifier.CHILD_PROCESS_OPTIONS).toBeInstanceOf(Object);
   });
 
   describe('install dependencies', () => {
-    describe('by yarn', () => {
-      test.each([
-        ['npm', true],
-        ['yarn', true]
-      ])(
-        'if "packageManager" === %s and "isYarnAvailable" === %s',
-        async (packageManager: PackageManager, isYarnAvailable: boolean): Promise<void> => {
-          specifier = new Specifier({ title: testDir, packageManager, isYarnAvailable } as IContext);
+    test.each([
+      [null, false],
+      ['npm', false],
+      ['npm', true],
+      ['yarn', false],
+      ['yarn', true]
+    ])(
+      'if "packageManager" === %s and "isYarnAvailable" === %s',
+      async (packageManager: PackageManager, isYarnAvailable: boolean): Promise<void> => {
+        args.title = testDir;
+        args.packageManager = packageManager;
+        args.isYarnAvailable = isYarnAvailable;
+        specifier = new Specifier(args);
 
-          await specifier.installPackages().run();
-          expect(execa.command).toBeCalledWith('yarn install', specifier.CHILD_PROCESS_OPTIONS);
+        const isYarn: boolean = shouldUseYarn({ packageManager, isYarnAvailable } as IContext);
+        const dependencies: string[] = ['test'];
+        const devDependencies: string[] = ['dev-test'];
 
-          await specifier.installPackages(['test'], ['dev-test']).run();
-          expect(execa.command).toBeCalledWith('yarn add test', specifier.CHILD_PROCESS_OPTIONS);
-          expect(execa.command).toBeCalledWith('yarn add dev-test --dev', specifier.CHILD_PROCESS_OPTIONS);
+        await specifier.installPackages().run(args);
+        expect(execa.command).toBeCalledWith(isYarn ? 'yarn install' : 'npm i', specifier.CHILD_PROCESS_OPTIONS);
+        await specifier.installPackages(dependencies, devDependencies).run(args);
+        expect(execa.command).toBeCalledWith(actualCommand(dependencies, false), specifier.CHILD_PROCESS_OPTIONS);
+        expect(execa.command).toBeCalledWith(actualCommand(devDependencies, true), specifier.CHILD_PROCESS_OPTIONS);
+
+        function actualCommand(packagesNames: string[], isDevDependencies: boolean): string {
+          const installCommand: string = isYarn ? 'yarn add' : 'npm i';
+          const flags: string = isYarn ? '--dev' : '--save-dev';
+
+          return `${installCommand} ${packagesNames.join(' ')} ${isDevDependencies ? flags : ''}`.trim();
         }
-      );
-    });
-
-    describe('by npm', () => {
-      test.each([
-        [null, false],
-        ['npm', false],
-        ['npm', true],
-        ['yarn', false]
-      ])(
-        'if "packageManager" === %s and "isYarnAvailable" === %s',
-        async (packageManager: PackageManager, isYarnAvailable: boolean): Promise<void> => {
-          specifier = new Specifier({ title: testDir, packageManager, isYarnAvailable } as IContext);
-
-          await specifier.installPackages().run();
-          expect(execa.command).toBeCalledWith('yarn install', specifier.CHILD_PROCESS_OPTIONS);
-
-          await specifier.installPackages(['test'], ['dev-test']).run();
-          expect(execa.command).toBeCalledWith('yarn add test', specifier.CHILD_PROCESS_OPTIONS);
-          expect(execa.command).toBeCalledWith('yarn add dev-test --dev', specifier.CHILD_PROCESS_OPTIONS);
-        }
-      );
-    });
+      }
+    );
   });
 
   test('merge object with .json file', async (): Promise<void> => {
@@ -168,7 +162,6 @@ describe('Specifier should', () => {
   });
 
   test('Get linters tasks names', async (): Promise<void> => {
-    const ctx = {} as IContext;
     Object.defineProperty(fs, 'readJsonSync', {
       value: jest.fn().mockReturnValue({
         scripts: {
@@ -180,9 +173,9 @@ describe('Specifier should', () => {
       })
     });
 
-    await specifier.getLinters(ctx);
+    await specifier.getLinters(args);
 
-    expect(ctx).toMatchObject({ lintersKeys: ['lint:scss', 'lint:es'] });
+    expect(args).toMatchObject({ lintersKeys: ['lint:scss', 'lint:es'] });
   });
 
   test('Run linters', async (): Promise<void> => {
