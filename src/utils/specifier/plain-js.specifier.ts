@@ -18,12 +18,12 @@ export class PlainJSSpecifier extends Specifier {
           ])
       },
       {
-        title: 'Do some magic...',
+        title: 'Do some magic',
         task: () =>
           new Listr(
             [
               {
-                title: 'Copy configs...',
+                title: 'Copy configs',
                 task: ({ title }: IContext): Listr => this.copyConfigs(...config.getConfigsPaths(title))
               },
               {
@@ -33,6 +33,7 @@ export class PlainJSSpecifier extends Specifier {
               {
                 title: 'Install dependencies',
                 task: (ctx: IContext, task: ListrTaskWrapper<IContext, any>) => {
+                  removeSync(join(ctx.title, 'package-lock.json'));
                   task.title = `Install dependencies by ${cyan(ctx.packageManager)}`;
                   return this.installPackages();
                 }

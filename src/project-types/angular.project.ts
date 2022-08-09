@@ -17,7 +17,7 @@ export const angularProject = (context: IContext): Listr => {
         )
     },
     {
-      title: 'Specify it...',
+      title: 'Specify it',
       task: () => new AngularSpecifier(context).specify()
     }
   ]);

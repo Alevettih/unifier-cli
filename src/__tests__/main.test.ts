@@ -1,4 +1,4 @@
-import main, { args } from '@src/main';
+import main, { args, ProjectType } from '@src/main';
 import * as fs from 'fs-extra';
 import * as projects from '@src/project-types';
 import { isDirectoryExistsAndNotEmpty } from '@utils/helpers';
@@ -15,8 +15,7 @@ describe('User answers', () => {
 
     test('should throw error with invalid project type', async () => {
       args.title = title;
-      // @ts-ignore
-      args.type = 'test';
+      args.type = 'test' as ProjectType;
 
       await expect(main()).rejects.toThrow(Error);
     });

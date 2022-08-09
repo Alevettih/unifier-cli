@@ -1,7 +1,6 @@
 import { AngularSpecifier } from '@utils/specifier/angular.specifier';
 import { Specifier } from '@utils/specifier';
 import { mockClassMethods } from '@utils/helpers';
-import * as child_process from 'child_process';
 import * as fs from 'fs-extra';
 import config from '@utils/specifier/configs/angular.config';
 import { args } from '@src/main';

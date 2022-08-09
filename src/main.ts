@@ -1,4 +1,4 @@
-import { questions } from '@utils/questions';
+import { Questions } from '@utils/questions';
 import { getAngularInfo, initArguments, isDirectoryExistsAndNotEmpty, isYarnAvailable } from '@utils/helpers';
 import { remove } from 'fs-extra';
 import { join } from 'path';
@@ -10,20 +10,25 @@ import { title } from '@utils/validators';
 export type ProjectType = 'plain-js' | 'angular';
 export type PackageManager = 'npm' | 'yarn';
 
+export interface IAngularInfo {
+  versions: string[];
+  tags: { [key: string]: string };
+}
+
 export interface IContext {
   isYarnAvailable: boolean;
   title: string;
   version: string;
   type: ProjectType;
   packageManager: PackageManager;
-  angularInfo: { [key: string]: any };
+  angularInfo: IAngularInfo;
   lintersKeys: string[];
   skipGit: boolean;
 }
 
 export const args: IContext = initArguments(process.argv);
 
-export default async function (): Promise<IContext> {
+export default async function main(): Promise<void | IContext> {
   const titleValidationResult: boolean | string = title(args.title);
   const isTitleAvailableAndValid: boolean = args.title && typeof titleValidationResult !== 'boolean';
 
@@ -35,7 +40,7 @@ export default async function (): Promise<IContext> {
   const task = new Listr(
     [
       {
-        title: 'Checking dependencies data...',
+        title: 'Checking dependencies data',
         task: async (ctx: IContext) => {
           ctx.isYarnAvailable = await isYarnAvailable();
           ctx.angularInfo = await getAngularInfo();
@@ -45,7 +50,7 @@ export default async function (): Promise<IContext> {
       {
         skip: () => process.env.NODE_ENV === 'test',
         title: 'Answer some questions',
-        task: questions
+        task: () => new Questions().ask()
       },
       {
         title: 'Erase existing project directory',

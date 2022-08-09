@@ -5,7 +5,7 @@ import * as deepMerge from 'deepmerge';
 import { command, ExecaReturnValue } from 'execa';
 import * as minimist from 'minimist';
 import { ParsedArgs } from 'minimist';
-import { IContext } from '@src/main';
+import { IAngularInfo, IContext } from '@src/main';
 
 export const IS_WINDOWS: boolean = process.platform === 'win32';
 
@@ -13,9 +13,15 @@ export function shouldUseYarn({ packageManager, isYarnAvailable }: IContext): bo
   return isYarnAvailable && packageManager === 'yarn';
 }
 
-export async function getAngularInfo(): Promise<{ [key: string]: any }> {
-  const commandRes = await command(`npm view @angular/cli --json`);
-  return JSON.parse(commandRes.stdout);
+export async function getAngularInfo(): Promise<IAngularInfo> {
+  try {
+    const commandRes = await command(`npm view @angular/cli --json`);
+    const { 'dist-tags': tags, versions } = JSON.parse(commandRes.stdout);
+
+    return { tags, versions };
+  } catch (e) {
+    return { tags: {}, versions: [] };
+  }
 }
 
 export async function isYarnAvailable(): Promise<boolean> {

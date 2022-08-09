@@ -35,7 +35,7 @@ export class AngularSpecifier extends Specifier {
         task: ({ version }: IContext): Promise<ExecaReturnValue> => this.installEsLint(version)
       },
       {
-        title: 'Do some magic...',
+        title: 'Do some magic',
         task: () =>
           new Listr(
             [

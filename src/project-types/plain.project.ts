@@ -13,7 +13,7 @@ export const plainProject = (context: IContext): Listr => {
       task: () => command(`git clone https://github.com/Alevettih/project-template-webpack.git ${join(title)}`)
     },
     {
-      title: 'Specify it...',
+      title: 'Specify it',
       task: () => new PlainJSSpecifier(context).specify()
     }
   ]);
