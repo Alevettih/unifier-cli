@@ -2,13 +2,39 @@ import { sep } from 'path';
 import { pathExistsSync } from 'fs-extra';
 import { readdirSync } from 'fs';
 import * as deepMerge from 'deepmerge';
-import { command } from 'execa';
+import { command, ExecaReturnValue } from 'execa';
+import * as minimist from 'minimist';
+import { ParsedArgs } from 'minimist';
+import { IAngularInfo, IContext } from '@src/main';
 
 export const IS_WINDOWS: boolean = process.platform === 'win32';
 
-export async function getAngularInfo(): Promise<{ [key: string]: any }> {
-  const commandRes = await command(`npm view @angular/cli --json`);
-  return JSON.parse(commandRes.stdout);
+export function shouldUseYarn({ packageManager, isYarnAvailable }: IContext): boolean {
+  return isYarnAvailable && packageManager === 'yarn';
+}
+
+export async function getAngularInfo(): Promise<IAngularInfo> {
+  try {
+    const commandRes = await command(`npm view @angular/cli --json`);
+    const { 'dist-tags': tags, versions } = JSON.parse(commandRes.stdout);
+
+    return { tags, versions };
+  } catch (e) {
+    return { tags: {}, versions: [] };
+  }
+}
+
+export async function isYarnAvailable(): Promise<boolean> {
+  return command(`npm list -g --json`).then(
+    (result: ExecaReturnValue<any>) => {
+      const jsonStr: string = result?.stdout;
+      const json: any = jsonStr ? JSON.parse(jsonStr) : { dependencies: {} };
+      return Object.keys(json.dependencies).includes('yarn');
+    },
+    () => {
+      return false;
+    }
+  );
 }
 
 export function isDirectoryExistsAndNotEmpty(input?: string): boolean {
@@ -101,3 +127,17 @@ export const newlineSeparatedValue = {
     return res;
   }
 };
+
+export function initArguments(argv: string[]): IContext {
+  const parsedArgs: ParsedArgs = minimist(argv.slice(2));
+
+  if (parsedArgs && parsedArgs._ && parsedArgs._[0]) {
+    parsedArgs.title = parsedArgs._[0];
+  }
+
+  parsedArgs.skipGit = parsedArgs['skip-git'] ?? false;
+  delete parsedArgs['skip-git'];
+  delete parsedArgs._;
+
+  return parsedArgs as unknown as IContext;
+}

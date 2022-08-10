@@ -1,4 +1,4 @@
-import { IAnswer, ProjectType } from '@src/main';
+import { IContext, ProjectType } from '@src/main';
 import { red } from 'ansi-colors';
 import { Listr } from 'listr2';
 import { plainProject } from './plain.project';
@@ -13,13 +13,13 @@ export const types: ITypes = {
   ANGULAR: 'angular'
 };
 
-export function selectProjectType(answers: IAnswer): Listr {
-  switch (answers && answers.type) {
+export function selectProjectType(context: IContext): Listr {
+  switch (context?.type) {
     case types.PLAIN: {
-      return plainProject(answers);
+      return plainProject(context);
     }
     case types.ANGULAR: {
-      return angularProject(answers);
+      return angularProject(context);
     }
     default: {
       const availableTypes = `\n - ${Object.values(types).join('\n - ')}`;

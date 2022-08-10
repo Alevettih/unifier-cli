@@ -4,42 +4,66 @@ import * as angularJsonAdditions from '@configs/angular/angular.json';
 import { IConfigPaths, Specifier } from '@utils/specifier';
 import { cyan, red } from 'ansi-colors';
 import config from '@utils/specifier/configs/angular.config';
-import { Listr } from 'listr2';
+import { Listr, ListrTaskWrapper } from 'listr2';
 import { command, ExecaReturnValue } from 'execa';
 import { major } from 'semver';
+import { IContext } from '@src/main';
 
 export class AngularSpecifier extends Specifier {
   private readonly _NG_COMMAND: string = 'node ./node_modules/@angular/cli/bin/ng';
 
   specify(): Listr {
-    const tasks = [
+    return new Listr([
       {
         title: `Update ${cyan('package.json')}`,
-        task: () => this.mergeWithJson(join(this.name, 'package.json'), config.packageJson(this.name, this.SKIP_GIT))
+        task: ({ skipGit, title }: IContext): Promise<void> =>
+          this.mergeWithJson(join(title, 'package.json'), config.packageJson(title, skipGit))
       },
       {
         title: 'Install dependencies',
-        task: () => this.installPackages(config.dependencies, config.devDependencies(this.SKIP_GIT))
+        task: (ctx: IContext, task: ListrTaskWrapper<IContext, any>) => {
+          task.title = `Install dependencies by ${cyan(ctx.packageManager)}`;
+          return this.installPackages(config.dependencies, config.devDependencies(ctx.skipGit));
+        }
       },
-      { title: 'Add Material', task: () => this.installMaterial(this.VERSION) },
-      { title: 'Add ESLint', task: () => this.installEsLint(this.VERSION) },
       {
-        title: 'Do some magic...',
+        title: 'Add Material',
+        task: ({ version }: IContext): Promise<ExecaReturnValue> => this.installMaterial(version)
+      },
+      {
+        title: 'Add ESLint',
+        task: ({ version }: IContext): Promise<ExecaReturnValue> => this.installEsLint(version)
+      },
+      {
+        title: 'Do some magic',
         task: () =>
           new Listr(
             [
-              { title: 'Copy configs...', task: () => this.copyConfigs(...config.getConfigsPaths(this.name)) },
-              { title: 'Copy the base structure of project', task: () => this.copyBaseStructure() },
-              { title: `Update ${cyan('.gitignore')} rules`, task: () => this.updateGitignoreRules() },
+              {
+                title: `Remove default ${cyan('browserslist')}`,
+                task: ({ title }: IContext): void => removeSync(join(title, '/browserslist'))
+              },
+              {
+                title: 'Copy configs...',
+                task: ({ title }: IContext): Listr => this.copyConfigs(...config.getConfigsPaths(title))
+              },
+              {
+                title: 'Copy the base structure of project',
+                task: (ctx: IContext): Promise<void> => this.copyBaseStructure(ctx)
+              },
+              {
+                title: `Update ${cyan('.gitignore')} rules`,
+                task: (ctx: IContext): Promise<void> => this.updateGitignoreRules(ctx)
+              },
               {
                 title: `Add ${cyan('token.json')} to assets directory. (Should be in ${cyan('.gitignore')})`,
-                task: () => this.addTokenJsonToAssets()
+                task: (ctx: IContext): Promise<void> => this.addTokenJsonToAssets(ctx)
               },
               {
                 title: `Edit ${cyan('angular.json')}`,
-                task: () =>
-                  this.mergeWithJson(join(this.name, 'angular.json'), {
-                    projects: { [this.name]: { ...angularJsonAdditions } }
+                task: ({ title }: IContext) =>
+                  this.mergeWithJson(join(title, 'angular.json'), {
+                    projects: { [title]: { ...angularJsonAdditions } }
                   })
               }
             ],
@@ -53,17 +77,13 @@ export class AngularSpecifier extends Specifier {
       {
         title: 'Linters',
         task: () => this.lintersTask()
-      }
-    ];
-
-    if (!this.SKIP_GIT) {
-      tasks.push({
+      },
+      {
         title: 'Do initial commit',
+        enabled: ({ skipGit }: IContext): boolean => !skipGit,
         task: () => this.initialCommit(true)
-      });
-    }
-
-    return new Listr(tasks);
+      }
+    ]);
   }
 
   installMaterial(version: string): Promise<ExecaReturnValue> {
@@ -83,18 +103,17 @@ export class AngularSpecifier extends Specifier {
   }
 
   copyConfigs(...configPaths: IConfigPaths[]): Listr {
-    removeSync(join(this.name, '/browserslist'));
     return super.copyConfigs(...configPaths);
   }
 
-  copyBaseStructure(): Promise<void> {
-    return copy(join(__dirname, './codebase/angular'), join(this.name)).catch(err => {
+  copyBaseStructure({ title }: IContext): Promise<void> {
+    return copy(join(__dirname, './codebase/angular'), join(title)).catch(err => {
       throw new Error(red(`Base structure copying failed: ${err}`));
     });
   }
 
-  addTokenJsonToAssets(): Promise<void> {
-    return outputFile(join(this.name, 'src/assets/token.json'), '"=03e"', 'utf-8').catch(err => {
+  addTokenJsonToAssets({ title }: IContext): Promise<void> {
+    return outputFile(join(title, 'src/assets/token.json'), '"=03e"', 'utf-8').catch(err => {
       throw new Error(red(`token.json creation failed: ${err}`));
     });
   }
