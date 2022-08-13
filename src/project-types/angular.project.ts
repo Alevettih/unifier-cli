@@ -11,9 +11,7 @@ export const angularProject = (context: IContext): Listr => {
       title: 'Install Angular project',
       task: () =>
         command(
-          `npx --package @angular/cli@${version} ng new ${title} --style=scss --routing=true --skip-install ${
-            skipGit ? '--skip-git' : ''
-          }`.trim()
+          `npx --package @angular/cli@${version} ng new ${title} --style=scss --routing --skip-install --skip-git=${skipGit}`.trim()
         )
     },
     {

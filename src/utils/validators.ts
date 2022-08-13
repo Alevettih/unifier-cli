@@ -10,3 +10,13 @@ export function title(input?: string): boolean | string {
     return red('Project name may only include letters, numbers, underscores and hashes.');
   }
 }
+
+export function minLength(min: number) {
+  return (items?: string[]): boolean | string => {
+    if (items?.length >= min) {
+      return true;
+    } else {
+      return red('Please, select at least one option.');
+    }
+  };
+}

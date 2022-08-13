@@ -4,10 +4,10 @@ import { TitleQuestion } from '@utils/questions/title.question';
 import { TypeQuestion } from '@utils/questions/type.question';
 import { VersionQuestion } from '@utils/questions/version.question';
 import { PackageManagerQuestion } from '@utils/questions/package-manager.question';
+import { ApplicationQuestion } from '@utils/questions/application.question';
 
 export interface IQuestion {
   tasks: ListrTask[];
-  prefix?: string;
 }
 
 export class Questions {
@@ -15,10 +15,17 @@ export class Questions {
   private _typeQuestion: TypeQuestion = new TypeQuestion();
   private _versionQuestion: VersionQuestion = new VersionQuestion();
   private _packageManagerQuestion: PackageManagerQuestion = new PackageManagerQuestion();
+  private _applicationTypesQuestion: ApplicationQuestion = new ApplicationQuestion();
 
   ask(): Listr<IContext> {
     return new Listr<IContext>(
-      [...this.titleTasks, ...this.typeTasks, ...this.versionTasks, ...this.packageManagerTasks],
+      [
+        ...this.titleTasks,
+        ...this.typeTasks,
+        ...this.versionTasks,
+        ...this.packageManagerTasks,
+        ...this.applicationTypesTasks
+      ],
       { concurrent: false }
     );
   }
@@ -37,5 +44,9 @@ export class Questions {
 
   get packageManagerTasks(): ListrTask[] {
     return this._packageManagerQuestion.tasks;
+  }
+
+  get applicationTypesTasks(): ListrTask[] {
+    return this._applicationTypesQuestion.tasks;
   }
 }

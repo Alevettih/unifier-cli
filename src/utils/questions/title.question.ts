@@ -22,10 +22,14 @@ export class TitleQuestion implements IQuestion {
       },
       {
         task: async (ctx: IContext, task: ListrTaskWrapper<IContext, any>) => {
-          task.title = `Project name: ${cyan(ctx.title)}`;
+          task.title = `${this._title} ${cyan(ctx.title)}`;
         }
       }
     ];
+  }
+
+  private get _title(): string {
+    return 'Project name:';
   }
 
   private get _prefix(): string {
@@ -39,7 +43,7 @@ export class TitleQuestion implements IQuestion {
   private async _ask(ctx: IContext, task: ListrTaskWrapper<IContext, any>): Promise<string> {
     return task.prompt<string>({
       type: 'input',
-      message: 'Project name:',
+      message: this._title,
       initial: ctx.title || getCWD(),
       prefix: isDirectoryExistsAndNotEmpty(ctx.title) ? this._prefix : null,
       validate: title

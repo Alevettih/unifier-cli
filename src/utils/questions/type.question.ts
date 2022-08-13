@@ -15,10 +15,14 @@ export class TypeQuestion implements IQuestion {
       },
       {
         task: async (ctx: IContext, task: ListrTaskWrapper<IContext, any>) => {
-          task.title = `Project type: ${cyan(ctx.type)}`;
+          task.title = `${this._title} ${cyan(ctx.type)}`;
         }
       }
     ];
+  }
+
+  private get _title(): string {
+    return 'Project type:';
   }
 
   private get _prefix(): string {
@@ -30,7 +34,7 @@ export class TypeQuestion implements IQuestion {
 
     return await task.prompt<ProjectType>({
       type: 'select',
-      message: 'Project type:',
+      message: this._title,
       prefix: shouldShowWarning ? this._prefix : null,
       choices: Object.values(types)
     });

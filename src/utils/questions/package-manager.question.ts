@@ -15,24 +15,28 @@ export class PackageManagerQuestion implements IQuestion {
       {
         enabled: this._shouldEnableTask,
         task: async (ctx: IContext, task: ListrTaskWrapper<IContext, any>) => {
-          task.title = `Preferred package manager: ${cyan(ctx.packageManager)}`;
+          task.title = `${this._title} ${cyan(ctx.packageManager)}`;
         }
       }
     ];
   }
 
-  private _shouldEnableTask({ isYarnAvailable }: IContext): boolean {
-    return isYarnAvailable;
+  private get _title(): string {
+    return 'Preferred package manager:';
   }
 
   private get _choices(): PackageManager[] {
     return ['npm', 'yarn'];
   }
 
+  private _shouldEnableTask({ isYarnAvailable }: IContext): boolean {
+    return isYarnAvailable;
+  }
+
   private async _ask(task: ListrTaskWrapper<IContext, any>): Promise<PackageManager> {
     return await task.prompt<PackageManager>({
       type: 'select',
-      message: 'Preferred package manager:',
+      message: this._title,
       choices: this._choices
     });
   }

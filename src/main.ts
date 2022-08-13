@@ -9,6 +9,7 @@ import { title } from '@utils/validators';
 
 export type ProjectType = 'plain-js' | 'angular';
 export type PackageManager = 'npm' | 'yarn';
+export type ApplicationType = 'admin' | 'client';
 
 export interface IAngularInfo {
   versions: string[];
@@ -21,6 +22,7 @@ export interface IContext {
   version: string;
   type: ProjectType;
   packageManager: PackageManager;
+  applications: ApplicationType[];
   angularInfo: IAngularInfo;
   lintersKeys: string[];
   skipGit: boolean;

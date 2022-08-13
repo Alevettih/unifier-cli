@@ -36,7 +36,8 @@ export class Specifier {
           title: `Copy ${cyan(file)} file`,
           task: () => copy(path.src, path.dist)
         };
-      })
+      }),
+      { concurrent: true }
     );
   }
 
@@ -145,7 +146,7 @@ export class Specifier {
   runLinters(ctx: IContext): Listr {
     return new Listr(
       ctx.lintersKeys.map(linter => ({
-        title: `Run ${linter}`,
+        title: `Run ${cyan(linter)}`,
         task: () =>
           command(`npm run ${linter}`, this.CHILD_PROCESS_OPTIONS).catch(() => {
             throw new Error(red('Linting failed, please fix linting problems manually'));
