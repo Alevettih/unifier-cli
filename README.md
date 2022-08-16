@@ -51,7 +51,6 @@ Also you can use additional arguments:
 
 - `--type=<type>` - tells CLI that it should create a project with that type. Get `angular` or `plain-js` value.
 - `--skip-git` - tells CLI that it should create a project without initialisation of git repository.
-- `--force-npm` - tells CLI that it should create a project with force using `npm`, even if `yarn` is installed globally.
 
 ## Development
 
@@ -102,4 +101,3 @@ npm run lint
 ## Team
 
 - **Alex Tykhonenko** - _Master_
-- **Kate Shcherbak** - _PM_
