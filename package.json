@@ -34,8 +34,7 @@
     "project-template",
     "project-generator",
     "angular",
-    "js",
-    "email"
+    "js"
   ],
   "author": "Alex Tykhonenko <alevettih@gmail.com>",
   "license": "MIT",
