@@ -1,13 +1,15 @@
-import { copy, outputFile, readJsonSync, removeSync, writeJson } from 'fs-extra';
+import { copy, outputFile, readJsonSync, removeSync, writeFile, writeJson } from 'fs-extra';
 import { join } from 'path';
-import { IConfigPaths, Specifier } from '@utils/specifier';
+import { configsDir, IConfigPaths, Specifier } from '@utils/specifier';
 import { cyan, red } from 'ansi-colors';
 import config from '@utils/specifier/configs/angular.config';
 import { Listr, ListrTaskWrapper } from 'listr2';
 import { command, ExecaReturnValue } from 'execa';
 import { major } from 'semver';
-import { IContext } from '@src/main';
+import { IApplicationInfo, IContext } from '@src/main';
 import * as deepMerge from 'deepmerge';
+import { readFileSync } from 'fs';
+import mustache from 'mustache';
 
 export class AngularSpecifier extends Specifier {
   private readonly _NG_COMMAND: string = 'node ./node_modules/@angular/cli/bin/ng';
@@ -17,7 +19,11 @@ export class AngularSpecifier extends Specifier {
       {
         title: `Update ${cyan('package.json')}`,
         task: async (ctx: IContext): Promise<void> =>
-          this.mergeWithJson(join(ctx.title, 'package.json'), await config.getPackageJsonChanges(ctx))
+          this.mergeWithJson(
+            join(ctx.title, 'package.json'),
+            await config.packageJson.getChanges(ctx),
+            config.packageJson.fieldsToDelete
+          )
       },
       {
         title: 'Install dependencies',
@@ -53,23 +59,27 @@ export class AngularSpecifier extends Specifier {
             {
               title: `Edit ${cyan('angular.json')}`,
               task: (ctx: IContext) => this.editAngularJson(ctx)
+            },
+            {
+              title: `Update ${cyan('.gitignore')} rules`,
+              task: (ctx: IContext): Promise<void> => this.updateGitignoreRules(ctx)
+            },
+            {
+              title: `Update ${cyan('README.md')}`,
+              task: (ctx: IContext): Promise<void> => this.updateReadme(ctx)
+            },
+            {
+              title: 'Copy configs',
+              task: ({ title }: IContext): Listr => this.copyConfigs(...config.getConfigsPaths(title))
             }
           ])
-      },
-      {
-        title: 'Copy configs...',
-        task: ({ title }: IContext): Listr => this.copyConfigs(...config.getConfigsPaths(title))
-      },
-      {
-        title: `Update ${cyan('.gitignore')} rules`,
-        task: (ctx: IContext): Promise<void> => this.updateGitignoreRules(ctx)
       },
       {
         title: 'Run Prettier',
         task: () => this.runPrettier()
       },
       {
-        title: 'Linters',
+        title: 'Run linters',
         task: () => this.lintersTask()
       },
       {
@@ -100,11 +110,23 @@ export class AngularSpecifier extends Specifier {
     return super.copyConfigs(...configPaths);
   }
 
-  async editAngularJson({ title, applications }: IContext): Promise<void> {
+  async updateReadme(ctx: IContext): Promise<void> {
+    const template: string = readFileSync(join(__dirname, configsDir, 'angular', 'README.mustache')).toString();
+    const readme: string = mustache.render(template, {
+      ...ctx,
+      noun: (): string => (ctx.applicationsInfo.length > 1 ? 'files' : 'file'),
+      tokensNames: (): string =>
+        ctx.applicationsInfo.map(({ token }: IApplicationInfo): string => `\`${token}\``).join(' and ')
+    });
+
+    return writeFile(join(ctx.title, 'README.md'), readme);
+  }
+
+  async editAngularJson({ title, applicationsInfo }: IContext): Promise<void> {
     const pathToJson: string = join(title, 'angular.json');
     let angularJson: any = readJsonSync(pathToJson);
 
-    angularJson = deepMerge(angularJson, config.getAngularJsonChanges(applications), {
+    angularJson = deepMerge(angularJson, config.getAngularJsonChanges(applicationsInfo), {
       arrayMerge: (target: any[], source: any[]): any[] => source
     });
 
@@ -115,40 +137,41 @@ export class AngularSpecifier extends Specifier {
     });
   }
 
-  async copyBaseStructure({ title, applications }: IContext): Promise<void> {
+  async copyBaseStructure({ title, applicationsInfo }: IContext): Promise<void> {
     await copy(join(__dirname, './codebase/angular/base'), join(title)).catch(err => {
       throw new Error(red(`Base structure copying failed: ${err}`));
     });
     removeSync(join(title, `/src/main.ts`));
     removeSync(join(title, `/src/index.html`));
 
-    for (const app of applications) {
-      removeSync(join(title, `/projects/${app}`));
-      await copy(join(__dirname, `./codebase/angular/projects/${app}`), join(title, `/projects/${app}`)).catch(err => {
+    for (const app of applicationsInfo) {
+      removeSync(join(title, `/projects/${app.name}`));
+      await copy(
+        join(__dirname, `./codebase/angular/projects/${app.name}`),
+        join(title, `/projects/${app.name}`)
+      ).catch(err => {
         throw new Error(red(`Base structure copying failed: ${err}`));
       });
       await copy(
-        join(__dirname, `./codebase/angular/routing-modules/${app}`),
-        join(title, `/src/app/modules/main/${app}`)
+        join(__dirname, `./codebase/angular/routing-modules/${app.name}`),
+        join(title, `/src/app/modules/main/${app.name}`)
       ).catch(err => {
         throw new Error(red(`Base structure copying failed: ${err}`));
       });
     }
   }
 
-  async addTokensToAssets({ title, applications }: IContext): Promise<void> {
-    for (const app of applications) {
-      const filename: string = `token.${app}.json`;
-
-      await outputFile(join(title, `src/assets/${filename}`), '"=03e"', 'utf-8').catch(err => {
-        throw new Error(red(`${filename} creation failed: ${err}`));
+  async addTokensToAssets({ title, applicationsInfo }: IContext): Promise<void> {
+    for (const app of applicationsInfo) {
+      await outputFile(join(title, `src/assets/${app.token}`), '"=03e"', 'utf-8').catch(err => {
+        throw new Error(red(`${app.token} creation failed: ${err}`));
       });
     }
   }
 
-  async generateApplications({ applications }: IContext): Promise<void> {
-    for (const app of applications) {
-      await command(`${this._NG_COMMAND} generate app ${app} --routing --style scss`, this.CHILD_PROCESS_OPTIONS);
+  async generateApplications({ applicationsInfo }: IContext): Promise<void> {
+    for (const app of applicationsInfo) {
+      await command(`${this._NG_COMMAND} generate app ${app.name} --routing --style scss`, this.CHILD_PROCESS_OPTIONS);
     }
   }
 }

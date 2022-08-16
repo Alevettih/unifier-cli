@@ -1,6 +1,6 @@
-import { ApplicationType } from '@src/main';
+import { IApplicationInfo } from '@src/main';
 
-export function getAngularJsonChanges(applications: ApplicationType[]) {
+export function getAngularJsonChanges(applicationsInfo: IApplicationInfo[]) {
   const json: any = {
     projects: {
       default: {
@@ -26,7 +26,7 @@ export function getAngularJsonChanges(applications: ApplicationType[]) {
     }
   };
 
-  applications.forEach((app: ApplicationType): void => {
+  applicationsInfo.forEach(({ name }: IApplicationInfo): void => {
     const options = {
       polyfills: 'src/polyfills.ts',
       assets: ['src/.htaccess', 'src/default.conf', 'src/favicon.ico', 'src/assets'],
@@ -35,7 +35,7 @@ export function getAngularJsonChanges(applications: ApplicationType[]) {
       stylePreprocessorOptions: { includePaths: ['src/scss'] }
     };
 
-    json.projects[app] = {
+    json.projects[name] = {
       schematics: { '@schematics/angular:application': { strict: true } },
       sourceRoot: 'src',
       prefix: 'client',

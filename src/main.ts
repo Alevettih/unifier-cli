@@ -6,6 +6,7 @@ import { green, red } from 'ansi-colors';
 import { Listr } from 'listr2';
 import { selectProjectType } from '@src/project-types';
 import { title } from '@utils/validators';
+import getPort from 'get-port';
 
 export type ProjectType = 'plain-js' | 'angular';
 export type PackageManager = 'npm' | 'yarn';
@@ -16,12 +17,20 @@ export interface IAngularInfo {
   tags: { [key: string]: string };
 }
 
+export interface IApplicationInfo {
+  name: ApplicationType;
+  token: `token.${ApplicationType}.json`;
+  port: number;
+}
+
 export interface IContext {
+  port: number;
   isYarnAvailable: boolean;
   title: string;
   version: string;
   type: ProjectType;
   packageManager: PackageManager;
+  applicationsInfo: IApplicationInfo[];
   applications: ApplicationType[];
   angularInfo: IAngularInfo;
   lintersKeys: string[];
@@ -46,6 +55,7 @@ export default async function main(): Promise<void | IContext> {
         task: async (ctx: IContext) => {
           ctx.isYarnAvailable = await isYarnAvailable();
           ctx.angularInfo = await getAngularInfo();
+          ctx.port = await getPort();
           ctx.packageManager = 'npm';
         }
       },

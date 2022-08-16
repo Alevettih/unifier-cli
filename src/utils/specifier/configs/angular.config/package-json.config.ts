@@ -1,9 +1,8 @@
-import { ApplicationType, IContext } from '@src/main';
-import getPort from 'get-port';
+import { IApplicationInfo, IContext } from '@src/main';
 
-export async function getPackageJsonChanges({ title, applications, skipGit = false }: IContext) {
-  const port: number = await getPort();
+export const fieldsToDelete: string[] = ['scripts.build', 'scripts.start', 'scripts.watch', 'scripts.test'];
 
+export async function getPackageJsonChanges({ title, applicationsInfo, skipGit = false }: IContext) {
   const packageJson = {
     scripts: {
       'config:to-base64': 'node ./bin/to-base64.js',
@@ -26,11 +25,11 @@ export async function getPackageJsonChanges({ title, applications, skipGit = fal
     }
   };
 
-  applications.forEach((app: ApplicationType, index: number): void => {
-    packageJson.scripts[`build:${app}`] = `ng build ${app}`;
-    packageJson.scripts[`watch:${app}`] = `ng build ${app} --watch --configuration development`;
-    packageJson.scripts[`start:${app}`] = `ng serve ${app} --port=${port + index}`;
-    packageJson.scripts[`start:${app}:ssl`] = `ng serve ${app} --ssl --port=${port + index}`;
+  applicationsInfo.forEach(({ name, port }: IApplicationInfo): void => {
+    packageJson.scripts[`build:${name}`] = `ng build ${name}`;
+    packageJson.scripts[`watch:${name}`] = `ng build ${name} --watch --configuration development`;
+    packageJson.scripts[`start:${name}`] = `ng serve ${name} --port=${port}`;
+    packageJson.scripts[`start:${name}:ssl`] = `ng serve ${name} --ssl --port=${port}`;
   });
 
   packageJson.scripts[`build`] = 'run-p build:*';

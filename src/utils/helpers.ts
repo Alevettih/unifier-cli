@@ -5,7 +5,7 @@ import * as deepMerge from 'deepmerge';
 import { command, ExecaReturnValue } from 'execa';
 import * as minimist from 'minimist';
 import { ParsedArgs } from 'minimist';
-import { IAngularInfo, IContext } from '@src/main';
+import { ApplicationType, IAngularInfo, IApplicationInfo, IContext } from '@src/main';
 
 export const IS_WINDOWS: boolean = process.platform === 'win32';
 
@@ -51,6 +51,16 @@ export function emptyTarget(value: any): any {
 
 export function clone(value: any, options: deepMerge.Options): object {
   return deepMerge(emptyTarget(value), value, options);
+}
+
+export function deepDelete<T>(target: string, context: T) {
+  const targets = target.split('.');
+
+  if (targets.length > 1) {
+    deepDelete(targets.slice(1).join('.'), context[targets[0]]);
+  } else {
+    delete context[target];
+  }
 }
 
 export function arrayMerge(target: any[], source: any[], options: deepMerge.Options): any[] {
@@ -129,15 +139,34 @@ export const newlineSeparatedValue = {
 };
 
 export function initArguments(argv: string[]): IContext {
-  const parsedArgs: ParsedArgs = minimist(argv.slice(2));
+  const parsedArgs: ParsedArgs & IContext = minimist(argv.slice(2)) as ParsedArgs & IContext;
 
   if (parsedArgs && parsedArgs._ && parsedArgs._[0]) {
     parsedArgs.title = parsedArgs._[0];
   }
 
   parsedArgs.skipGit = parsedArgs['skip-git'] ?? false;
+  parsedArgs.applicationsInfo = [];
+
   delete parsedArgs['skip-git'];
   delete parsedArgs._;
+
+  Object.defineProperty(parsedArgs, 'applications', {
+    get() {
+      return parsedArgs.applicationsInfo.map(({ name }: IApplicationInfo): ApplicationType => name);
+    },
+    set(applications: ApplicationType[]): void {
+      if (Array.isArray(applications)) {
+        parsedArgs.applicationsInfo = applications.map(
+          (name: ApplicationType, index: number): IApplicationInfo => ({
+            port: parsedArgs.port + index,
+            token: `token.${name}.json`,
+            name
+          })
+        );
+      }
+    }
+  });
 
   return parsedArgs as unknown as IContext;
 }

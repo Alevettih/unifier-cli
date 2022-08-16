@@ -2,7 +2,7 @@ import { copy, outputFile, readFileSync, readJsonSync, writeJson } from 'fs-extr
 import { join } from 'path';
 import { cyan, red } from 'ansi-colors';
 import { command, ExecaReturnValue, Options } from 'execa';
-import { newlineSeparatedValue, arrayMerge, IS_WINDOWS, shouldUseYarn } from '@utils/helpers';
+import { newlineSeparatedValue, arrayMerge, IS_WINDOWS, shouldUseYarn, deepDelete } from '@utils/helpers';
 import * as deepMerge from 'deepmerge';
 import { Listr, ListrTask } from 'listr2';
 import { IContext } from '@src/main';
@@ -41,8 +41,13 @@ export class Specifier {
     );
   }
 
-  mergeWithJson(pathToJson: string, objToMerge: object): Promise<void> {
+  mergeWithJson(pathToJson: string, objToMerge: object, fieldsToRemove: string[] = []): Promise<void> {
     const json = readJsonSync(pathToJson);
+
+    for (const fieldPath of fieldsToRemove) {
+      deepDelete(fieldPath, json);
+    }
+
     return writeJson(
       pathToJson,
       deepMerge(json, objToMerge, {
