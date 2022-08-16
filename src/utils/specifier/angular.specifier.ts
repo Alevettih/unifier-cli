@@ -1,13 +1,15 @@
-import { copy, outputFile, removeSync } from 'fs-extra';
+import { copy, outputFile, readJsonSync, removeSync, writeFile, writeJson } from 'fs-extra';
 import { join } from 'path';
-import * as angularJsonAdditions from '@configs/angular/angular.json';
-import { IConfigPaths, Specifier } from '@utils/specifier';
+import { configsDir, IConfigPaths, Specifier } from '@utils/specifier';
 import { cyan, red } from 'ansi-colors';
 import config from '@utils/specifier/configs/angular.config';
 import { Listr, ListrTaskWrapper } from 'listr2';
 import { command, ExecaReturnValue } from 'execa';
 import { major } from 'semver';
-import { IContext } from '@src/main';
+import { IApplicationInfo, IContext } from '@src/main';
+import * as deepMerge from 'deepmerge';
+import { readFileSync } from 'fs';
+import mustache from 'mustache';
 
 export class AngularSpecifier extends Specifier {
   private readonly _NG_COMMAND: string = 'node ./node_modules/@angular/cli/bin/ng';
@@ -16,8 +18,12 @@ export class AngularSpecifier extends Specifier {
     return new Listr([
       {
         title: `Update ${cyan('package.json')}`,
-        task: ({ skipGit, title }: IContext): Promise<void> =>
-          this.mergeWithJson(join(title, 'package.json'), config.packageJson(title, skipGit))
+        task: async (ctx: IContext): Promise<void> =>
+          this.mergeWithJson(
+            join(ctx.title, 'package.json'),
+            await config.packageJson.getChanges(ctx),
+            config.packageJson.fieldsToDelete
+          )
       },
       {
         title: 'Install dependencies',
@@ -35,47 +41,45 @@ export class AngularSpecifier extends Specifier {
         task: ({ version }: IContext): Promise<ExecaReturnValue> => this.installEsLint(version)
       },
       {
-        title: 'Do some magic',
+        title: 'Setup codebase',
         task: () =>
-          new Listr(
-            [
-              {
-                title: `Remove default ${cyan('browserslist')}`,
-                task: ({ title }: IContext): void => removeSync(join(title, '/browserslist'))
-              },
-              {
-                title: 'Copy configs...',
-                task: ({ title }: IContext): Listr => this.copyConfigs(...config.getConfigsPaths(title))
-              },
-              {
-                title: 'Copy the base structure of project',
-                task: (ctx: IContext): Promise<void> => this.copyBaseStructure(ctx)
-              },
-              {
-                title: `Update ${cyan('.gitignore')} rules`,
-                task: (ctx: IContext): Promise<void> => this.updateGitignoreRules(ctx)
-              },
-              {
-                title: `Add ${cyan('token.json')} to assets directory. (Should be in ${cyan('.gitignore')})`,
-                task: (ctx: IContext): Promise<void> => this.addTokenJsonToAssets(ctx)
-              },
-              {
-                title: `Edit ${cyan('angular.json')}`,
-                task: ({ title }: IContext) =>
-                  this.mergeWithJson(join(title, 'angular.json'), {
-                    projects: { [title]: { ...angularJsonAdditions } }
-                  })
-              }
-            ],
-            { concurrent: true }
-          )
+          new Listr([
+            {
+              title: 'Generate application(s)',
+              task: (ctx: IContext): Promise<void> => this.generateApplications(ctx)
+            },
+            {
+              title: 'Copy the base structure of project',
+              task: (ctx: IContext): Promise<void> => this.copyBaseStructure(ctx)
+            },
+            {
+              title: `Add token(s) to assets directory. (Should be in ${cyan('.gitignore')})`,
+              task: (ctx: IContext): Promise<void> => this.addTokensToAssets(ctx)
+            },
+            {
+              title: `Edit ${cyan('angular.json')}`,
+              task: (ctx: IContext) => this.editAngularJson(ctx)
+            },
+            {
+              title: `Update ${cyan('.gitignore')} rules`,
+              task: (ctx: IContext): Promise<void> => this.updateGitignoreRules(ctx)
+            },
+            {
+              title: `Update ${cyan('README.md')}`,
+              task: (ctx: IContext): Promise<void> => this.updateReadme(ctx)
+            },
+            {
+              title: 'Copy configs',
+              task: ({ title }: IContext): Listr => this.copyConfigs(...config.getConfigsPaths(title))
+            }
+          ])
       },
       {
         title: 'Run Prettier',
         task: () => this.runPrettier()
       },
       {
-        title: 'Linters',
+        title: 'Run linters',
         task: () => this.lintersTask()
       },
       {
@@ -106,15 +110,68 @@ export class AngularSpecifier extends Specifier {
     return super.copyConfigs(...configPaths);
   }
 
-  copyBaseStructure({ title }: IContext): Promise<void> {
-    return copy(join(__dirname, './codebase/angular'), join(title)).catch(err => {
-      throw new Error(red(`Base structure copying failed: ${err}`));
+  async updateReadme(ctx: IContext): Promise<void> {
+    const template: string = readFileSync(join(__dirname, configsDir, 'angular', 'README.mustache')).toString();
+    const readme: string = mustache.render(template, {
+      ...ctx,
+      noun: (): string => (ctx.applicationsInfo.length > 1 ? 'files' : 'file'),
+      tokensNames: (): string =>
+        ctx.applicationsInfo.map(({ token }: IApplicationInfo): string => `\`${token}\``).join(' and ')
+    });
+
+    return writeFile(join(ctx.title, 'README.md'), readme);
+  }
+
+  async editAngularJson({ title, applicationsInfo }: IContext): Promise<void> {
+    const pathToJson: string = join(title, 'angular.json');
+    let angularJson: any = readJsonSync(pathToJson);
+
+    angularJson = deepMerge(angularJson, config.getAngularJsonChanges(applicationsInfo), {
+      arrayMerge: (target: any[], source: any[]): any[] => source
+    });
+
+    delete angularJson?.projects?.[title];
+
+    return writeJson(pathToJson, angularJson, { spaces: 2 }).catch(err => {
+      throw new Error(red(`JSON update failed: ${err}`));
     });
   }
 
-  addTokenJsonToAssets({ title }: IContext): Promise<void> {
-    return outputFile(join(title, 'src/assets/token.json'), '"=03e"', 'utf-8').catch(err => {
-      throw new Error(red(`token.json creation failed: ${err}`));
+  async copyBaseStructure({ title, applicationsInfo }: IContext): Promise<void> {
+    await copy(join(__dirname, './codebase/angular/base'), join(title)).catch(err => {
+      throw new Error(red(`Base structure copying failed: ${err}`));
     });
+    removeSync(join(title, `/src/main.ts`));
+    removeSync(join(title, `/src/index.html`));
+
+    for (const app of applicationsInfo) {
+      removeSync(join(title, `/projects/${app.name}`));
+      await copy(
+        join(__dirname, `./codebase/angular/projects/${app.name}`),
+        join(title, `/projects/${app.name}`)
+      ).catch(err => {
+        throw new Error(red(`Base structure copying failed: ${err}`));
+      });
+      await copy(
+        join(__dirname, `./codebase/angular/routing-modules/${app.name}`),
+        join(title, `/src/app/modules/main/${app.name}`)
+      ).catch(err => {
+        throw new Error(red(`Base structure copying failed: ${err}`));
+      });
+    }
+  }
+
+  async addTokensToAssets({ title, applicationsInfo }: IContext): Promise<void> {
+    for (const app of applicationsInfo) {
+      await outputFile(join(title, `src/assets/${app.token}`), '"=03e"', 'utf-8').catch(err => {
+        throw new Error(red(`${app.token} creation failed: ${err}`));
+      });
+    }
+  }
+
+  async generateApplications({ applicationsInfo }: IContext): Promise<void> {
+    for (const app of applicationsInfo) {
+      await command(`${this._NG_COMMAND} generate app ${app.name} --routing --style scss`, this.CHILD_PROCESS_OPTIONS);
+    }
   }
 }

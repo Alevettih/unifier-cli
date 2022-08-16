@@ -2,7 +2,7 @@ import { copy, outputFile, readFileSync, readJsonSync, writeJson } from 'fs-extr
 import { join } from 'path';
 import { cyan, red } from 'ansi-colors';
 import { command, ExecaReturnValue, Options } from 'execa';
-import { newlineSeparatedValue, arrayMerge, IS_WINDOWS, shouldUseYarn } from '@utils/helpers';
+import { newlineSeparatedValue, arrayMerge, IS_WINDOWS, shouldUseYarn, deepDelete } from '@utils/helpers';
 import * as deepMerge from 'deepmerge';
 import { Listr, ListrTask } from 'listr2';
 import { IContext } from '@src/main';
@@ -36,12 +36,18 @@ export class Specifier {
           title: `Copy ${cyan(file)} file`,
           task: () => copy(path.src, path.dist)
         };
-      })
+      }),
+      { concurrent: true }
     );
   }
 
-  mergeWithJson(pathToJson: string, objToMerge: object): Promise<void> {
+  mergeWithJson(pathToJson: string, objToMerge: object, fieldsToRemove: string[] = []): Promise<void> {
     const json = readJsonSync(pathToJson);
+
+    for (const fieldPath of fieldsToRemove) {
+      deepDelete(fieldPath, json);
+    }
+
     return writeJson(
       pathToJson,
       deepMerge(json, objToMerge, {
@@ -145,7 +151,7 @@ export class Specifier {
   runLinters(ctx: IContext): Listr {
     return new Listr(
       ctx.lintersKeys.map(linter => ({
-        title: `Run ${linter}`,
+        title: `Run ${cyan(linter)}`,
         task: () =>
           command(`npm run ${linter}`, this.CHILD_PROCESS_OPTIONS).catch(() => {
             throw new Error(red('Linting failed, please fix linting problems manually'));

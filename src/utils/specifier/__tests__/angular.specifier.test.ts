@@ -14,6 +14,7 @@ describe('Angular specifier should', () => {
 
   beforeEach(() => {
     args.title = testDir;
+    args.applications = ['client', 'admin'];
     specifier = new AngularSpecifier(args);
   });
 
@@ -36,13 +37,13 @@ describe('Angular specifier should', () => {
     await expect(specifier.copyBaseStructure(args)).rejects.toThrow();
   });
 
-  test('add token.json to assets', async (): Promise<void> => {
-    await specifier.addTokenJsonToAssets(args);
+  test('add tokens to assets', async (): Promise<void> => {
+    await specifier.addTokensToAssets(args);
 
     expect(fs.outputFile).toBeCalled();
 
     Object.defineProperty(fs, 'outputFile', { value: jest.fn().mockRejectedValueOnce({}) });
-    await expect(specifier.addTokenJsonToAssets(args)).rejects.toThrow();
+    await expect(specifier.addTokensToAssets(args)).rejects.toThrow();
   });
 
   describe('specify Angular project', () => {

@@ -1,0 +1,58 @@
+@use "sass:map";
+@use "@angular/material" as mat;
+@use "material/modules/button-theme" as button;
+@use "material/modules/form-field-theme" as form-field;
+
+@use "material/palettes/custom-primary" as primary;
+
+@include mat.core();
+
+$primary-palette: mat.define-palette(primary.$palette, 200, 100, 300);
+$accent-palette: mat.define-palette(mat.$orange-palette, A200, A100, A400);
+$warn-palette: mat.define-palette(mat.$red-palette, 300, 200, 400);
+
+$custom-theme: mat.define-light-theme($primary-palette, $accent-palette, $warn-palette);
+
+:root {
+  $mat-theme-background: map-get($map: $custom-theme, $key: background);
+  $mat-theme-foreground: map-get($map: $custom-theme, $key: foreground);
+  $primary-color: mat.get-color-from-palette($primary-palette, 500);
+
+  --material-base-background-color:
+    #{map-get(
+      $map: $mat-theme-background,
+      $key: background
+    )};
+}
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+
+@mixin custom-material-theme($custom-theme: $custom-theme) {
+  @include mat.all-component-themes($custom-theme);
+  @include button.theme($custom-theme);
+  @include form-field.theme($custom-theme);
+
+  @include mat.core(
+    mat.define-typography-config(
+      $font-family: var(--ff-main-font),
+      $display-4: mat.define-typography-level(112px, 112px, 300, $letter-spacing: -0.05em),
+      $display-3: mat.define-typography-level(56px, 56px, 400, $letter-spacing: -0.02em),
+      $display-2: mat.define-typography-level(45px, 48px, 400, $letter-spacing: -0.005em),
+      $display-1: mat.define-typography-level(34px, 40px, 400),
+      $headline: mat.define-typography-level(24px, 32px, 400),
+      $title: mat.define-typography-level(20px, 32px, 500),
+      $subheading-2: mat.define-typography-level(16px, 28px, 400),
+      $subheading-1: mat.define-typography-level(15px, 24px, 400),
+      $body-2: mat.define-typography-level(14px, 24px, 500),
+      $body-1: mat.define-typography-level(14px, 20px, 400),
+      $caption: mat.define-typography-level(12px, 20px, 400),
+      $button: mat.define-typography-level(14px, 14px, 500),
+      // Line-height must be unit-less fraction of the font-size.
+      $input: mat.define-typography-level(inherit, 1.125, 400)
+    )
+  );
+}
+
+@include custom-material-theme($custom-theme: $custom-theme);

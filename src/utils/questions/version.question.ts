@@ -16,10 +16,14 @@ export class VersionQuestion implements IQuestion {
       },
       {
         task: async (ctx: IContext, task: ListrTaskWrapper<IContext, any>) => {
-          task.title = `Version: ${cyan(ctx.version)}`;
+          task.title = `${this._title} ${cyan(ctx.version)}`;
         }
       }
     ];
+  }
+
+  private get _title(): string {
+    return 'Version:';
   }
 
   private _shouldEnableTask(ctx: IContext): boolean {
@@ -45,7 +49,7 @@ export class VersionQuestion implements IQuestion {
   private async _ask(ctx: IContext, task: ListrTaskWrapper<IContext, any>): Promise<string> {
     return await task.prompt<string>({
       type: 'select',
-      message: 'Version:',
+      message: this._title,
       choices: this._choices(ctx)
     });
   }
