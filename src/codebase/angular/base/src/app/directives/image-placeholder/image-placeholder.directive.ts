@@ -8,11 +8,12 @@ export class ImagePlaceholderDirective implements OnChanges {
   @Input() placeholder: string;
   @Input() src: string | ArrayBuffer;
   @HostBinding('src') url: string | SafeResourceUrl;
+
+  constructor(private _sanitizer: DomSanitizer) {}
+
   @HostListener('error') updateUrl(): void {
     this.url = this.placeholder;
   }
-
-  constructor(private _sanitizer: DomSanitizer) {}
 
   ngOnChanges({ src }: SimpleChanges): void {
     if (src?.currentValue) {

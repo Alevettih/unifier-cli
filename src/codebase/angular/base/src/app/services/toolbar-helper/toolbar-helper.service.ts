@@ -13,6 +13,32 @@ export interface IToolbarData<T = any> {
   providedIn: 'root'
 })
 export class ToolbarHelperService {
+  private readonly _INFO_VIEWER_DATA$: BehaviorSubject<IToolbarData> = new BehaviorSubject<IToolbarData>({
+    template: null,
+    templateData: null,
+    isHidden: false
+  });
+
+  set data(data: IToolbarData) {
+    this._INFO_VIEWER_DATA$.next(data);
+  }
+
+  get data(): IToolbarData {
+    return this._INFO_VIEWER_DATA$.value;
+  }
+
+  get template(): TemplateRef<any> {
+    return this._INFO_VIEWER_DATA$.value?.template;
+  }
+
+  get templateData(): any {
+    return this._INFO_VIEWER_DATA$.value?.templateData;
+  }
+
+  get isHidden(): any {
+    return this._INFO_VIEWER_DATA$.value?.isHidden;
+  }
+
   constructor(private _router: Router) {
     this._router.events
       .pipe(
@@ -32,31 +58,5 @@ export class ToolbarHelperService {
           isHidden: false
         };
       });
-  }
-
-  private _infoViewerData$: BehaviorSubject<IToolbarData> = new BehaviorSubject<IToolbarData>({
-    template: null,
-    templateData: null,
-    isHidden: false
-  });
-
-  set data(data: IToolbarData) {
-    this._infoViewerData$.next(data);
-  }
-
-  get data(): IToolbarData {
-    return this._infoViewerData$.value;
-  }
-
-  get template(): TemplateRef<any> {
-    return this._infoViewerData$.value?.template;
-  }
-
-  get templateData(): any {
-    return this._infoViewerData$.value?.templateData;
-  }
-
-  get isHidden(): any {
-    return this._infoViewerData$.value?.isHidden;
   }
 }

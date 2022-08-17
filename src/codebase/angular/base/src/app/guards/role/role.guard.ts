@@ -8,7 +8,7 @@ import { ToastrService } from 'ngx-toastr';
 export interface IRoleGuardParams {
   roles: UserRole[];
   redirectTo: string[];
-  skipErrorNotification?: boolean;
+  shouldSkipErrorNotification?: boolean;
 }
 
 @Injectable({
@@ -30,11 +30,11 @@ export class RoleGuard implements CanActivate, CanActivateChild {
     return this._isRoleAllowed(childRoute?.data?.roleGuardParams ?? {});
   }
 
-  private _isRoleAllowed({ redirectTo, roles, skipErrorNotification }: IRoleGuardParams): Promise<boolean> | boolean {
+  private _isRoleAllowed({ redirectTo, roles, shouldSkipErrorNotification }: IRoleGuardParams): Promise<boolean> | boolean {
     const isRoleAllowed: boolean = Boolean((roles ?? [])?.find((role: UserRole): boolean => this._auth.myRole === role));
 
     if (!isRoleAllowed) {
-      if (!skipErrorNotification) {
+      if (!shouldSkipErrorNotification) {
         this._notification.error(this._translate.instant('BACKEND_ERRORS.ACCESS_DENIED'));
       }
       return redirectTo?.length ? this._router.navigate(redirectTo) : false;

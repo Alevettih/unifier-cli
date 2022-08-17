@@ -7,8 +7,6 @@ import { ToolbarHelperService } from '@services/toolbar-helper/toolbar-helper.se
   styleUrls: ['./toolbar.component.scss']
 })
 export class ToolbarComponent {
-  constructor(private _toolbarHelper: ToolbarHelperService) {}
-
   get template(): TemplateRef<any> {
     return this._toolbarHelper.template;
   }
@@ -20,4 +18,6 @@ export class ToolbarComponent {
   get isHidden(): any {
     return this._toolbarHelper.isHidden;
   }
+
+  constructor(private _toolbarHelper: ToolbarHelperService) {}
 }

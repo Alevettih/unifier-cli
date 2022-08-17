@@ -9,7 +9,7 @@ import { QueryParamsService } from '@services/query-params/query-params.service'
 })
 export class PaginatedListComponent extends BasePaginationAbstractComponent {
   @Input() queryParams: QueryParamsService;
-  @Input() hidePagination: boolean = false;
+  @Input() shouldHidePagination: boolean = false;
   @Input() emptyMessage: string;
   @Input() emptyIcon: string = 'no';
   @Input() columnWidth: string = '1fr';

@@ -14,7 +14,7 @@ export abstract class BaseModel {
   @Transform(transformToDate)
   date: Date;
 
-  [Symbol.toPrimitive](hint: 'number' | 'string' | 'default') {
+  [Symbol.toPrimitive](hint: 'number' | 'string' | 'default'): string | number | void {
     switch (hint) {
       case 'string':
         return this.iri;

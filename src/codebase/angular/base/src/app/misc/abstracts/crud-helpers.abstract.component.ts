@@ -8,99 +8,99 @@ import { IModalProperties, ModalService } from '@shared/modal/modal.service';
   template: ''
 })
 export abstract class CrudHelpersAbstractComponent<T = any> implements OnDestroy {
-  protected readonly ACTION_MODAL_COMPONENT: any;
-  protected readonly MESSAGE_MODAL_COMPONENT: any;
-  protected readonly MODAL_OPTIONS: IModalProperties = {};
-  protected readonly DESTROYED$: Subject<void> = new Subject<void>();
-  protected readonly MODAL_NAMESPACE: string = '';
+  protected readonly _ACTION_MODAL_COMPONENT: any;
+  protected readonly _MESSAGE_MODAL_COMPONENT: any;
+  protected readonly _MODAL_OPTIONS: IModalProperties = {} as IModalProperties;
+  protected readonly _DESTROYED$: Subject<void> = new Subject<void>();
+  protected readonly _MODAL_NAMESPACE: string = '';
 
-  constructor(protected modal: ModalService, protected translate: TranslateService) {}
+  protected get _namespace(): string {
+    return this._MODAL_NAMESPACE ? `.${this._MODAL_NAMESPACE}` : '';
+  }
+
+  protected constructor(protected _modal: ModalService, protected _translate: TranslateService) {}
 
   ngOnDestroy(): void {
-    this.DESTROYED$.next();
-    this.DESTROYED$.complete();
+    this._DESTROYED$.next();
+    this._DESTROYED$.complete();
   }
 
   onRemove(entity: T): void {
-    this.openConfirmationModal()
-      .pipe(switchMap((): Observable<void> => this.removeItem(entity)))
+    this._openConfirmationModal()
+      .pipe(switchMap((): Observable<void> => this._removeItem(entity)))
       .subscribe();
   }
 
   onCreate(): void {
-    this.openCreateModal()
-      .pipe(switchMap((entity: Partial<T>): Observable<T> => this.createItem(entity)))
+    this._openCreateModal()
+      .pipe(switchMap((entity: Partial<T>): Observable<T> => this._createItem(entity)))
       .subscribe();
   }
 
   onEdit(entity: T): void {
-    this.openEditModal(entity)
-      .pipe(switchMap((res: Partial<T>): Observable<T> => this.updateItem({ id: (entity as any)?.id, ...res })))
+    this._openEditModal(entity)
+      .pipe(switchMap((res: Partial<T>): Observable<T> => this._updateItem({ id: (entity as any)?.id, ...res })))
       .subscribe();
   }
 
-  protected get namespace(): string {
-    return this.MODAL_NAMESPACE ? `.${this.MODAL_NAMESPACE}` : '';
-  }
+  protected _openCreateModal(): Observable<Partial<T>> {
+    const modalKey: string = `MODALS${this._namespace}.CREATE`;
 
-  protected openCreateModal(): Observable<Partial<T>> {
-    const modalKey: string = `MODALS${this.namespace}.CREATE`;
-
-    return this.modal.open<Partial<T>>(
+    return this._modal.open<Partial<T>>(
       {
-        title: this.translate.instant(`${modalKey}.TITLE`),
-        component: this.ACTION_MODAL_COMPONENT
+        title: this._translate.instant(`${modalKey}.TITLE`),
+        component: this._ACTION_MODAL_COMPONENT
       },
-      this.MODAL_OPTIONS
+      this._MODAL_OPTIONS
     );
   }
 
-  protected openEditModal(entity: T): Observable<Partial<T>> {
-    const modalKey: string = `MODALS${this.namespace}.EDIT`;
+  protected _openEditModal(entity: T): Observable<Partial<T>> {
+    const modalKey: string = `MODALS${this._namespace}.EDIT`;
 
-    return this.modal.open<Partial<T>>(
+    return this._modal.open<Partial<T>>(
       {
-        title: this.translate.instant(`${modalKey}.TITLE`),
-        component: this.ACTION_MODAL_COMPONENT,
+        title: this._translate.instant(`${modalKey}.TITLE`),
+        component: this._ACTION_MODAL_COMPONENT,
         context: { entity }
       },
-      this.MODAL_OPTIONS
+      this._MODAL_OPTIONS
     );
   }
 
-  protected openConfirmationModal(): Observable<boolean> {
-    const modalKey: string = `MODALS${this.namespace}.REMOVE`;
+  protected _openConfirmationModal(): Observable<boolean> {
+    const modalKey: string = `MODALS${this._namespace}.REMOVE`;
 
-    return this.modal.open<boolean>(
+    return this._modal.open<boolean>(
       {
         icon: 'attention',
-        title: this.translate.instant(`${modalKey}.TITLE`),
+        title: this._translate.instant(`${modalKey}.TITLE`),
         message:
-          this.translate.instant(`${modalKey}.MESSAGE`) !== `${modalKey}.MESSAGE` ? this.translate.instant(`${modalKey}.MESSAGE`) : '',
-        component: this.MESSAGE_MODAL_COMPONENT,
+          this._translate.instant(`${modalKey}.MESSAGE`) !== `${modalKey}.MESSAGE` ? this._translate.instant(`${modalKey}.MESSAGE`) : '',
+        component: this._MESSAGE_MODAL_COMPONENT,
         context: {},
-        actions: this.MESSAGE_MODAL_COMPONENT
+        actions: this._MESSAGE_MODAL_COMPONENT
           ? null
           : [
-              { type: 'close', value: false, color: 'accent', name: this.translate.instant('BUTTON_NAME.NO') },
-              { type: 'close', value: true, color: 'primary', name: this.translate.instant('BUTTON_NAME.YES') }
+              { type: 'close', value: false, color: 'accent', name: this._translate.instant('BUTTON_NAME.NO') },
+              { type: 'close', value: true, color: 'primary', name: this._translate.instant('BUTTON_NAME.YES') }
             ]
       },
-      this.MODAL_OPTIONS
+      this._MODAL_OPTIONS
     );
   }
 
-  protected updateItem(entity: Partial<T>): Observable<T> {
+  protected _updateItem(entity: Partial<T>): Observable<T> {
     console.log(entity);
     throw new Error('Method not implemented');
   }
 
-  protected createItem(entity: Partial<T>): Observable<T> {
+  protected _createItem(entity: Partial<T>): Observable<T> {
     console.log(entity);
     throw new Error('Method not implemented');
   }
 
-  protected removeItem(entity: T): Observable<void> {
+  protected _removeItem(entity: T): Observable<void> {
     console.log(entity);
     throw new Error('Method not implemented');
   }

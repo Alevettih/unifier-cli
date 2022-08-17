@@ -1,4 +1,4 @@
-import { transform, isEqual } from 'lodash';
+import { isEqual, transform } from 'lodash';
 import { typeOf } from '@misc/helpers/typeof.function';
 
 export function difference<T extends object>(object: T, base: any): Partial<T> {

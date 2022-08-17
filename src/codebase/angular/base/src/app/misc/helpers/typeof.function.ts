@@ -15,20 +15,20 @@ type typeOfInvertedType = `not-${typeOfBaseType}`;
 
 export type typeOfAvailableType = typeOfBaseType | typeOfInvertedType;
 
-export function typeOf(item: any, type: typeOfAvailableType): boolean {
-  let res: boolean;
+export function typeOf(item: unknown, type: typeOfAvailableType): boolean {
+  let isTypeMatched: boolean;
 
   if (type.includes('strict-object')) {
-    res = item && typeof item === 'object' && !Array.isArray(item);
+    isTypeMatched = item && typeof item === 'object' && !Array.isArray(item);
   } else if (type.includes('null')) {
-    res = !item && typeof item === 'object' && !(item instanceof Object);
+    isTypeMatched = !item && typeof item === 'object' && !(item instanceof Object);
   } else if (type.includes('array')) {
-    res = item && Array.isArray(item);
+    isTypeMatched = item && Array.isArray(item);
   } else if (type.includes('integer')) {
-    res = Number.isInteger(item);
+    isTypeMatched = Number.isInteger(item);
   } else {
-    res = typeof item === type.split('-').slice(-1)[0];
+    isTypeMatched = typeof item === type.split('-').slice(-1)[0];
   }
 
-  return type.includes('not-') ? !res : res;
+  return type.includes('not-') ? !isTypeMatched : isTypeMatched;
 }

@@ -15,59 +15,59 @@ import { IDateRange, QueryParamsService } from '@services/query-params/query-par
   providers: [QueryParamsService]
 })
 export abstract class ListingApiAbstractComponent<T = any> extends CrudHelpersAbstractComponent<T> implements OnInit, OnDestroy {
+  isLoading: boolean = false;
   readonly BASE_DATE_FORMAT: string = DATE_FORMAT.FULL;
   abstract list: List<T>;
-  isLoading: boolean = false;
 
-  constructor(
-    protected queryParams: QueryParamsService,
-    protected activatedRoute: ActivatedRoute,
-    protected override modal: ModalService,
-    protected override translate: TranslateService
+  get params(): Params {
+    return this._queryParams.params;
+  }
+
+  protected constructor(
+    protected _queryParams: QueryParamsService,
+    protected _activatedRoute: ActivatedRoute,
+    protected override _modal: ModalService,
+    protected override _translate: TranslateService
   ) {
-    super(modal, translate);
-    queryParams.shouldTranslateParamsToURL = false;
+    super(_modal, _translate);
+    _queryParams.shouldTranslateParamsToURL = false;
   }
 
   ngOnInit(): void {
-    merge(this.queryParams.params$, this.activatedRoute.params)
+    merge(this._queryParams.params$, this._activatedRoute.params)
       .pipe(
-        takeUntil(this.DESTROYED$),
-        switchMap((): Observable<List> => this.loadItems(this.params))
+        takeUntil(this._DESTROYED$),
+        switchMap((): Observable<List> => this._loadItems(this.params))
       )
       .subscribe();
   }
 
-  get params(): Params {
-    return this.queryParams.params;
-  }
-
-  onFilter(fieldName: string, value: any, type: 'search' | 'date-range'): void {
+  onFilter(fieldName: string, value: unknown, type: 'search' | 'date-range'): void {
     switch (type) {
       case 'search':
-        this.queryParams.searchQuery((value as string)?.trim?.(), fieldName);
+        this._queryParams.searchQuery((value as string)?.trim?.(), fieldName);
         break;
       case 'date-range':
-        this.queryParams.addRange(fieldName, value as IDateRange);
+        this._queryParams.addRange(fieldName, value as IDateRange);
         break;
     }
 
-    this.queryParams.paginate(1, this.queryParams.params[QueryParamsService.BASE_KEYS.PER_PAGE]);
+    this._queryParams.paginate(1, this._queryParams.params[QueryParamsService.BASE_KEYS.PER_PAGE]);
   }
 
-  protected updateList(clearPagination: boolean): void {
-    if (clearPagination) {
-      this.queryParams.paginate(1, this.queryParams.params[QueryParamsService.BASE_KEYS.PER_PAGE]);
+  protected _updateList(shouldClearPagination: boolean): void {
+    if (shouldClearPagination) {
+      this._queryParams.paginate(1, this._queryParams.params[QueryParamsService.BASE_KEYS.PER_PAGE]);
     } else {
-      this.loadItems(this.params).subscribe();
+      this._loadItems(this.params).subscribe();
     }
   }
 
-  protected loadItems(params: Params): Observable<List<T>> {
+  protected _loadItems(params: Params): Observable<List<T>> {
     this.isLoading = true;
 
-    return this.getItems(params).pipe(
-      takeUntil(this.DESTROYED$),
+    return this._getItems(params).pipe(
+      takeUntil(this._DESTROYED$),
       catchError((err: HttpServiceError): Observable<never> => {
         this.list = { entities: [], total: 0 };
         this.isLoading = false;
@@ -80,5 +80,5 @@ export abstract class ListingApiAbstractComponent<T = any> extends CrudHelpersAb
     );
   }
 
-  protected abstract getItems(params: Params): Observable<List<T>>;
+  protected abstract _getItems(params: Params): Observable<List<T>>;
 }

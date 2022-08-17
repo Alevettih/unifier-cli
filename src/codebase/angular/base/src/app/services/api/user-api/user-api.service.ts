@@ -11,30 +11,30 @@ import { UserTokenAction } from '@models/enums/user-token-action.enum';
   providedIn: 'root'
 })
 export class UserApiService extends ApiBaseAbstractService<User> {
-  protected readonly URLPath: string = '/api/users';
-  protected readonly MODEL: ClassConstructor<User> = User;
+  protected readonly _URL_PATH: string = '/api/users';
+  protected readonly _MODEL: ClassConstructor<User> = User;
 
   getMe(services?: IServicesConfig): Observable<User> {
     return this.getItem('me', services);
   }
 
   logout(services?: IServicesConfig): Observable<void> {
-    return this.http.patch(`${this.config.apiUrl}/api/users/logout`, null, {}, services);
+    return this._http.patch(`${this._config.apiUrl}/api/users/logout`, null, {}, services);
   }
 
   availableEmail(email: string, services?: IServicesConfig): Observable<any> {
-    return this.http.get(`${this.config.apiUrl}/api/users/available/email/${email}`, {}, services);
+    return this._http.get(`${this._config.apiUrl}/api/users/available/email/${email}`, {}, services);
   }
 
   sendToken(email: string, type: UserTokenAction, payload?: { [key: string]: string }, services?: IServicesConfig): Observable<any> {
-    return this.http.post(`${this.config.apiUrl}/api/users/send/token`, { email, type, payload }, {}, services);
+    return this._http.post(`${this._config.apiUrl}/api/users/send/token`, { email, type, payload }, {}, services);
   }
 
   updatePassword(token: string, params: Params, services?: IServicesConfig): Observable<any> {
-    return this.http.patch(`${this.config.apiUrl}/api/users/${token}/password`, { user: params }, {}, services);
+    return this._http.patch(`${this._config.apiUrl}/api/users/${token}/password`, { user: params }, {}, services);
   }
 
   confirmAccount(token: string, services?: IServicesConfig): Observable<any> {
-    return this.http.patch(`${this.config.apiUrl}/api/users/${token}/confirm`, { user: { confirmed: true } }, {}, services);
+    return this._http.patch(`${this._config.apiUrl}/api/users/${token}/confirm`, { user: { confirmed: true } }, {}, services);
   }
 }

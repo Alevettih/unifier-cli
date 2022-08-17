@@ -8,7 +8,7 @@ import { DetailsInfoAbstractResolver } from '@misc/abstracts/details-info.abstra
   providedIn: 'root'
 })
 export class UserResolver extends DetailsInfoAbstractResolver<User> implements Resolve<User> {
-  protected override readonly PARAM_NAME: string = 'userId';
+  protected override readonly _PARAM_NAME: string = 'userId';
 
   constructor(protected override _api: UserApiService, _router: Router) {
     super(_router);

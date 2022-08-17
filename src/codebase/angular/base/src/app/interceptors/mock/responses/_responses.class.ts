@@ -8,16 +8,8 @@ import { Params } from '@angular/router';
 import { QueryParamsService } from '@services/query-params/query-params.service';
 
 export abstract class Responses<T extends { id: string }> {
-  protected abstract readonly MODEL: ClassConstructor<T>;
   readonly ENTITIES: (T | Partial<T>)[] = [];
-
-  protected abstract entitiesFn(index: number): Partial<T>;
-
-  init(initialCount: number = 20, withConversion: boolean = true): void {
-    for (let i: number = 0; i < initialCount; i++) {
-      this.ENTITIES.push(withConversion ? convertToModel(this.entitiesFn.call(this, i), this.MODEL) : this.entitiesFn.call(this, i));
-    }
-  }
+  protected abstract readonly _MODEL: ClassConstructor<T>;
 
   get list(): (
     params: string[],
@@ -42,6 +34,12 @@ export abstract class Responses<T extends { id: string }> {
 
   get delete(): (params: string[], body: void, headers: HttpHeaders) => Observable<HttpResponse<void>> {
     return this._delete.bind(this);
+  }
+
+  init(initialCount: number = 20, withConversion: boolean = true): void {
+    for (let i: number = 0; i < initialCount; i++) {
+      this.ENTITIES.push(withConversion ? convertToModel(this._entitiesFn.call(this, i), this._MODEL) : this._entitiesFn.call(this, i));
+    }
   }
 
   protected _list(
@@ -120,4 +118,6 @@ export abstract class Responses<T extends { id: string }> {
       })
     );
   }
+
+  protected abstract _entitiesFn(index: number): Partial<T>;
 }

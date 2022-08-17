@@ -9,8 +9,8 @@ import { IBreadcrumb } from '@models/interfaces/breadcrumbs/breadcrumb.interface
   styleUrls: ['./breadcrumbs.component.scss']
 })
 export class BreadcrumbsComponent implements OnInit {
-  breadcrumbs$: BehaviorSubject<IBreadcrumb[]>;
   @Input() hidden: boolean;
+  breadcrumbs$: BehaviorSubject<IBreadcrumb[]>;
 
   constructor(private _breadcrumbsService: BreadcrumbsService) {}
 

@@ -9,28 +9,43 @@ import { ComponentPortal } from '@angular/cdk/portal';
   providedIn: 'root'
 })
 export class LoaderService implements OnDestroy {
-  private readonly _queue: BehaviorSubject<boolean[]> = new BehaviorSubject<boolean[]>([]);
-  private readonly _ngDestroy: Subject<void> = new Subject<void>();
-  private _loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  private _overlayRef: OverlayRef;
+  private readonly _QUEUE$: BehaviorSubject<boolean[]> = new BehaviorSubject<boolean[]>([]);
+  private readonly _DESTROYED$: Subject<void> = new Subject<void>();
+  private readonly _LOADING$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly _OVERLAY_REF: OverlayRef;
+
+  get isLoading(): Observable<boolean> {
+    return this._LOADING$.asObservable().pipe(
+      distinctUntilChanged(),
+      tap((isLoading: boolean): void => {
+        if (isLoading) {
+          if (!this._OVERLAY_REF.hasAttached()) {
+            this._OVERLAY_REF.attach(new ComponentPortal(MatSpinner));
+          }
+        } else {
+          this._OVERLAY_REF.detach();
+        }
+      })
+    );
+  }
 
   constructor(private _overlay: Overlay) {
-    this._overlayRef = this._overlay.create({
+    this._OVERLAY_REF = this._overlay.create({
       hasBackdrop: true,
       disposeOnNavigation: false,
       positionStrategy: this._overlay.position().global().centerHorizontally().centerVertically()
     });
 
-    this._queue
+    this._QUEUE$
       .asObservable()
       .pipe(
         filter((queue: boolean[]): boolean => queue.length > 0 && queue[0]),
         tap((): void => {
-          const updatedQueue: boolean[] = this._queue.value;
+          const updatedQueue: boolean[] = this._QUEUE$.value;
           updatedQueue[0] = false;
-          this._queue.next(updatedQueue);
+          this._QUEUE$.next(updatedQueue);
         }),
-        takeUntil(this._ngDestroy)
+        takeUntil(this._DESTROYED$)
       )
       .subscribe();
 
@@ -38,10 +53,10 @@ export class LoaderService implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this._queue.next([]);
-    this._queue.complete();
-    this._ngDestroy.next();
-    this._ngDestroy.complete();
+    this._QUEUE$.next([]);
+    this._QUEUE$.complete();
+    this._DESTROYED$.next();
+    this._DESTROYED$.complete();
   }
 
   on(): void {
@@ -52,32 +67,17 @@ export class LoaderService implements OnDestroy {
     this._removeDismissed();
   }
 
-  private _addToQueue(loading: boolean): void {
-    this._queue.next(this._queue.value.concat([loading]));
-    this._loading.next(Boolean(this._queue.value.length));
+  private _addToQueue(isLoading: boolean): void {
+    this._QUEUE$.next(this._QUEUE$.value.concat([isLoading]));
+    this._LOADING$.next(Boolean(this._QUEUE$.value.length));
   }
 
   private _removeDismissed(): void {
-    const updatedQueue: boolean[] = this._queue.value;
+    const updatedQueue: boolean[] = this._QUEUE$.value;
     if (!updatedQueue[0] && typeof updatedQueue[0] === 'boolean') {
       updatedQueue.shift();
     }
-    this._queue.next(updatedQueue);
-    this._loading.next(Boolean(updatedQueue.length));
-  }
-
-  get isLoading(): Observable<boolean> {
-    return this._loading.asObservable().pipe(
-      distinctUntilChanged(),
-      tap((isLoading: boolean): void => {
-        if (isLoading) {
-          if (!this._overlayRef.hasAttached()) {
-            this._overlayRef.attach(new ComponentPortal(MatSpinner));
-          }
-        } else {
-          this._overlayRef.detach();
-        }
-      })
-    );
+    this._QUEUE$.next(updatedQueue);
+    this._LOADING$.next(Boolean(updatedQueue.length));
   }
 }

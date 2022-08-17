@@ -10,13 +10,13 @@ import { ApiBaseAbstractService } from '@misc/abstracts/api-base.abstract.servic
   providedIn: 'root'
 })
 export abstract class DetailsInfoAbstractResolver<Model extends BaseModel> implements Resolve<Model> {
-  protected abstract readonly PARAM_NAME: string;
+  protected abstract readonly _PARAM_NAME: string;
   protected abstract _api: ApiBaseAbstractService<Model>;
 
   protected constructor(private _router: Router) {}
 
   resolve({ params }: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Model> {
-    return this._api.getItem(params[this.PARAM_NAME]).pipe(
+    return this._api.getItem(params[this._PARAM_NAME]).pipe(
       catchError((err: HttpServiceError): Observable<never> => {
         if (err.status === 404) {
           this._router.navigate(['', '404']);

@@ -45,6 +45,18 @@ export class ModalComponent<T> implements AfterViewInit {
   @ViewChild('modalBody') modalBody: ElementRef<HTMLDivElement>;
   componentRef: ComponentRef<IModalFormComponent<T>>;
 
+  get icon(): string {
+    return this.data.icon ?? 'warning_amber';
+  }
+
+  get context(): IModalComponentContext<T> {
+    return { ...this.data?.context, dialog: this._dialog };
+  }
+
+  get componentInstance(): IModalFormComponent<T> {
+    return this.componentRef?.instance;
+  }
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: IModalData<T>,
     private _dialog: MatDialogRef<ModalComponent<T>>,
@@ -58,18 +70,6 @@ export class ModalComponent<T> implements AfterViewInit {
     if (this.data.component) {
       this._createComponent();
     }
-  }
-
-  get icon(): string {
-    return this.data.icon ?? 'warning_amber';
-  }
-
-  get context(): IModalComponentContext<T> {
-    return { ...this.data?.context, dialog: this._dialog };
-  }
-
-  get componentInstance(): IModalFormComponent<T> {
-    return this.componentRef?.instance;
   }
 
   onSubmit(): void {

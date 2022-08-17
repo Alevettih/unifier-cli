@@ -143,6 +143,11 @@ export class AngularSpecifier extends Specifier {
     });
     removeSync(join(title, `/src/main.ts`));
     removeSync(join(title, `/src/index.html`));
+    removeSync(join(title, `/src/app/app.module.ts`));
+    removeSync(join(title, `/src/app/app-routing.module.ts`));
+    ['ts', 'spec.ts', 'scss', 'html'].forEach((extension: string): void =>
+      removeSync(join(title, `/src/app/app.component.${extension}`))
+    );
 
     for (const app of applicationsInfo) {
       removeSync(join(title, `/projects/${app.name}`));

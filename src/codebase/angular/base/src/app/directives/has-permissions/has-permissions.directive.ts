@@ -12,9 +12,13 @@ export class HasPermissionsDirective implements OnInit {
   @Input() hasPermissionsElse: TemplateRef<any>;
   @Input() hasPermissions: permissionType[];
 
+  get currentRole(): UserRole {
+    return this._auth.myRole;
+  }
+
   constructor(private _templateRef: TemplateRef<any>, private _viewContainer: ViewContainerRef, private _auth: AuthService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     if (hasPermissions(this.currentRole, this.hasPermissions)) {
       this._viewContainer.createEmbeddedView(this.hasPermissionsThen ?? this._templateRef);
     } else if (this.hasPermissionsElse) {
@@ -22,9 +26,5 @@ export class HasPermissionsDirective implements OnInit {
     } else {
       this._viewContainer.clear();
     }
-  }
-
-  get currentRole(): UserRole {
-    return this._auth.myRole;
   }
 }

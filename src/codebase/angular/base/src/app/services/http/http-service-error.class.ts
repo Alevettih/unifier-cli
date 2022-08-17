@@ -6,16 +6,16 @@ export interface IErrorDescription {
 }
 
 export class HttpServiceError extends HttpErrorResponse {
-  constructor(e: HttpErrorResponse) {
-    super(e);
+  get descriptions(): IErrorDescription[] {
+    return this._isFormError ? this._getFormFieldsErrorDescriptions(this) : [this._getSimpleErrorMessage()];
   }
 
   private get _isFormError(): boolean {
     return Boolean(this.error.violations);
   }
 
-  get descriptions(): IErrorDescription[] {
-    return this._isFormError ? this._getFormFieldsErrorDescriptions(this) : [this._getSimpleErrorMessage()];
+  constructor(e: HttpErrorResponse) {
+    super(e);
   }
 
   private _getSimpleErrorMessage(): IErrorDescription {

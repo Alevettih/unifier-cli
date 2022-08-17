@@ -24,17 +24,8 @@ interface IFormValues {
 })
 export class UserModalComponent extends BaseFormAbstractComponent implements OnInit {
   @Input() context: IModalComponentContext<User>;
-  private _availableRoles: UserRole[] = [UserRole.admin];
   roleOptions: IOption[] = [];
-
-  constructor(private _translate: TranslateService, private _fb: FormBuilder) {
-    super();
-  }
-
-  ngOnInit(): void {
-    this._initOptions();
-    this._initForm();
-  }
+  private readonly _AVAILABLE_ROLES: UserRole[] = [UserRole.admin];
 
   get user(): User {
     return this.context?.entity;
@@ -51,6 +42,15 @@ export class UserModalComponent extends BaseFormAbstractComponent implements OnI
 
   get dialog(): MatDialogRef<ModalComponent<User>> {
     return this.context?.dialog;
+  }
+
+  constructor(private _translate: TranslateService, private _fb: FormBuilder) {
+    super();
+  }
+
+  ngOnInit(): void {
+    this._initOptions();
+    this._initForm();
   }
 
   getModalResult(): IFormValues {
@@ -75,7 +75,7 @@ export class UserModalComponent extends BaseFormAbstractComponent implements OnI
   }
 
   private _initOptions(): void {
-    this.roleOptions = this._availableRoles.map(
+    this.roleOptions = this._AVAILABLE_ROLES.map(
       (role: UserRole): IOption => ({ value: role, label: this._translate.instant(`SERVICE_ROLE.${role.toUpperCase()}`), disabled: false })
     );
   }

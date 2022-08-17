@@ -20,7 +20,7 @@ export class BaseAutocompleteComponent extends BaseFormFieldAbstractComponent im
   ngOnInit(): void {
     this.formControl.valueChanges
       .pipe(
-        takeUntil(this.destroyed$),
+        takeUntil(this._DESTROYED$),
         auditTime(300),
         pairwise(),
         filter(([prev, next]: [string, string]): boolean => prev !== next),

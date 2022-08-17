@@ -17,12 +17,6 @@ import { AuthService } from '@services/auth/auth.service';
 export class MainLayoutComponent {
   private readonly _DESTROYED$: Subject<void> = new Subject<void>();
 
-  constructor(
-    private _auth: AuthService,
-    private _breakpointObserver: BreakpointObserver,
-    @Inject(PLATFORM_ID) private _platformId: Params
-  ) {}
-
   get me(): User {
     return this._auth?.me;
   }
@@ -49,4 +43,10 @@ export class MainLayoutComponent {
       map((shouldBeOpen: boolean): MatDrawerMode => (!shouldBeOpen ? 'over' : 'side'))
     );
   }
+
+  constructor(
+    private _auth: AuthService,
+    private _breakpointObserver: BreakpointObserver,
+    @Inject(PLATFORM_ID) private _platformId: Params
+  ) {}
 }

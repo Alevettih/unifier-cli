@@ -33,19 +33,6 @@ export class FileUploaderComponent extends BaseFormFieldAbstractComponent implem
   selectFile: ApiFile[] = [];
   fileError: string = '';
 
-  constructor(
-    private _fileApi: FileApiService,
-    private _sanitizer: DomSanitizer,
-    protected override cdr: ChangeDetectorRef,
-    protected override translate: TranslateService
-  ) {
-    super(cdr, translate);
-  }
-
-  ngOnInit(): void {
-    this.selectFile = this.valueControl ? (this.multiple ? (this.control.value as ApiFile[]) : [this.control.value]) : [];
-  }
-
   get isFileError(): boolean {
     return (this.control?.invalid && this.control?.touched) || !!this.fileError;
   }
@@ -66,7 +53,20 @@ export class FileUploaderComponent extends BaseFormFieldAbstractComponent implem
   }
 
   get placeholderWord(): string {
-    return this.translate.instant(`FILE_UPLOADER.FILE${this.multiple ? 'S' : ''}`);
+    return this._translate.instant(`FILE_UPLOADER.FILE${this.multiple ? 'S' : ''}`);
+  }
+
+  constructor(
+    private _fileApi: FileApiService,
+    private _sanitizer: DomSanitizer,
+    protected override _cdr: ChangeDetectorRef,
+    protected override _translate: TranslateService
+  ) {
+    super(_cdr, _translate);
+  }
+
+  ngOnInit(): void {
+    this.selectFile = this.valueControl ? (this.multiple ? (this.control.value as ApiFile[]) : [this.control.value]) : [];
   }
 
   getFiles(event: Event): File[] {
@@ -103,15 +103,15 @@ export class FileUploaderComponent extends BaseFormFieldAbstractComponent implem
   }
 
   fileValidation(files: File[]): boolean {
-    if (files.find((file: File): boolean => this.toMB(file.size) > this.maxSizeFile)?.size) {
-      this.fileError = this.translate.instant('FILE_UPLOADER.FILE_SIZE', { size: this.maxSizeFile });
+    if (files.find((file: File): boolean => this._toMB(file.size) > this.maxSizeFile)?.size) {
+      this.fileError = this._translate.instant('FILE_UPLOADER.FILE_SIZE', { size: this.maxSizeFile });
       return false;
     } else {
       this.fileError = '';
     }
 
     if (this.maxCountFile && this.maxCountFile < files.length) {
-      this.fileError = this.translate.instant('FILE_UPLOADER.SELECTED_FILES_MAX', { count: this.maxCountFile });
+      this.fileError = this._translate.instant('FILE_UPLOADER.SELECTED_FILES_MAX', { count: this.maxCountFile });
       return false;
     } else {
       this.fileError = '';
@@ -140,7 +140,7 @@ export class FileUploaderComponent extends BaseFormFieldAbstractComponent implem
   }
 
   isFileMaxSize(file: ApiFile | File): boolean {
-    return this.toMB(file.size) > this.maxSizeFile;
+    return this._toMB(file.size) > this.maxSizeFile;
   }
 
   chooseAnotherFile(): void {
@@ -155,7 +155,7 @@ export class FileUploaderComponent extends BaseFormFieldAbstractComponent implem
     return this._sanitizer.bypassSecurityTrustResourceUrl(URL.createObjectURL(file)) as string;
   }
 
-  protected toMB(size: number): number {
+  protected _toMB(size: number): number {
     return size / 1024 ** 2;
   }
 }

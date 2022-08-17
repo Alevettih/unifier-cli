@@ -8,7 +8,6 @@ import { HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Params } from '@angular/router';
 
 class UserResponses extends Responses<User> {
-  protected readonly MODEL: ClassConstructor<User> = User;
   override readonly ENTITIES: User[] = [
     convertToModel(
       {
@@ -20,8 +19,9 @@ class UserResponses extends Responses<User> {
       User
     )
   ];
+  protected readonly _MODEL: ClassConstructor<User> = User;
 
-  protected entitiesFn(index: number): Partial<User> {
+  protected _entitiesFn(index: number): Partial<User> {
     return {
       id: `vkvggvc9-33g3-vk0p-v90c-g9g9ggp8v9${index.toString().padStart(2, '0')}`,
       firstName: `John`,

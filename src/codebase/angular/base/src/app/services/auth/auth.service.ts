@@ -19,9 +19,25 @@ import { GrantType } from '@models/enums/grant-type.enum';
   providedIn: 'root'
 })
 export class AuthService {
-  private _tokens$: BehaviorSubject<Token> = new BehaviorSubject<Token>(this._storage.get<Token>(StorageKey.tokens));
-  private _role$: BehaviorSubject<UserRole> = new BehaviorSubject<UserRole>(this._storage.get<UserRole>(StorageKey.role));
   me$: BehaviorSubject<User> = new BehaviorSubject<User>(null);
+  private readonly _TOKENS$: BehaviorSubject<Token> = new BehaviorSubject<Token>(this._storage.get<Token>(StorageKey.tokens));
+  private readonly _ROLE$: BehaviorSubject<UserRole> = new BehaviorSubject<UserRole>(this._storage.get<UserRole>(StorageKey.role));
+
+  get isAuthenticated(): boolean {
+    return Boolean(this.myRole && this.token?.access && this.token?.refresh);
+  }
+
+  get token(): Token {
+    return this._TOKENS$.value;
+  }
+
+  get myRole(): UserRole {
+    return this._ROLE$.value;
+  }
+
+  get me(): User {
+    return this.me$.value;
+  }
 
   constructor(
     @Inject(APP_CONFIG) private _config: IAppConfig,
@@ -42,7 +58,7 @@ export class AuthService {
   }
 
   login(
-    { username, password, grant_type = GrantType.password, code }: ILoginParams,
+    { username, password, grantType = GrantType.password, code }: ILoginParams,
     shouldRemember: boolean,
     services?: IServicesConfig
   ): Observable<User> {
@@ -50,7 +66,7 @@ export class AuthService {
     this._storage.shouldUseLocalstorage = shouldRemember;
     const form: FormData = new FormData();
 
-    form.append('grant_type', grant_type ?? GrantType.password);
+    form.append('grant_type', grantType ?? GrantType.password);
     form.append('client_id', clientId);
     form.append('client_secret', clientSecret);
     form.append('username', username);
@@ -81,8 +97,8 @@ export class AuthService {
 
   clearTokens(): void {
     this._storage.clear();
-    this._tokens$.next(null);
-    this._role$.next(null);
+    this._TOKENS$.next(null);
+    this._ROLE$.next(null);
     this.me$.next(null);
   }
 
@@ -96,24 +112,8 @@ export class AuthService {
       : req;
   }
 
-  get isAuthenticated(): boolean {
-    return Boolean(this.myRole && this.token?.access && this.token?.refresh);
-  }
-
-  get token(): Token {
-    return this._tokens$.value;
-  }
-
-  get myRole(): UserRole {
-    return this._role$.value;
-  }
-
-  get me(): User {
-    return this.me$.value;
-  }
-
   setRole(role: UserRole): UserRole {
-    this._role$.next(role);
+    this._ROLE$.next(role);
     this._storage.set(StorageKey.role, role);
     return role;
   }
@@ -134,7 +134,7 @@ export class AuthService {
     if (res.access_token) {
       tokens = plainToClass(Token, res);
       this._storage.set(StorageKey.tokens, tokens);
-      this._tokens$.next(tokens);
+      this._TOKENS$.next(tokens);
     }
 
     return tokens;

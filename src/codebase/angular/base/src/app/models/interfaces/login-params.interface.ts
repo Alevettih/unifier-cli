@@ -2,7 +2,7 @@ export interface ILoginParams {
   username?: string;
   password?: string;
   code?: string;
-  grant_type?: string;
+  grantType?: string;
   service?: string;
   token?: string;
   role?: string;

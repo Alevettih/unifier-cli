@@ -19,8 +19,8 @@ export class UserBase extends BaseModel {
   @Expose()
   @Transform(transformToModel(ApiFile))
   avatar: ApiFile;
-  @Expose()
-  emailVerified: boolean;
+  @Expose({ name: 'emailVerified' })
+  isEmailVerified: boolean;
   @Expose()
   @Transform(({ value, obj }: TransformFnParams): string => value ?? `${obj.firstName ?? ''} ${obj.lastName ?? ''}`.trim())
   fullName: string;

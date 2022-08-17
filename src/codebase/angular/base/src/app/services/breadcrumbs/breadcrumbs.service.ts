@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { ActivatedRouteSnapshot, ActivationEnd, Event, NavigationEnd, Router, UrlSegment } from '@angular/router';
-import { buffer, filter, map } from 'rxjs/operators';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { buffer, filter, map, takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { Subscription } from 'rxjs/internal/Subscription';
 import { IBreadcrumb } from '@models/interfaces/breadcrumbs/breadcrumb.interface';
 
@@ -13,17 +13,22 @@ const isActivationEnd: CheckFunction<ActivationEnd> = (ev: Event): ev is Activat
   providedIn: 'root'
 })
 export class BreadcrumbsService implements OnDestroy {
-  private _routerEventsSubscription: Subscription;
-  private _collection: IBreadcrumb[];
-  private readonly _bcForDisplay$: BehaviorSubject<IBreadcrumb[]>;
+  private readonly _DESTROYED$: Subject<void> = new Subject<void>();
+  private readonly _BC_FOR_DISPLAY$: BehaviorSubject<IBreadcrumb[]>;
   private readonly _DYNAMIC_BREADCRUMB_PREFIX: string = ':';
+  private _collection: IBreadcrumb[];
+
+  get breadcrumbs$(): BehaviorSubject<IBreadcrumb[]> {
+    return this._BC_FOR_DISPLAY$;
+  }
 
   constructor(private _router: Router) {
-    this._bcForDisplay$ = new BehaviorSubject([]);
+    this._BC_FOR_DISPLAY$ = new BehaviorSubject([]);
     const navigationEnd$: Observable<NavigationEnd> = this._router.events.pipe(filter(isNavigationEnd));
 
-    this._routerEventsSubscription = this._router.events
+    this._router.events
       .pipe(
+        takeUntil(this._DESTROYED$),
         filter<Event, ActivationEnd>(isActivationEnd),
         map(({ snapshot }: ActivationEnd): ActivatedRouteSnapshot => snapshot),
         buffer<ActivatedRouteSnapshot>(navigationEnd$),
@@ -54,24 +59,21 @@ export class BreadcrumbsService implements OnDestroy {
           return breadcrumb ? [...rootAcc, breadcrumb] : [...rootAcc];
         }, []);
 
-        this._bcForDisplay$.next(this._collection);
+        this._BC_FOR_DISPLAY$.next(this._collection);
       });
   }
 
   add(breadcrumb: IBreadcrumb): void {
     this._collection.push(breadcrumb);
-    this._bcForDisplay$.next(this._collection);
+    this._BC_FOR_DISPLAY$.next(this._collection);
   }
 
   update(): void {
-    this._bcForDisplay$.next(this._collection);
+    this._BC_FOR_DISPLAY$.next(this._collection);
   }
 
   ngOnDestroy(): void {
-    this._routerEventsSubscription.unsubscribe();
-  }
-
-  get breadcrumbs$(): BehaviorSubject<IBreadcrumb[]> {
-    return this._bcForDisplay$;
+    this._DESTROYED$.next();
+    this._DESTROYED$.complete();
   }
 }

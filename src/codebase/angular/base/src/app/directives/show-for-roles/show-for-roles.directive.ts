@@ -14,9 +14,9 @@ export class ShowForRolesDirective {
     }
   }
 
-  constructor(private _templateRef: TemplateRef<any>, private _viewContainer: ViewContainerRef, private _auth: AuthService) {}
-
   get currentRole(): UserRole {
     return this._auth.myRole;
   }
+
+  constructor(private _templateRef: TemplateRef<any>, private _viewContainer: ViewContainerRef, private _auth: AuthService) {}
 }

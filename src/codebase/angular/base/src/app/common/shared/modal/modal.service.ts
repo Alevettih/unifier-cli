@@ -14,7 +14,7 @@ export class ModalService {
 
   open<T = any>(data: IModalData<T>, properties?: IModalProperties): Observable<T> {
     const shouldHandleFalse: boolean = properties?.shouldHandleFalse ?? false;
-    delete (properties ?? {}).shouldHandleFalse;
+    delete properties?.shouldHandleFalse;
 
     return this._dialog
       .open(ModalComponent, {

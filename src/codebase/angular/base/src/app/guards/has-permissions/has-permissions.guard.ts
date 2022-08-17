@@ -13,6 +13,10 @@ export interface IHasPermissionsGuardData {
   providedIn: 'root'
 })
 export class HasPermissionsGuard implements CanActivate, CanLoad {
+  get currentRole(): UserRole {
+    return this._auth.myRole;
+  }
+
   constructor(private _auth: AuthService, private _router: Router) {}
 
   canActivate(route: ActivatedRouteSnapshot): Promise<boolean> | boolean {
@@ -23,16 +27,12 @@ export class HasPermissionsGuard implements CanActivate, CanLoad {
     return this.hasPermissions(route?.data?.permissions);
   }
 
-  hasPermissions(permissions: permissionType[]) {
+  hasPermissions(permissions: permissionType[]): boolean {
     if (hasPermissions(this.currentRole, permissions)) {
       return true;
     } else {
       this._router.navigate(['', '404']);
       return false;
     }
-  }
-
-  get currentRole(): UserRole {
-    return this._auth.myRole;
   }
 }

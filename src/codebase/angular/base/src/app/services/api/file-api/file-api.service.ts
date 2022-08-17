@@ -10,8 +10,8 @@ import { toModel } from '@misc/rxjs-operators/to-model.operator';
   providedIn: 'root'
 })
 export class FileApiService extends ApiBaseAbstractService<ApiFile> {
-  protected URLPath: string = '/api/files';
-  protected MODEL: ClassConstructor<ApiFile> = ApiFile;
+  protected readonly _URL_PATH: string = '/api/files';
+  protected readonly _MODEL: ClassConstructor<ApiFile> = ApiFile;
 
   uploadMedia(file: File, servicesConfig?: IServicesConfig): Observable<ApiFile> {
     const body = new FormData();
@@ -19,6 +19,6 @@ export class FileApiService extends ApiBaseAbstractService<ApiFile> {
     body.append('file', file);
     body.append('originalName', file.name);
 
-    return this.http.post(`${this.url}/upload`, body, servicesConfig).pipe(toModel(this.MODEL));
+    return this._http.post(`${this.url}/upload`, body, {}, servicesConfig).pipe(toModel(this._MODEL));
   }
 }

@@ -15,19 +15,19 @@ export class BaseRangeDatepickerComponent extends BaseFormFieldAbstractComponent
   @Output() dateChange: EventEmitter<Date> = new EventEmitter<Date>();
   range: FormGroup;
 
-  constructor(protected override cdr: ChangeDetectorRef, protected override translate: TranslateService, protected fb: FormBuilder) {
-    super(cdr, translate);
+  constructor(protected override _cdr: ChangeDetectorRef, protected override _translate: TranslateService, protected _fb: FormBuilder) {
+    super(_cdr, _translate);
 
-    this.range = this.fb.group({
-      start: this.fb.control(''),
-      end: this.fb.control('')
+    this.range = this._fb.group({
+      start: this._fb.control(''),
+      end: this._fb.control('')
     });
   }
 
   ngOnInit(): void {
     this.range.valueChanges
       .pipe(
-        takeUntil(this.destroyed$),
+        takeUntil(this._DESTROYED$),
         filter(({ start, end }: Params): boolean => Boolean(start && end))
       )
       .subscribe(({ start, end }: Params): void => {

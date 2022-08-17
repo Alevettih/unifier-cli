@@ -9,7 +9,7 @@ import { APP_CONFIG, IAppConfig } from '@misc/constants/app-config.constant';
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
   private _isRefreshingToken: boolean = false;
-  private _hasToken$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly _HAS_TOKEN$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(@Inject(APP_CONFIG) private _config: IAppConfig, private _auth: AuthService, private _router: Router) {}
 
@@ -38,11 +38,11 @@ export class JwtInterceptor implements HttpInterceptor {
       const observable$: Observable<any> = this._auth.token?.refresh ? this._auth.refreshToken() : this._auth.getTemporaryToken();
 
       this._isRefreshingToken = true;
-      this._hasToken$.next(false);
+      this._HAS_TOKEN$.next(false);
 
       return observable$.pipe(
         switchMap((): Observable<HttpEvent<any>> => {
-          this._hasToken$.next(true);
+          this._HAS_TOKEN$.next(true);
           return next.handle(this._auth.addTokenToRequest(req));
         }),
         catchError((error: HttpErrorResponse): never => {
@@ -54,7 +54,7 @@ export class JwtInterceptor implements HttpInterceptor {
         })
       );
     } else {
-      return this._hasToken$.pipe(
+      return this._HAS_TOKEN$.pipe(
         skipWhile((token: boolean): boolean => !token),
         first(),
         switchMap((): Observable<HttpEvent<any>> => next.handle(this._auth.addTokenToRequest(req)))

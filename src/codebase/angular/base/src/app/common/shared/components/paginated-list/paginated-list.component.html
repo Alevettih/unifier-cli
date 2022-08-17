@@ -10,7 +10,7 @@
       </ng-container>
     </div>
   </loader-container>
-  <div class="paginated-list__pagination-wrap" *ngIf="!hidePagination">
+  <div class="paginated-list__pagination-wrap" *ngIf="!shouldHidePagination">
     <paginator class="data-table__pagination" [queryParams]="queryParams" [(paginatePipeArgs)]="paginatePipeArgs"></paginator>
   </div>
 </div>

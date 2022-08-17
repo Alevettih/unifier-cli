@@ -14,8 +14,6 @@ import { navItems } from '@layouts/main/main-header/nav-items';
 export class MainHeaderComponent {
   navigationItems: INavLink[] = navItems;
 
-  constructor(private _router: Router, private _auth: AuthService, private _translate: TranslateService) {}
-
   get me(): User {
     return this._auth.me;
   }
@@ -23,6 +21,8 @@ export class MainHeaderComponent {
   get userName(): string {
     return `${this._translate.instant('MESSAGE.HELLO')} <b>${this.me?.fullName}</b>!`;
   }
+
+  constructor(private _router: Router, private _auth: AuthService, private _translate: TranslateService) {}
 
   logout(): void {
     this._auth.logout().subscribe(() => this._router.navigate(['']));

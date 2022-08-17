@@ -8,9 +8,9 @@ import { FormBuilder, FormControl } from '@angular/forms';
   styleUrls: ['./switch-toggle.component.scss']
 })
 export class SwitchToggleComponent implements OnInit {
-  readonly BooleanFieldType: typeof BooleanFieldType = BooleanFieldType;
   @Input() value: boolean;
   control: FormControl;
+  readonly BooleanFieldType: typeof BooleanFieldType = BooleanFieldType;
 
   constructor(private _fb: FormBuilder) {}
 

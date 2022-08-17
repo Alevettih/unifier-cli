@@ -7,6 +7,6 @@ import { DATE_FORMAT } from '@misc/constants/_base.constant';
   styleUrls: ['./date.component.scss']
 })
 export class DateComponent {
-  readonly DATE_FORMAT: typeof DATE_FORMAT = DATE_FORMAT;
   @Input() value: Date | string | number;
+  readonly DATE_FORMAT: typeof DATE_FORMAT = DATE_FORMAT;
 }

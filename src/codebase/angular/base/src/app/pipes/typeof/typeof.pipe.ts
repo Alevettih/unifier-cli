@@ -5,7 +5,7 @@ import { typeOf, typeOfAvailableType } from '@misc/helpers/typeof.function';
   name: 'typeof'
 })
 export class TypeofPipe implements PipeTransform {
-  transform(item: any, type: typeOfAvailableType): boolean {
+  transform(item: unknown, type: typeOfAvailableType): boolean {
     return typeOf(item, type);
   }
 }

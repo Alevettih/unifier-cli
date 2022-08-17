@@ -15,7 +15,6 @@ export enum FormFieldFloatLabelMode {
   template: ''
 })
 export abstract class BaseFormFieldAbstractComponent implements OnChanges, OnDestroy {
-  protected destroyed$: Subject<void> = new Subject<void>();
   @Input() icon: string;
   @Input() customRequiredKey: string;
   @Input() placeholder: string;
@@ -29,35 +28,7 @@ export abstract class BaseFormFieldAbstractComponent implements OnChanges, OnDes
   @Input() floatLabel: FormFieldFloatLabelMode = FormFieldFloatLabelMode.never;
   @Input() maxLength: number = 256;
   @Input() autocomplete: string = 'off';
-
-  constructor(protected cdr: ChangeDetectorRef, protected translate: TranslateService) {}
-
-  ngOnChanges({ value, disabled, placeholder, control }: SimpleChanges): void {
-    if (disabled && typeof disabled.currentValue === 'boolean') {
-      if (this.disabled) {
-        this.control.disable();
-      } else {
-        this.control.enable();
-      }
-    }
-
-    if (control?.currentValue instanceof AbstractControl) {
-      zip(control.currentValue.valueChanges, control.currentValue.statusChanges)
-        .pipe(takeUntil(this.destroyed$))
-        .subscribe((): void => this.cdr.detectChanges());
-    }
-
-    if (value) {
-      this.control.setValue(value?.currentValue);
-    }
-
-    this.cdr.detectChanges();
-  }
-
-  ngOnDestroy(): void {
-    this.destroyed$.next();
-    this.destroyed$.complete();
-  }
+  protected readonly _DESTROYED$: Subject<void> = new Subject<void>();
 
   get isRequired(): boolean {
     return Boolean(this.required);
@@ -73,43 +44,72 @@ export abstract class BaseFormFieldAbstractComponent implements OnChanges, OnDes
 
     switch (true) {
       case this.control.hasError('mustMatch'):
-        return this.translate.instant(`${mainTranslateKey}.MUST_MATCH`);
+        return this._translate.instant(`${mainTranslateKey}.MUST_MATCH`);
       case this.control.hasError('notUniqueValue'):
-        return this.translate.instant(`${mainTranslateKey}.NOT_UNIQUE_VALUE`);
+        return this._translate.instant(`${mainTranslateKey}.NOT_UNIQUE_VALUE`);
       case this.control.hasError('email'):
-        return this.translate.instant(`${mainTranslateKey}.EMAIL`);
+        return this._translate.instant(`${mainTranslateKey}.EMAIL`);
       case this.control.hasError('phone'):
-        return this.translate.instant(`${mainTranslateKey}.PHONE`);
+        return this._translate.instant(`${mainTranslateKey}.PHONE`);
       case this.control.hasError('url'):
-        return this.translate.instant(`${mainTranslateKey}.URL`);
+        return this._translate.instant(`${mainTranslateKey}.URL`);
       case this.control.hasError('min'):
-        return this.translate.instant(`${mainTranslateKey}.MIN`, { value: this.control.getError('min').min });
+        return this._translate.instant(`${mainTranslateKey}.MIN`, { value: this.control.getError('min').min });
       case this.control.hasError('max'):
-        return this.translate.instant(`${mainTranslateKey}.MAX`, { value: this.control.getError('max').max });
+        return this._translate.instant(`${mainTranslateKey}.MAX`, { value: this.control.getError('max').max });
       case this.control.hasError('minlength'):
-        return this.translate.instant(`${mainTranslateKey}.MIN_LENGTH`, {
+        return this._translate.instant(`${mainTranslateKey}.MIN_LENGTH`, {
           value: this.control.getError('minlength')?.requiredLength
         });
       case this.control.hasError('maxlength'):
-        return this.translate.instant(`${mainTranslateKey}.MAX_LENGTH`, {
+        return this._translate.instant(`${mainTranslateKey}.MAX_LENGTH`, {
           value: this.control.getError('maxlength')?.requiredLength
         });
       case this.control.hasError('password'):
-        return this.translate.instant(`${mainTranslateKey}.PASSWORD`);
+        return this._translate.instant(`${mainTranslateKey}.PASSWORD`);
       case this.control.hasError('validName'):
-        return this.translate.instant(`${mainTranslateKey}.VALID_NAME`);
+        return this._translate.instant(`${mainTranslateKey}.VALID_NAME`);
       case this.control.hasError('lettersNumbersOnly'):
-        return this.translate.instant(`${mainTranslateKey}.LETTERS_NUMBERS`);
+        return this._translate.instant(`${mainTranslateKey}.LETTERS_NUMBERS`);
       case this.control.hasError('required'):
-        return this.translate.instant(`${mainTranslateKey}.${this.customRequiredKey ?? 'REQUIRED'}`, {
+        return this._translate.instant(`${mainTranslateKey}.${this.customRequiredKey ?? 'REQUIRED'}`, {
           fieldName: this.customRequiredKey ? fieldName.toLowerCase() : fieldName
         });
       case this.control.hasError('requiredTrue'):
-        return this.translate.instant(`${mainTranslateKey}.${this.customRequiredKey ?? 'REQUIRED'}`, {
+        return this._translate.instant(`${mainTranslateKey}.${this.customRequiredKey ?? 'REQUIRED'}`, {
           fieldName: this.customRequiredKey ? fieldName.toLowerCase() : fieldName
         });
       default:
         return null;
     }
+  }
+
+  constructor(protected _cdr: ChangeDetectorRef, protected _translate: TranslateService) {}
+
+  ngOnDestroy(): void {
+    this._DESTROYED$.next();
+    this._DESTROYED$.complete();
+  }
+
+  ngOnChanges({ value, disabled, placeholder, control }: SimpleChanges): void {
+    if (disabled && typeof disabled.currentValue === 'boolean') {
+      if (this.disabled) {
+        this.control.disable();
+      } else {
+        this.control.enable();
+      }
+    }
+
+    if (control?.currentValue instanceof AbstractControl) {
+      zip(control.currentValue.valueChanges, control.currentValue.statusChanges)
+        .pipe(takeUntil(this._DESTROYED$))
+        .subscribe((): void => this._cdr.detectChanges());
+    }
+
+    if (value) {
+      this.control.setValue(value?.currentValue);
+    }
+
+    this._cdr.detectChanges();
   }
 }

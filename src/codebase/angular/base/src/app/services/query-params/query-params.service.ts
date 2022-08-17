@@ -24,29 +24,29 @@ export class QueryParamsService {
     PAGE: 'page',
     PER_PAGE: 'itemsPerPage'
   });
-  private _params$: BehaviorSubject<Params> = new BehaviorSubject<Params>({});
+  private readonly _PARAMS$: BehaviorSubject<Params> = new BehaviorSubject<Params>({});
   private _shouldTranslateParamsToURL: boolean = false;
-
-  constructor(private _activatedRoute: ActivatedRoute, private _router: Router) {}
 
   get shouldTranslateParamsToURL(): boolean {
     return this._shouldTranslateParamsToURL;
   }
 
-  set shouldTranslateParamsToURL(value: boolean) {
-    this._shouldTranslateParamsToURL = value;
-    this._params$.next(value ? this._activatedRoute.snapshot.queryParams : {});
+  set shouldTranslateParamsToURL(shouldTranslateParamsToURL: boolean) {
+    this._shouldTranslateParamsToURL = shouldTranslateParamsToURL;
+    this._PARAMS$.next(shouldTranslateParamsToURL ? this._activatedRoute.snapshot.queryParams : {});
   }
 
   get params$(): Observable<Params> {
-    return this._params$.pipe(auditTime(100));
+    return this._PARAMS$.pipe(auditTime(100));
   }
 
   get params(): Params {
-    return this._params$.value;
+    return this._PARAMS$.value;
   }
 
-  paginate(page: number, perPage?: number): QueryParamsService {
+  constructor(private _activatedRoute: ActivatedRoute, private _router: Router) {}
+
+  paginate(page: number, perPage?: number): this {
     const params: Params = {
       ...this.params,
       [QueryParamsService.BASE_KEYS.PAGE]: page ?? 1,
@@ -57,7 +57,7 @@ export class QueryParamsService {
     return this;
   }
 
-  sort(field: string, direction: SortDirection): QueryParamsService {
+  sort(field: string, direction: SortDirection): this {
     if (!field || !['asc', 'desc', ''].includes(direction)) {
       return null;
     }
@@ -70,7 +70,7 @@ export class QueryParamsService {
     return this;
   }
 
-  searchQuery(query: string | number, fieldName: string): QueryParamsService {
+  searchQuery(query: string | number, fieldName: string): this {
     this.clearParams(fieldName);
     if (query) {
       this._setParams({ ...this.params, [fieldName]: query });
@@ -78,12 +78,12 @@ export class QueryParamsService {
     return this;
   }
 
-  addFilter(fieldName: string, value: any): QueryParamsService {
+  addFilter(fieldName: string, value: string | number): this {
     this._setParams({ ...this.params, [fieldName]: value });
     return this;
   }
 
-  addRange(fieldName: string, value: IDateRange): QueryParamsService {
+  addRange(fieldName: string, value: IDateRange): this {
     this.clearRange(fieldName);
 
     if (value.start) {
@@ -97,12 +97,12 @@ export class QueryParamsService {
     return this;
   }
 
-  clearRange(fieldName: string): QueryParamsService {
+  clearRange(fieldName: string): this {
     this.clearParams(`${fieldName}[after]`, `${fieldName}[before]`);
     return this;
   }
 
-  clearPaginate(): QueryParamsService {
+  clearPaginate(): this {
     this._setParams({
       ...this.params,
       [QueryParamsService.BASE_KEYS.PAGE]: 1,
@@ -111,7 +111,7 @@ export class QueryParamsService {
     return this;
   }
 
-  clearSort(): QueryParamsService {
+  clearSort(): this {
     const key: string = this._getCurrentSortKey(this.params);
 
     if (key) {
@@ -121,7 +121,7 @@ export class QueryParamsService {
     return this;
   }
 
-  clearParams(...paramsNames: string[]): QueryParamsService {
+  clearParams(...paramsNames: string[]): this {
     const params: Params = this.params;
     paramsNames.forEach((itemName: string): boolean => delete params[itemName]);
     this._setParams(params);
@@ -151,7 +151,7 @@ export class QueryParamsService {
       : of(true);
 
     observable$.subscribe(() => {
-      this._params$.next(queryParams);
+      this._PARAMS$.next(queryParams);
     });
   }
 }

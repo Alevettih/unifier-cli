@@ -12,7 +12,7 @@ export enum BooleanFieldType {
   styleUrls: ['./base-boolean-field.component.scss']
 })
 export class BaseBooleanFieldComponent extends BaseFormFieldAbstractComponent {
-  readonly BooleanFieldType: typeof BooleanFieldType = BooleanFieldType;
   @Input() type: BooleanFieldType;
   @Output() controlChange: EventEmitter<any> = new EventEmitter<any>();
+  readonly BooleanFieldType: typeof BooleanFieldType = BooleanFieldType;
 }

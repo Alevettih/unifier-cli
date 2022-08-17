@@ -14,8 +14,8 @@ import { BaseFormAbstractComponent } from '@misc/abstracts/base-form.abstract.co
   styleUrls: ['./set-new-password-form.component.scss']
 })
 export class SetNewPasswordFormComponent extends BaseFormAbstractComponent implements OnInit {
-  readonly PAGE_KEY: string = 'AUTH.';
   @Input() token: string;
+  readonly PAGE_KEY: string = 'AUTH.';
 
   constructor(
     private _formBuilder: FormBuilder,

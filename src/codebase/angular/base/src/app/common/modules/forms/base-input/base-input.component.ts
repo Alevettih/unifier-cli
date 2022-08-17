@@ -8,9 +8,9 @@ import { InputType } from '@models/enums/input-type.enum';
   styleUrls: ['./base-input.component.scss']
 })
 export class BaseInputComponent extends BaseFormFieldAbstractComponent {
-  private _shouldRevealPassword: boolean = false;
   @Input() inputType: InputType;
   @Output() search: EventEmitter<string> = new EventEmitter<string>();
+  private _shouldRevealPassword: boolean = false;
 
   get isSearchInput(): boolean {
     return this.inputType === InputType.search;

@@ -6,6 +6,7 @@ import { LoaderService } from '@services/loader/loader.service';
 import { IErrorDescription, HttpServiceError } from '@services/http/http-service-error.class';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import { IHttpRequestOptions } from '@models/interfaces/http-request-options.interface';
 
 export interface IServicesConfig {
   skipErrorNotification?: ((err: HttpServiceError) => boolean) | boolean;
@@ -27,16 +28,16 @@ export class HttpService extends HttpClient {
     super(handler);
   }
 
-  override get(url: string, options?: any, services?: IServicesConfig | null): Observable<any> {
+  override get(url: string, options?: IHttpRequestOptions, services?: IServicesConfig | null): Observable<any> {
     this._startLoader(services);
-    const httpOptions: { headers: HttpHeaders } = {
+    const httpOptions: IHttpRequestOptions = {
       headers: new HttpHeaders({
         Accept: 'application/ld+json'
       })
     };
 
     return super
-      .get(url, { ...httpOptions, ...options })
+      .get(url, { ...httpOptions, ...options } as IHttpRequestOptions)
       .pipe(
         tap(this._onSuccess.bind(this, services)),
         catchError(this._onError.bind(this, services)),
@@ -44,7 +45,7 @@ export class HttpService extends HttpClient {
       );
   }
 
-  override post(url: string, body: any | null, options?: any, services?: IServicesConfig | null): Observable<any> {
+  override post(url: string, body: any | null, options?: IHttpRequestOptions, services?: IServicesConfig | null): Observable<any> {
     this._startLoader(services);
 
     return super
@@ -56,7 +57,7 @@ export class HttpService extends HttpClient {
       );
   }
 
-  override patch(url: string, body: any | null, options?: any, services?: IServicesConfig | null): Observable<any> {
+  override patch(url: string, body: any | null, options?: IHttpRequestOptions, services?: IServicesConfig | null): Observable<any> {
     this._startLoader(services);
     const httpOptions: { headers: HttpHeaders } = {
       headers: new HttpHeaders({
@@ -72,7 +73,7 @@ export class HttpService extends HttpClient {
       );
   }
 
-  override delete(url: string, options?: any, services?: IServicesConfig | null): Observable<any> {
+  override delete(url: string, options?: IHttpRequestOptions, services?: IServicesConfig | null): Observable<any> {
     this._startLoader(services);
 
     return super
@@ -84,7 +85,7 @@ export class HttpService extends HttpClient {
       );
   }
 
-  override put(url: string, body: any | null, options?: any, services?: IServicesConfig | null): Observable<any> {
+  override put(url: string, body: any | null, options?: IHttpRequestOptions, services?: IServicesConfig | null): Observable<any> {
     this._startLoader(services);
 
     return super
