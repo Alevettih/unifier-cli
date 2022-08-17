@@ -8,7 +8,7 @@
     "prepublishOnly": "npm run lint && npm run test && npm run build",
     "build": "run-s build:app build:cli",
     "build:app": "webpack --mode production",
-    "build:cli": "node ./bin/generage-cli",
+    "build:cli": "node ./bin/add-shebang-to-cli",
     "lint": "eslint src --fix",
     "dev": "webpack --watch --progress --mode development",
     "test": "jest",
