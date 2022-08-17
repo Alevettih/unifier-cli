@@ -1,26 +1,14 @@
-import { Component, Inject } from '@angular/core';
-import { MAT_SNACK_BAR_DATA, MatSnackBarRef } from '@angular/material/snack-bar';
-
-export interface INotificationData {
-  heading?: string;
-  message: string;
-  image?: string;
-  url?: string;
-}
+import { Component } from '@angular/core';
+import { Toast, ToastPackage, ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'notification',
   templateUrl: './notification.component.html',
-  styleUrls: ['./notification.component.scss']
+  styleUrls: ['./notification.component.scss'],
+  preserveWhitespaces: false
 })
-export class NotificationComponent {
-  constructor(@Inject(MAT_SNACK_BAR_DATA) public data: INotificationData, private _snackBar: MatSnackBarRef<NotificationComponent>) {}
-
-  close(): void {
-    this._snackBar.dismiss();
-  }
-
-  get image(): string {
-    return this.data?.image ?? '/assets/img/logo.png';
+export class NotificationComponent extends Toast {
+  constructor(protected _service: ToastrService, public _package: ToastPackage) {
+    super(_service, _package);
   }
 }

@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHandler, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { NotificationService } from '@services/notification/notification.service';
 import { catchError, finalize, tap } from 'rxjs/operators';
 import { LoaderService } from '@services/loader/loader.service';
 import { IErrorDescription, HttpServiceError } from '@services/http/http-service-error.class';
 import { TranslateService } from '@ngx-translate/core';
-import { SnackBarNotificationType } from '@models/enums/snack-bar-notification-type.enum';
+import { ToastrService } from 'ngx-toastr';
 
 export interface IServicesConfig {
   skipErrorNotification?: ((err: HttpServiceError) => boolean) | boolean;
@@ -21,7 +20,7 @@ export interface IServicesConfig {
 export class HttpService extends HttpClient {
   constructor(
     handler: HttpHandler,
-    private _notification: NotificationService,
+    private _notification: ToastrService,
     private _loader: LoaderService,
     private _translate: TranslateService
   ) {
@@ -99,12 +98,7 @@ export class HttpService extends HttpClient {
 
   private _onSuccess(config: IServicesConfig): void {
     if (config?.showSuccessNotification) {
-      this._notification.addToQueue(
-        {
-          message: config?.showSuccessNotification?.text ?? 'Request successfully sent!'
-        },
-        SnackBarNotificationType.success
-      );
+      this._notification.success(config?.showSuccessNotification?.text ?? 'Request successfully sent!');
     }
   }
 
@@ -118,7 +112,7 @@ export class HttpService extends HttpClient {
       customError.descriptions.forEach(({ key, message }: IErrorDescription): void => {
         const notificationMessage: string = key ? this._translate.instant(`BACKEND_ERRORS.${key.toUpperCase()}`) : message;
 
-        this._notification.addToQueue({ message: notificationMessage }, SnackBarNotificationType.error);
+        this._notification.error(notificationMessage);
       });
     }
 

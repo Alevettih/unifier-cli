@@ -2,9 +2,8 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, Router } from '@angular/router';
 import { AuthService } from '@services/auth/auth.service';
 import { UserRole } from '@models/enums/user-role.enum';
-import { NotificationService } from '@services/notification/notification.service';
-import { SnackBarNotificationType } from '@models/enums/snack-bar-notification-type.enum';
 import { TranslateService } from '@ngx-translate/core';
+import { ToastrService } from 'ngx-toastr';
 
 export interface IRoleGuardParams {
   roles: UserRole[];
@@ -19,7 +18,7 @@ export class RoleGuard implements CanActivate, CanActivateChild {
   constructor(
     private _auth: AuthService,
     private _router: Router,
-    private _notification: NotificationService,
+    private _notification: ToastrService,
     private _translate: TranslateService
   ) {}
 
@@ -36,7 +35,7 @@ export class RoleGuard implements CanActivate, CanActivateChild {
 
     if (!isRoleAllowed) {
       if (!skipErrorNotification) {
-        this._notification.addToQueue({ message: this._translate.instant('BACKEND_ERRORS.ACCESS_DENIED') }, SnackBarNotificationType.error);
+        this._notification.error(this._translate.instant('BACKEND_ERRORS.ACCESS_DENIED'));
       }
       return redirectTo?.length ? this._router.navigate(redirectTo) : false;
     }

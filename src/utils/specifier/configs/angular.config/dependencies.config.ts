@@ -40,6 +40,7 @@ export const dependencies: string[] = [
   '@ngx-translate/core',
   '@ngx-translate/http-loader',
   'ngx-pagination',
+  'ngx-toastr',
   'ngx-infinite-scroll',
 
   'class-transformer',

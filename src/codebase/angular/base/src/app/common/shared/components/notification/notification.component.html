@@ -1,13 +1,29 @@
-<div class="notification">
-  <div class="notification__image-wrap">
-    <img class="notification__image" [src]="image" placeholder="/assets/img/logo.png" alt="Notification image" />
-  </div>
+<div class="notification" [style.display]="state.value === 'inactive' ? 'none' : ''">
   <div class="notification__content">
-    <h3 class="notification__heading">{{ data.heading }}</h3>
-    <p class="notification__message">{{ data.message }}</p>
+    <h3 class="notification__heading" *ngIf="title" [class]="options.titleClass" [attr.aria-label]="title">
+      {{ title }}
+    </h3>
+    <p
+      class="notification__message"
+      *ngIf="message && options.enableHtml"
+      role="alert"
+      [class]="options.messageClass"
+      [innerHTML]="message"
+    ></p>
+    <p
+      class="notification__message"
+      *ngIf="message && !options.enableHtml"
+      role="alert"
+      [class]="options.messageClass"
+      [attr.aria-label]="message"
+    >
+      {{ message }}
+    </p>
   </div>
-  <button class="notification__close" mat-icon-button (click)="close()">
+  <button *ngIf="options.closeButton" class="notification__close" mat-icon-button (click)="remove()">
     <mat-icon>close</mat-icon>
   </button>
-  <a class="notification__link" (click)="close()" *ngIf="data.url" [routerLink]="data.url"></a>
+</div>
+<div *ngIf="options.progressBar">
+  <div class="toast-progress" [style.width]="width + '%'"></div>
 </div>

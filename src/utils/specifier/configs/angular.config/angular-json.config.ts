@@ -30,7 +30,7 @@ export function getAngularJsonChanges(applicationsInfo: IApplicationInfo[]) {
     const options = {
       polyfills: 'src/polyfills.ts',
       assets: ['src/.htaccess', 'src/default.conf', 'src/favicon.ico', 'src/assets'],
-      styles: ['src/styles.scss'],
+      styles: ['src/styles.scss', 'node_modules/ngx-toastr/toastr.css'],
       scripts: [],
       stylePreprocessorOptions: { includePaths: ['src/scss'] }
     };
