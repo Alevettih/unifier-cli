@@ -1,20 +1,25 @@
-import { copy, outputFile, readFileSync, readJsonSync, writeJson } from 'fs-extra';
+import { existsSync, copy, outputFile, readFileSync, readJsonSync, removeSync, writeJson } from 'fs-extra';
 import { join } from 'path';
 import { cyan, red } from 'ansi-colors';
 import { command, ExecaReturnValue, Options } from 'execa';
-import { newlineSeparatedValue, arrayMerge, IS_WINDOWS, shouldUseYarn, deepDelete } from '@utils/helpers';
 import * as deepMerge from 'deepmerge';
 import { Listr, ListrTask } from 'listr2';
 import { IContext } from '@src/main';
+import mustache, { Context } from 'mustache';
+import { shouldUseYarn } from '@utils/helpers/verifications/should-use-yarn.helper';
+import { deepDelete } from '@utils/helpers/data-structure-manipulation/deep-delete.helper';
+import { arrayMerge } from '@utils/helpers/data-structure-manipulation/array-merge.helper';
+import { newlineSeparatedValue } from '@utils/helpers/newline-separated-value.helper';
 
-export interface IConfigPaths {
+export interface IPaths {
   src: string;
   dist: string;
 }
 
-export const configsDir: string = './configs/';
-
 export class Specifier {
+  static readonly IS_WINDOWS: boolean = process.platform === 'win32';
+  static readonly TEMPLATES_DIR: string = './templates/';
+  static readonly CONFIGS_DIR: string = './configs/';
   private _ctx: IContext;
   readonly CHILD_PROCESS_OPTIONS: Options;
 
@@ -27,10 +32,10 @@ export class Specifier {
     this.CHILD_PROCESS_OPTIONS = { shell: true, cwd: join(ctx.title) };
   }
 
-  copyConfigs(...paths: IConfigPaths[]): Listr {
+  copyConfigs(...paths: IPaths[]): Listr {
     return new Listr(
-      paths.map((path: IConfigPaths): ListrTask => {
-        const pathArray = path.src.split(IS_WINDOWS ? '\\' : '/');
+      paths.map((path: IPaths): ListrTask => {
+        const pathArray = path.src.split(Specifier.IS_WINDOWS ? '\\' : '/');
         const file = pathArray[pathArray.length - 1];
         return {
           title: `Copy ${cyan(file)} file`,
@@ -105,7 +110,7 @@ export class Specifier {
   }
 
   async removeDefaultGit(): Promise<ExecaReturnValue> {
-    const rmCommand: string = IS_WINDOWS ? 'del' : 'rm -rf';
+    const rmCommand: string = Specifier.IS_WINDOWS ? 'del' : 'rm -rf';
     return command(`${rmCommand} .git`, this.CHILD_PROCESS_OPTIONS);
   }
 
@@ -118,6 +123,20 @@ export class Specifier {
       `git add .&& git commit -m "Initial commit" -n${amend ? ` --amend` : ''}`,
       this.CHILD_PROCESS_OPTIONS
     );
+  }
+
+  applyTemplates(paths: IPaths[], view: any | Context): Promise<void> {
+    return Promise.all(
+      paths.map(({ src, dist }: IPaths): Promise<void> => {
+        const template: string = readFileSync(src)?.toString();
+        const content: string = mustache.render(template, view);
+        return outputFile(dist, content);
+      })
+    ).then(() => null);
+  }
+
+  removeFiles(...files: string[]): void {
+    files.forEach(path => existsSync(path) && removeSync(path));
   }
 
   runPrettier(): Promise<ExecaReturnValue> {

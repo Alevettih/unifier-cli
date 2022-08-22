@@ -1,6 +1,6 @@
 import { ListrTask, ListrTaskWrapper } from 'listr2';
-import { types } from '@src/project-types';
-import { IContext, ProjectType } from '@src/main';
+import { ProjectType } from '@src/project-types';
+import { IContext } from '@src/main';
 import { cyan, yellow } from 'ansi-colors';
 import { IQuestion } from '@utils/questions/index';
 
@@ -8,7 +8,7 @@ export class TypeQuestion implements IQuestion {
   get tasks(): ListrTask[] {
     return [
       {
-        enabled: (ctx: any) => !ctx.type || !Object.values(types).includes(ctx.type),
+        enabled: (ctx: any) => !ctx.type || !Object.values(ProjectType).includes(ctx.type),
         task: async (ctx: IContext, task: ListrTaskWrapper<IContext, any>) => {
           ctx.type = await this._ask(ctx, task);
         }
@@ -30,13 +30,13 @@ export class TypeQuestion implements IQuestion {
   }
 
   private async _ask(ctx: IContext, task: ListrTaskWrapper<IContext, any>): Promise<ProjectType> {
-    const shouldShowWarning: boolean = ctx.type && !Object.values(types).includes(ctx.type);
+    const shouldShowWarning: boolean = ctx.type && !Object.values(ProjectType).includes(ctx.type);
 
     return await task.prompt<ProjectType>({
       type: 'select',
       message: this._title,
       prefix: shouldShowWarning ? this._prefix : null,
-      choices: Object.values(types)
+      choices: Object.values(ProjectType)
     });
   }
 }

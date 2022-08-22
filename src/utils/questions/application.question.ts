@@ -2,7 +2,7 @@ import { IQuestion } from '@utils/questions/index';
 import { ListrTask, ListrTaskWrapper } from 'listr2';
 import { ApplicationType, IContext } from '@src/main';
 import { cyan } from 'ansi-colors';
-import { minLength } from '@utils/validators';
+import { Validators } from '@utils/validators';
 
 export class ApplicationQuestion implements IQuestion {
   get tasks(): ListrTask[] {
@@ -39,7 +39,7 @@ export class ApplicationQuestion implements IQuestion {
       type: 'multiselect',
       message: this._title,
       choices: this._choices,
-      validate: minLength(1)
+      validate: Validators.minLength(1)
     });
   }
 }

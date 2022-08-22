@@ -1,7 +1,7 @@
 import { IQuestion } from '@utils/questions/index';
 import { ListrTask, ListrTaskWrapper, PromptOptions } from 'listr2';
 import { IContext } from '@src/main';
-import { types } from '@src/project-types';
+import { ProjectType } from '@src/project-types';
 import { major, satisfies } from 'semver';
 import { cyan, grey } from 'ansi-colors';
 
@@ -29,7 +29,7 @@ export class VersionQuestion implements IQuestion {
   private _shouldEnableTask(ctx: IContext): boolean {
     const { tags, versions } = ctx.angularInfo;
 
-    if (ctx.type !== types.ANGULAR) {
+    if (ctx.type !== ProjectType.ANGULAR) {
       return false;
     }
 

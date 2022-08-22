@@ -1,5 +1,8 @@
 # Unifier CLI
 
+[![Unifier CLI](https://badge.fury.io/js/unifier-cli.svg)](https://www.npmjs.com/package/unifier-cli)
+[![License MIT](http://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
+
 `unifier-cli` is a front-end tool, that created for unifying all configs, structure, and share base codebase within different [Requestum](https://requestum.com/) projects.
 
 With this tool you can create **two** types of project:

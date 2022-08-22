@@ -1,8 +1,9 @@
 import { PlainJSSpecifier } from '@utils/specifier/plain-js.specifier';
 import { Specifier } from '@utils/specifier';
-import { mockClassMethods } from '@utils/helpers';
 import * as fs from 'fs-extra';
 import { args } from '@src/main';
+import { mockClassMethods } from '@utils/helpers/mock-class-methods.helper';
+import { ProjectType } from '@src/project-types';
 
 jest.mock('child_process');
 jest.mock('fs-extra');
@@ -13,6 +14,7 @@ describe('Plain JS specifier should', () => {
 
   beforeEach(() => {
     args.title = testDir;
+    args.type = ProjectType.PLAIN;
     specifier = new PlainJSSpecifier(args);
   });
 

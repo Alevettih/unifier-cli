@@ -1,9 +1,10 @@
 import { IContext } from '@src/main';
-import { getCWD, isDirectoryExistsAndNotEmpty } from '@utils/helpers';
 import { ListrTask, ListrTaskWrapper } from 'listr2';
 import { cyan, yellow } from 'ansi-colors';
-import { title } from '@utils/validators';
 import { IQuestion } from '@utils/questions/index';
+import { getCWD } from '@utils/helpers/getters/get-cwd.helper';
+import { isDirectoryExistsAndNotEmpty } from '@utils/helpers/verifications/is-directory-exists-and-no-empty.helper';
+import { Validators } from '@utils/validators';
 
 export class TitleQuestion implements IQuestion {
   get tasks(): ListrTask[] {
@@ -46,7 +47,7 @@ export class TitleQuestion implements IQuestion {
       message: this._title,
       initial: ctx.title || getCWD(),
       prefix: isDirectoryExistsAndNotEmpty(ctx.title) ? this._prefix : null,
-      validate: title
+      validate: Validators.title
     });
   }
 

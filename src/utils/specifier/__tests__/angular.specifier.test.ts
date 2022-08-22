@@ -1,9 +1,11 @@
 import { AngularSpecifier } from '@utils/specifier/angular.specifier';
 import { Specifier } from '@utils/specifier';
-import { mockClassMethods } from '@utils/helpers';
 import * as fs from 'fs-extra';
-import config from '@utils/specifier/configs/angular.config';
 import { args } from '@src/main';
+import { getConfigsPaths } from '@utils/helpers/getters/get-configs-paths.helper';
+import { mockClassMethods } from '@utils/helpers/mock-class-methods.helper';
+import { ProjectType } from '@src/project-types';
+import { getDependencies, getDevDependencies } from '@utils/helpers/getters/get-dependencies.helper';
 
 jest.mock('child_process');
 jest.mock('fs-extra');
@@ -14,6 +16,7 @@ describe('Angular specifier should', () => {
 
   beforeEach(() => {
     args.title = testDir;
+    args.type = ProjectType.ANGULAR;
     args.applications = ['client', 'admin'];
     specifier = new AngularSpecifier(args);
   });
@@ -23,9 +26,9 @@ describe('Angular specifier should', () => {
   });
 
   test('remove default .browserslistrc before copy configs from specification', async (): Promise<void> => {
-    await specifier.copyConfigs(...config.getConfigsPaths(testDir)).run(args);
+    await specifier.copyConfigs(...getConfigsPaths(args.type, args.title)).run(args);
 
-    expect(fs.copy).toBeCalledTimes(config.getConfigsPaths(testDir).length);
+    expect(fs.copy).toBeCalledTimes(getConfigsPaths(args.type, args.title).length);
   });
 
   test('copy base structure of Angular project', async (): Promise<void> => {
@@ -33,8 +36,8 @@ describe('Angular specifier should', () => {
 
     expect(fs.copy).toBeCalled();
 
-    Object.defineProperty(fs, 'copy', { value: jest.fn().mockRejectedValueOnce({}) });
-    await expect(specifier.copyBaseStructure(args)).rejects.toThrow();
+    Object.defineProperty(fs, 'copySync', { value: jest.fn().mockRejectedValueOnce({}) });
+    await expect(specifier.copyBaseStructure(args)).resolves.toBe(undefined);
   });
 
   test('add tokens to assets', async (): Promise<void> => {
@@ -62,7 +65,7 @@ describe('Angular specifier should', () => {
     });
 
     test('install dependencies', async (): Promise<void> => {
-      expect(specifier.installPackages).toBeCalledWith(config.dependencies, config.devDependencies(false));
+      expect(specifier.installPackages).toBeCalledWith(getDependencies(), getDevDependencies(false));
     });
 
     test('Run Prettier', async (): Promise<void> => {

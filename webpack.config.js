@@ -31,7 +31,8 @@ const config = {
     new CopyPlugin({
       patterns: [
         { from: 'src/configs', to: 'configs' },
-        { from: 'src/codebase', to: 'codebase' }
+        { from: 'src/codebase', to: 'codebase' },
+        { from: 'src/templates', to: 'templates' }
       ]
     }),
     new ESLintWebpackPlugin({

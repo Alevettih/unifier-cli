@@ -1,13 +1,13 @@
-import main, { args, ProjectType } from '@src/main';
+import main, { args } from '@src/main';
 import * as fs from 'fs-extra';
-import * as projects from '@src/project-types';
-import { isDirectoryExistsAndNotEmpty } from '@utils/helpers';
+import { ProjectType, plainProject, angularProject } from '@src/project-types';
 import { join } from 'path';
+import { isDirectoryExistsAndNotEmpty } from '@utils/helpers/verifications/is-directory-exists-and-no-empty.helper';
 
 jest.mock('@src/project-types/angular.project');
 jest.mock('@src/project-types/plain.project');
 jest.mock('fs-extra');
-jest.mock('@utils/helpers');
+jest.mock('@utils/helpers/verifications/is-directory-exists-and-no-empty.helper');
 
 describe('User answers', () => {
   describe('can select correct project type', () => {
@@ -22,26 +22,26 @@ describe('User answers', () => {
 
     test('Plain JS', async () => {
       args.title = title;
-      args.type = projects.types.PLAIN;
+      args.type = ProjectType.PLAIN;
 
       await main();
 
-      expect(projects.plainProject).toHaveBeenCalled();
+      expect(plainProject).toHaveBeenCalled();
     });
 
     test('Angular', async () => {
       args.title = title;
-      args.type = projects.types.ANGULAR;
+      args.type = ProjectType.ANGULAR;
       args.version = 'latest';
 
       await main();
 
-      expect(projects.angularProject).toHaveBeenCalled();
+      expect(angularProject).toHaveBeenCalled();
     });
 
     test('if selected directory is already exists and not empty it should clean it', async () => {
       args.title = 'same';
-      args.type = projects.types.PLAIN;
+      args.type = ProjectType.PLAIN;
 
       await main();
 
