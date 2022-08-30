@@ -1,14 +1,16 @@
 import { Questions } from '@utils/questions';
-import { getAngularInfo, initArguments, isDirectoryExistsAndNotEmpty, isYarnAvailable } from '@utils/helpers';
 import { remove } from 'fs-extra';
 import { join } from 'path';
 import { green, red } from 'ansi-colors';
 import { Listr } from 'listr2';
-import { selectProjectType } from '@src/project-types';
-import { title } from '@utils/validators';
+import { ProjectType, selectProjectType } from '@src/project-types';
+import { Validators } from '@utils/validators';
 import getPort from 'get-port';
+import { getAngularInfo } from '@utils/helpers/getters/get-angular-info.helper';
+import { isYarnAvailable } from '@utils/helpers/verifications/is-yarn-available.helper';
+import { initArguments } from '@utils/helpers/init-arguments.helper';
+import { isDirectoryExistsAndNotEmpty } from '@utils/helpers/verifications/is-directory-exists-and-no-empty.helper';
 
-export type ProjectType = 'plain-js' | 'angular';
 export type PackageManager = 'npm' | 'yarn';
 export type ApplicationType = 'admin' | 'client';
 
@@ -40,7 +42,7 @@ export interface IContext {
 export const args: IContext = initArguments(process.argv);
 
 export default async function main(): Promise<void | IContext> {
-  const titleValidationResult: boolean | string = title(args.title);
+  const titleValidationResult: boolean | string = Validators.title(args.title);
   const isTitleAvailableAndValid: boolean = args.title && typeof titleValidationResult !== 'boolean';
 
   if (isTitleAvailableAndValid) {

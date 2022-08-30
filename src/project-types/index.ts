@@ -1,28 +1,24 @@
-import { IContext, ProjectType } from '@src/main';
+import { IContext } from '@src/main';
 import { red } from 'ansi-colors';
 import { Listr } from 'listr2';
 import { plainProject } from './plain.project';
 import { angularProject } from './angular.project';
 
-interface ITypes {
-  [key: string]: ProjectType;
+export enum ProjectType {
+  PLAIN = 'plain-js',
+  ANGULAR = 'angular'
 }
-
-export const types: ITypes = {
-  PLAIN: 'plain-js',
-  ANGULAR: 'angular'
-};
 
 export function selectProjectType(context: IContext): Listr {
   switch (context?.type) {
-    case types.PLAIN: {
+    case ProjectType.PLAIN: {
       return plainProject(context);
     }
-    case types.ANGULAR: {
+    case ProjectType.ANGULAR: {
       return angularProject(context);
     }
     default: {
-      const availableTypes = `\n - ${Object.values(types).join('\n - ')}`;
+      const availableTypes = `\n - ${Object.values(ProjectType).join('\n - ')}`;
       throw new Error(red(`\nInvalid project type!\nAvailable types:${availableTypes}`));
     }
   }

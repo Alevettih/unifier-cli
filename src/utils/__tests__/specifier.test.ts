@@ -1,9 +1,9 @@
 import * as fs from 'fs-extra';
 import * as execa from 'execa';
 import { join } from 'path';
-import { IS_WINDOWS, shouldUseYarn } from '@utils/helpers';
 import { Specifier } from '@utils/specifier';
 import { args, IContext, PackageManager } from '@src/main';
+import { shouldUseYarn } from '@utils/helpers/verifications/should-use-yarn.helper';
 
 jest.mock('fs-extra');
 
@@ -92,7 +92,7 @@ describe('Specifier should', () => {
     });
     await expect(specifier.removeDefaultGit()).rejects;
 
-    const rmCommand: string = IS_WINDOWS ? 'del' : 'rm -rf';
+    const rmCommand: string = Specifier.IS_WINDOWS ? 'del' : 'rm -rf';
     expect(execa.command).toBeCalledWith(`${rmCommand} .git`, specifier.CHILD_PROCESS_OPTIONS);
   });
 

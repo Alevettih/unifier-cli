@@ -1,4 +1,4 @@
-import config from '@specifier/configs/plain-js.config';
+import { getConfigsPaths } from '@utils/helpers/getters/get-configs-paths.helper';
 import { Specifier } from '@specifier/index';
 import { Listr, ListrTaskWrapper } from 'listr2';
 import { cyan } from 'ansi-colors';
@@ -24,7 +24,7 @@ export class PlainJSSpecifier extends Specifier {
             [
               {
                 title: 'Copy configs',
-                task: ({ title }: IContext): Listr => this.copyConfigs(...config.getConfigsPaths(title))
+                task: ({ title, type }: IContext): Listr => this.copyConfigs(...getConfigsPaths(type, title))
               },
               {
                 title: `Update ${cyan('.gitignore')} rules`,

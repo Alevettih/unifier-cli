@@ -91,14 +91,7 @@
         "sort-keys": "off",
         "quotes": ["error", "single", { "allowTemplateLiterals": true, "avoidEscape": true }],
         "semi": ["error", "always"],
-        "space-before-function-paren": [
-          "error",
-          {
-            "anonymous": "never",
-            "asyncArrow": "always",
-            "named": "never"
-          }
-        ],
+        "space-before-function-paren": ["error", { "anonymous": "never", "asyncArrow": "always", "named": "never" }],
         "@typescript-eslint/typedef": [
           "error",
           {
@@ -119,10 +112,7 @@
             "types": ["boolean"],
             "format": ["PascalCase", "camelCase"],
             "prefix": ["is", "should", "has", "can", "did", "will", "with"],
-            "filter": {
-              "regex": "/^(value|required|readonly|disabled)$/gm",
-              "match": true
-            },
+            "filter": { "regex": "/^(value|required|readonly|disabled)$/gm", "match": true },
             "leadingUnderscore": "allow"
           },
           {
