@@ -7,6 +7,7 @@ import { BooleanFieldType } from '@forms/base-boolean-field/base-boolean-field.c
 import { TranslateService } from '@ngx-translate/core';
 import { UserApiService } from '@services/api/user-api/user-api.service';
 import { BaseFormAbstractComponent } from '@misc/abstracts/base-form.abstract.component';
+import { InitPathService } from '@services/init-path/init-path.service';
 
 @Component({
   selector: 'log-in',
@@ -22,7 +23,8 @@ export class LogInComponent extends BaseFormAbstractComponent implements OnInit 
     private _formBuilder: FormBuilder,
     private _auth: AuthService,
     private _userApi: UserApiService,
-    private _activatedRoute: ActivatedRoute
+    private _activatedRoute: ActivatedRoute,
+    private _initPath: InitPathService
   ) {
     super();
   }
@@ -46,7 +48,7 @@ export class LogInComponent extends BaseFormAbstractComponent implements OnInit 
       this.formGroup.getRawValue();
 
     this._auth.login({ username, password }, shouldRemember).subscribe((): void => {
-      this._router.navigate(['']);
+      this._router.navigate(this._initPath.initialUrl).then((): void => this._initPath.clear());
     });
   }
 }
