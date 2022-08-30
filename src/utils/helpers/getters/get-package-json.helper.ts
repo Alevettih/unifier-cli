@@ -33,6 +33,12 @@ export function getPackageJsonChanges({ title, applicationsInfo, skipGit = false
     packageJson.scripts[`start:${name}:ssl`] = `ng serve ${name} --ssl --port=${port}`;
   });
 
+  if (applicationsInfo.length > 1) {
+    packageJson.scripts[`build:all`] = `run-p ${applicationsInfo
+      .map(({ name }: IApplicationInfo) => `build:${name}`)
+      .join(' ')}`;
+  }
+
   packageJson.scripts[`build`] = 'run-p build:*';
 
   delete packageJson.scripts['build'];
