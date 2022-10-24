@@ -16,6 +16,7 @@
     "function-linear-gradient-no-nonstandard-direction": true,
     "string-no-newline": true,
     "unit-no-unknown": true,
+    "import-notation": "string",
     "property-no-unknown": [
       true,
       {

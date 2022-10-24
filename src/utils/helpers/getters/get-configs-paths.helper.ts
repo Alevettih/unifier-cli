@@ -2,6 +2,7 @@ import { IPaths, Specifier } from '@utils/specifier';
 import { join } from 'path';
 import { ProjectType } from '@src/project-types';
 import { AngularSpecifier } from '@specifier/angular.specifier';
+import { EmailSpecifier } from '@specifier/email.specifier';
 
 export function getConfigsPaths(type: ProjectType, name: string): IPaths[] {
   switch (type) {
@@ -44,7 +45,7 @@ export function getConfigsPaths(type: ProjectType, name: string): IPaths[] {
           dist: join(name, '.stylelintrc')
         }
       ];
-    case ProjectType.PLAIN:
+    case ProjectType.MARKUP:
       return [
         {
           src: join(__dirname, Specifier.CONFIGS_DIR, '.prettierrc'),
@@ -69,6 +70,25 @@ export function getConfigsPaths(type: ProjectType, name: string): IPaths[] {
         {
           src: join(__dirname, Specifier.CONFIGS_DIR, '.eslintrc'),
           dist: join(name, '.eslintrc')
+        }
+      ];
+    case ProjectType.EMAIL:
+      return [
+        {
+          src: join(__dirname, Specifier.CONFIGS_DIR, '.prettierrc'),
+          dist: join(name, '.prettierrc')
+        },
+        {
+          src: join(__dirname, Specifier.CONFIGS_DIR, '.prettierignore'),
+          dist: join(name, '.prettierignore')
+        },
+        {
+          src: join(__dirname, Specifier.CONFIGS_DIR, '.editorconfig'),
+          dist: join(name, '.editorconfig')
+        },
+        {
+          src: join(__dirname, EmailSpecifier.CONFIGS_DIR, '.stylelintrc'),
+          dist: join(name, '.stylelintrc')
         }
       ];
   }

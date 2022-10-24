@@ -6,7 +6,9 @@ import { removeSync } from 'fs-extra';
 import { join } from 'path';
 import { IContext } from '@src/main';
 
-export class PlainJSSpecifier extends Specifier {
+export class EmailSpecifier extends Specifier {
+  static readonly CONFIGS_DIR: string = './configs/email/';
+
   specify(): Listr {
     return new Listr([
       {

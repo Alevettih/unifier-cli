@@ -1,4 +1,4 @@
-import { PlainJSSpecifier } from '@utils/specifier/plain-js.specifier';
+import { MarkupSpecifier } from '@specifier/markup.specifier';
 import { Specifier } from '@utils/specifier';
 import * as fs from 'fs-extra';
 import { args } from '@src/main';
@@ -8,21 +8,21 @@ import { ProjectType } from '@src/project-types';
 jest.mock('child_process');
 jest.mock('fs-extra');
 
-describe('Plain JS specifier should', () => {
+describe('Markup specifier should', () => {
   const testDir = 'target-tmp';
-  let specifier: PlainJSSpecifier;
+  let specifier: MarkupSpecifier;
 
   beforeEach(() => {
     args.title = testDir;
-    args.type = ProjectType.PLAIN;
-    specifier = new PlainJSSpecifier(args);
+    args.type = ProjectType.MARKUP;
+    specifier = new MarkupSpecifier(args);
   });
 
   test('extends from Specifier', () => {
     expect(specifier).toBeInstanceOf(Specifier);
   });
 
-  describe('specify Plain JS project', () => {
+  describe('specify Markup project', () => {
     beforeEach(async (): Promise<void> => {
       mockClassMethods(specifier, [Specifier], ['specify']);
 

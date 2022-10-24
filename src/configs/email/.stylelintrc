@@ -1,18 +1,9 @@
 {
   "extends": ["stylelint-config-standard"],
-  "customSyntax": "postcss-scss",
-  "ignoreFiles": ["./src/**/*.(js|ts|html)"],
-  "plugins": ["stylelint-scss", "stylelint-no-unsupported-browser-features", "stylelint-declaration-strict-value"],
+  "plugins": ["stylelint-scss", "stylelint-declaration-strict-value"],
+  "ignoreFiles": ["build/*"],
   "rules": {
-    "plugin/no-unsupported-browser-features": [
-      true,
-      {
-        "severity": "warning",
-        "ignorePartialSupport": true
-      }
-    ],
     "color-no-invalid-hex": true,
-    "color-function-notation": null,
     "font-family-no-duplicate-names": true,
     "font-family-no-missing-generic-family-keyword": true,
     "function-calc-no-unspaced-operator": true,
@@ -20,7 +11,6 @@
     "string-no-newline": true,
     "unit-no-unknown": true,
     "import-notation": "string",
-    "function-no-unknown": null,
     "property-no-unknown": [
       true,
       {
@@ -67,14 +57,22 @@
     "no-invalid-double-slash-comments": null,
     "color-named": "never",
     "color-no-hex": null,
+    "function-blacklist": null,
     "function-url-no-scheme-relative": true,
+    "function-url-scheme-blacklist": null,
+    "unit-blacklist": null,
     "shorthand-property-no-redundant-values": true,
     "value-no-vendor-prefix": true,
+    "property-blacklist": null,
     "property-no-vendor-prefix": true,
     "declaration-block-no-redundant-longhand-properties": null,
     "declaration-no-important": true,
+    "declaration-property-unit-blacklist": null,
+    "declaration-property-value-blacklist": null,
     "declaration-block-single-line-max-declarations": 1,
+    "selector-attribute-operator-blacklist": null,
     "selector-class-pattern": "^(?:(?:o|c|u|t|s|is|has|_|js|qa)-)?[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*(?:__[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*)?(?:_[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*)?(?:\\[.+\\])?$",
+    "selector-combinator-blacklist": null,
     "selector-id-pattern": null,
     "selector-max-empty-lines": 0,
     "selector-max-id": 1,
@@ -109,7 +107,7 @@
     "value-list-comma-space-after": "always-single-line",
     "value-list-comma-space-before": "never",
     "value-list-max-empty-lines": 0,
-    "value-keyword-case": ["lower", { "ignoreKeywords": ["/^A[0-9]{1,3}$/"], "camelCaseSvgKeywords": true }],
+    "value-keyword-case": ["lower", { "ignoreKeywords": ["/^A[0-9]{1,3}$/"] }],
     "custom-property-empty-line-before": [
       "always",
       {
@@ -186,7 +184,6 @@
     "max-empty-lines": 1,
     "max-line-length": 140,
     "no-eol-whitespace": true,
-    "no-invalid-position-at-import-rule": null,
     "scss/at-else-closing-brace-newline-after": "always-last-in-chain",
     "scss/at-else-closing-brace-space-after": "always-intermediate",
     "scss/at-else-empty-line-before": "never",

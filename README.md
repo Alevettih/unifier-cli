@@ -5,10 +5,11 @@
 
 `unifier-cli` is a front-end tool, that created for unifying all configs, structure, and share base codebase within different [Requestum](https://requestum.com/) projects.
 
-With this tool you can create **two** types of project:
+With this tool you can create **three** types of project:
 
 - Angular
-- Plain JS
+- Markup
+- Email
 
 ## Getting Started
 
@@ -52,7 +53,7 @@ unifier-cli <project name>
 
 Also you can use additional arguments:
 
-- `--type=<type>` - tells CLI that it should create a project with that type. Get `angular` or `plain-js` value.
+- `--type=<type>` - tells CLI that it should create a project with that type. Get `angular`, `markup` or `email` value.
 - `--skip-git` - tells CLI that it should create a project without initialisation of git repository.
 
 ## Development

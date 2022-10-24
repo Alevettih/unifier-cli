@@ -1,18 +1,23 @@
 import { IContext } from '@src/main';
 import { red } from 'ansi-colors';
 import { Listr } from 'listr2';
-import { plainProject } from './plain.project';
+import { markupProject } from './markup.project';
 import { angularProject } from './angular.project';
+import { emailProject } from '@src/project-types/email.project';
 
 export enum ProjectType {
-  PLAIN = 'plain-js',
+  EMAIL = 'email',
+  MARKUP = 'markup',
   ANGULAR = 'angular'
 }
 
 export function selectProjectType(context: IContext): Listr {
   switch (context?.type) {
-    case ProjectType.PLAIN: {
-      return plainProject(context);
+    case ProjectType.EMAIL: {
+      return emailProject(context);
+    }
+    case ProjectType.MARKUP: {
+      return markupProject(context);
     }
     case ProjectType.ANGULAR: {
       return angularProject(context);
@@ -24,5 +29,6 @@ export function selectProjectType(context: IContext): Listr {
   }
 }
 
-export { plainProject } from './plain.project';
+export { markupProject } from './markup.project';
+export { emailProject } from './email.project';
 export { angularProject } from './angular.project';
