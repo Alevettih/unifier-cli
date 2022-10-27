@@ -23,6 +23,9 @@ export function getAngularJsonChanges(applicationsInfo: IApplicationInfo[]) {
           }
         }
       }
+    },
+    cli: {
+      analytics: false
     }
   };
 

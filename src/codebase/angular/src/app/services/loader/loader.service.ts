@@ -1,8 +1,8 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { ComponentRef, Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, takeUntil, tap } from 'rxjs/operators';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
-import { MatSpinner } from '@angular/material/progress-spinner';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ComponentPortal } from '@angular/cdk/portal';
 
 @Injectable({
@@ -20,7 +20,8 @@ export class LoaderService implements OnDestroy {
       tap((isLoading: boolean): void => {
         if (isLoading) {
           if (!this._OVERLAY_REF.hasAttached()) {
-            this._OVERLAY_REF.attach(new ComponentPortal(MatSpinner));
+            const componentRef: ComponentRef<MatProgressSpinner> = this._OVERLAY_REF.attach(new ComponentPortal(MatProgressSpinner));
+            componentRef.setInput('mode', 'indeterminate');
           }
         } else {
           this._OVERLAY_REF.detach();
