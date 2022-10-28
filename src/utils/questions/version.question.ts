@@ -16,7 +16,9 @@ export class VersionQuestion implements IQuestion {
       },
       {
         task: async (ctx: IContext, task: ListrTaskWrapper<IContext, any>) => {
-          task.title = `${this._title} ${cyan(ctx.version)}`;
+          if (ctx.version) {
+            task.title = `${this._title} ${cyan(ctx.version)}`;
+          }
         }
       }
     ];

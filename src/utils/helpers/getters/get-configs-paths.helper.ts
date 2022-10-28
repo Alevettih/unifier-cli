@@ -2,7 +2,6 @@ import { IPaths, Specifier } from '@utils/specifier';
 import { join } from 'path';
 import { ProjectType } from '@src/project-types';
 import { AngularSpecifier } from '@specifier/angular.specifier';
-import { EmailSpecifier } from '@specifier/email.specifier';
 
 export function getConfigsPaths(type: ProjectType, name: string): IPaths[] {
   switch (type) {
@@ -62,14 +61,6 @@ export function getConfigsPaths(type: ProjectType, name: string): IPaths[] {
         {
           src: join(__dirname, Specifier.CONFIGS_DIR, '.browserslistrc'),
           dist: join(name, '.browserslistrc')
-        },
-        {
-          src: join(__dirname, Specifier.CONFIGS_DIR, '.stylelintrc'),
-          dist: join(name, '.stylelintrc')
-        },
-        {
-          src: join(__dirname, Specifier.CONFIGS_DIR, '.eslintrc'),
-          dist: join(name, '.eslintrc')
         }
       ];
     case ProjectType.EMAIL:
@@ -85,10 +76,6 @@ export function getConfigsPaths(type: ProjectType, name: string): IPaths[] {
         {
           src: join(__dirname, Specifier.CONFIGS_DIR, '.editorconfig'),
           dist: join(name, '.editorconfig')
-        },
-        {
-          src: join(__dirname, EmailSpecifier.CONFIGS_DIR, '.stylelintrc'),
-          dist: join(name, '.stylelintrc')
         }
       ];
   }
