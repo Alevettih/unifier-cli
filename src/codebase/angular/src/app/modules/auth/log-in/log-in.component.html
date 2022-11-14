@@ -17,7 +17,7 @@
     <base-boolean-field [type]="BooleanFieldType.checkbox" [control]="form.shouldRemember">
       {{ 'INPUT_NAME.REMEMBER_ME' | translate }}
     </base-boolean-field>
-    <a mat-button routerLink="/auth/forgot-password">{{ 'BUTTON_NAME.FORGOT_PASSWORD' | translate }}</a>
+    <a mat-button type="button" routerLink="/auth/forgot-password">{{ 'BUTTON_NAME.FORGOT_PASSWORD' | translate }}</a>
   </div>
 
   <button mat-flat-button color="accent">{{ 'BUTTON_NAME.LOGIN' | translate }}</button>
