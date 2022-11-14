@@ -6,17 +6,17 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class StorageService {
-  private readonly _SHOULD_USE_LOCALSTORAGE$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private _shouldUseLocalstorage$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  set shouldUseLocalstorage(shouldUseLocalstorage: boolean) {
-    this._SHOULD_USE_LOCALSTORAGE$.next(shouldUseLocalstorage);
+  set shouldUseLocalstorage(value: boolean) {
+    this._shouldUseLocalstorage$.next(value);
   }
 
-  get current(): Storage {
+  private get _current(): Storage {
     const alreadyUsedStorage: Storage = [sessionStorage, localStorage].find((storage: Storage): string =>
       storage.getItem(StorageKey.tokens)
     );
-    const newStorage: Storage = this._SHOULD_USE_LOCALSTORAGE$.value ? localStorage : sessionStorage;
+    const newStorage: Storage = this._shouldUseLocalstorage$.value ? localStorage : sessionStorage;
 
     return alreadyUsedStorage || newStorage;
   }
@@ -24,11 +24,23 @@ export class StorageService {
   get<T>(key: string): T {
     const currentStorage: Storage = [sessionStorage, localStorage].find((storage: Storage): boolean => Boolean(storage.getItem(key)));
 
-    return currentStorage?.getItem(key) ? JSON.parse(currentStorage?.getItem(key)) : null;
+    try {
+      return currentStorage?.getItem(key) ? JSON.parse(atob(currentStorage?.getItem(key).split('').reverse().join(''))) : null;
+    } catch (err) {
+      console.warn(`Can't decode value: `, err);
+      return null;
+    }
   }
 
-  set(name: StorageKey, value: unknown): void {
-    this.current.setItem(name, JSON.stringify(value ?? ''));
+  set(name: StorageKey, value: any): void {
+    this._current.setItem(
+      name,
+      btoa(JSON.stringify(value ?? ''))
+        .replace(/=/gi, '')
+        .split('')
+        .reverse()
+        .join('')
+    );
   }
 
   remove(key: string): void {

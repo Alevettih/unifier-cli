@@ -2,7 +2,6 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { ActivatedRouteSnapshot, ActivationEnd, Event, NavigationEnd, Router, UrlSegment } from '@angular/router';
 import { buffer, filter, map, takeUntil } from 'rxjs/operators';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { Subscription } from 'rxjs/internal/Subscription';
 import { IBreadcrumb } from '@models/interfaces/breadcrumbs/breadcrumb.interface';
 
 type CheckFunction<T extends Event> = (event: Event) => event is T;
