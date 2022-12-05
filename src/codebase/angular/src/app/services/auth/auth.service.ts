@@ -92,7 +92,7 @@ export class AuthService {
   }
 
   logout(): Observable<void> {
-    return this._userApi.logout({ skipLoaderStart: true }).pipe(tap((): void => this.clearTokens()));
+    return this._userApi.logout().pipe(tap((): void => this.clearTokens()));
   }
 
   clearTokens(): void {

@@ -1,0 +1,90 @@
+<aside [class.side-menu_collapsed]="isCollapsed" class="side-menu">
+  <div class="side-menu__inner">
+    <header #headerEl class="side-menu__header">
+      <a routerLink="/">
+        <mat-icon class="side-menu__logo" svgIcon="logo"></mat-icon>
+      </a>
+      <button (click)="toggleSize($event)" [style.top.px]="headerEl.offsetHeight + 13" class="side-menu__size-button" mat-icon-button>
+        <mat-icon class="side-menu__size-button-icon">{{ collapseButtonIcon }}</mat-icon>
+      </button>
+    </header>
+    <nav class="side-menu__navigation">
+      <ng-container *ngFor="let item of navItems">
+        <ng-container *showForRoles="item.roles">
+          <ng-container *hasPermissions="item.permissions">
+            <ng-container *ngIf="!item?.children?.length">
+              <ng-container *ngTemplateOutlet="navItemTemplate; context: { $implicit: item }"></ng-container>
+            </ng-container>
+            <mat-expansion-panel
+              *ngIf="item?.children?.length"
+              (click)="isCollapsed = false"
+              [expanded]="!isCollapsed"
+              class="side-menu__expansion-panel"
+            >
+              <mat-expansion-panel-header class="side-menu__expansion-panel-header">
+                <span class="side-menu__item-content">
+                  <mat-icon
+                    *ngIf="item.icon"
+                    [svgIcon]="item.icon"
+                    [matTooltip]="isCollapsed ? (item.title | translate) : null"
+                    matTooltipPosition="right"
+                    class="side-menu__item-icon"
+                  ></mat-icon>
+                  <span class="side-menu__item-text">{{ item.title | translate }}</span>
+                </span>
+              </mat-expansion-panel-header>
+
+              <nav class="side-menu__navigation side-menu__navigation_inner">
+                <ng-container *ngFor="let child of item.children">
+                  <ng-container *showForRoles="item.roles">
+                    <ng-container *hasPermissions="child.permissions">
+                      <ng-container *ngTemplateOutlet="navItemTemplate; context: { $implicit: child, inner: true }"></ng-container>
+                    </ng-container>
+                  </ng-container>
+                </ng-container>
+              </nav>
+            </mat-expansion-panel>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </nav>
+    <footer class="side-menu__footer">
+      <article *ngIf="user" class="side-menu__user">
+        <figure class="side-menu__img-wrap">
+          <img [src]="user?.avatar?.uri" alt="User avatar" class="side-menu__img" placeholder="https://via.placeholder.com/1" />
+        </figure>
+        <h3 class="side-menu__user-name">{{ user.fullName }}</h3>
+        <h3 class="side-menu__user-role">{{ 'USER_ROLE.' + user.role | uppercase | translate }}</h3>
+      </article>
+
+      <div class="side-menu__actions">
+        <button [routerLink]="'/profile'" mat-icon-button>
+          <mat-icon class="side-menu__item-icon">settings</mat-icon>
+        </button>
+        <button (click)="logout()" mat-icon-button>
+          <mat-icon class="side-menu__item-icon">logout</mat-icon>
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <ng-template #navItemTemplate let-inner="inner" let-item>
+    <a
+      [class.side-menu__item_inner]="inner"
+      [routerLink]="item.path"
+      class="side-menu__item"
+      mat-button
+      routerLinkActive="side-menu__item_active"
+    >
+      <span class="side-menu__item-content">
+        <mat-icon
+          [svgIcon]="item.icon"
+          [matTooltip]="isCollapsed ? (item.title | translate) : null"
+          matTooltipPosition="right"
+          class="side-menu__item-icon"
+        ></mat-icon>
+        <span class="side-menu__item-text">{{ item.title | translate }}</span>
+      </span>
+    </a>
+  </ng-template>
+</aside>

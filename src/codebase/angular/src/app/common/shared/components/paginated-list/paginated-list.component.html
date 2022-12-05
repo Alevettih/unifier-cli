@@ -5,7 +5,7 @@
       <h3 class="paginated-list__no-content-heading" *ngIf="emptyMessage">{{ emptyMessage }}</h3>
     </div>
     <div class="paginated-list__content" [style.grid-template-columns]="gridTemplateColumnsValue" [style.grid-gap]="gridGap">
-      <ng-container *ngFor="let item of entities | paginate: paginatePipeArgs">
+      <ng-container *ngFor="let item of entities | paginate : paginatePipeArgs">
         <ng-container *ngTemplateOutlet="itemTemplate ? itemTemplate : defaultItemTemplate; context: { $implicit: item }"></ng-container>
       </ng-container>
     </div>

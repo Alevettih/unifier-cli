@@ -15,11 +15,16 @@
     "SUBMIT": "Submit",
     "ACCEPT": "Accept",
     "CLOSE": "Close",
+    "OK": "OK",
     "CANCEL": "Cancel",
     "CREATE": "Create",
     "SAVE": "Save"
   },
   "MODALS": {
+    "LOGOUT": {
+      "TITLE": "Logout",
+      "MESSAGE": "Are you sure you want to logout?"
+    },
     "CREATE": {
       "TITLE": "Create"
     },

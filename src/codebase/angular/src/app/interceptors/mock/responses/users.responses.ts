@@ -13,7 +13,8 @@ class UserResponses extends Responses<User> {
       {
         id: 'vkvggvc9-33g3-vk0p-v90c-g9g9ggp8v453',
         email: 'john.doe@gmail.com',
-        name: 'John Doe',
+        firstName: `John`,
+        lastName: `Doe`,
         role: UserRole.client
       },
       User
@@ -41,6 +42,19 @@ class UserResponses extends Responses<User> {
         new HttpResponse({
           status: 200,
           body: this.ENTITIES.find((user: User): boolean => user.role === role)
+        })
+      );
+    }
+  }
+
+  protected override _update([id]: string[], body: Partial<User>): Observable<HttpResponse<Partial<User>>> {
+    if (id && id !== 'logout') {
+      return super._update([id], body);
+    } else {
+      return of(
+        new HttpResponse({
+          status: 200,
+          body: null
         })
       );
     }

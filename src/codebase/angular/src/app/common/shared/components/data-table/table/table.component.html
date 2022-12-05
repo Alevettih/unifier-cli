@@ -2,7 +2,7 @@
   matSort
   (matSortChange)="onSort($event)"
   [style.min-width]="minWidth"
-  [dataSource]="paginatePipeArgs ? (dataSource | paginate: paginatePipeArgs) : dataSource"
+  [dataSource]="paginatePipeArgs ? (dataSource | paginate : paginatePipeArgs) : dataSource"
   class="table"
   [class.table_hoverable]="rowClick"
 >
@@ -20,11 +20,11 @@
     <mat-cell class="table__cell" *matCellDef="let data; let i = index">
       <ng-container *ngIf="columnItem?.template; else base">
         <ng-container
-          *ngTemplateOutlet="columnItem.template; context: { $implicit: data | pathParse: columnItem.columnName, index: i, entity: data }"
+          *ngTemplateOutlet="columnItem.template; context: { $implicit: data | pathParse : columnItem.columnName, index: i, entity: data }"
         ></ng-container>
       </ng-container>
       <ng-template #base>
-        <cropped-text [text]="(data | pathParse: columnItem.columnName) ?? ''"></cropped-text>
+        <cropped-text [text]="(data | pathParse : columnItem.columnName) ?? ''"></cropped-text>
       </ng-template>
     </mat-cell>
   </ng-container>

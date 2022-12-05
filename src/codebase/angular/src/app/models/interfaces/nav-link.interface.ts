@@ -1,9 +1,11 @@
 import { UserRole } from '@models/enums/user-role.enum';
+import { permissionType } from '@directives/has-permissions/permission-matrix';
 
 export interface INavLink {
-  path: string;
   title: string;
+  path?: string;
   roles?: UserRole[];
+  permissions?: permissionType[];
   icon?: string;
-  action?: (...params: any[]) => any;
+  children?: INavLink[];
 }
