@@ -1,14 +1,10 @@
 const path = require('path');
-const CopyPlugin = require('copy-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const { TsconfigPathsPlugin } = require('tsconfig-paths-webpack-plugin');
 
 const config = {
-  entry: {
-    cli: './src/cli.ts',
-    main: './src/main.ts'
-  },
+  entry: { cli: './src/cli.ts' },
   target: 'node',
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -25,18 +21,14 @@ const config = {
   },
   resolve: {
     plugins: [new TsconfigPathsPlugin({ configFile: './tsconfig.json' })],
-    extensions: ['.tsx', '.ts', '.js']
+    extensions: ['.tsx', '.ts', '.js'],
+    alias: {
+      handlebars: 'handlebars/dist/handlebars.js'
+    }
   },
   plugins: [
-    new CopyPlugin({
-      patterns: [
-        { from: 'src/configs', to: 'configs' },
-        { from: 'src/codebase', to: 'codebase' },
-        { from: 'src/templates', to: 'templates' }
-      ]
-    }),
     new ESLintWebpackPlugin({
-      extensions: ['ts']
+      extensions: ['.ts']
     }),
     new CleanWebpackPlugin()
   ],
