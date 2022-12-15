@@ -19,10 +19,15 @@
     "typeRoots": ["node_modules/@types"],
     "paths": {
       "@src/*": ["src/*"],
-      "@utils/*": ["src/utils/*"],
-      "@configs/*": ["src/configs/*"],
-      "@codebase/*": ["src/codebase/*"],
-      "@specifier/*": ["src/utils/specifier/*"]
+      "@misc/*": ["src/misc/*"],
+      "@tasks/*": ["src/tasks/*"],
+      "@abstracts/*": ["src/misc/abstracts/*"],
+      "@helpers/*": ["src/misc/helpers/*"],
+      "@modules/*": ["src/modules/*"],
+      "@templates/*": ["src/templates/*"],
+      "@enum/*": ["src/types/enum/*"],
+      "@interface/*": ["src/types/interface/*"],
+      "@type/*": ["src/types/type/*"]
     },
     "lib": ["esnext", "dom"]
   },

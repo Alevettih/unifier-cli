@@ -1,4 +1,3 @@
-#!/usr/bin/env node
-import main from '@src/main';
+import main from '@src/modules/main';
 
 main().catch(err => console.error(err));

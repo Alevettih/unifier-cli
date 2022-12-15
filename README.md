@@ -51,7 +51,7 @@ You also can use command line arguments, like:
 unifier-cli <project name>
 ```
 
-Also you can use additional arguments:
+Also, you can use additional arguments:
 
 - `--type=<type>` - tells CLI that it should create a project with that type. Get `angular`, `markup` or `email` value.
 - `--skip-git` - tells CLI that it should create a project without initialisation of git repository.
@@ -101,7 +101,3 @@ Lint your `.ts` files
 ```bash
 npm run lint
 ```
-
-## Team
-
-- **Alex Tykhonenko** - _Master_
