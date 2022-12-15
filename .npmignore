@@ -8,6 +8,5 @@ src
 .gitignore
 .prettierignore
 .prettierrc
-jest.config.js
 tsconfig.json
 webpack.config.js
