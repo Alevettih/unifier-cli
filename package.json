@@ -10,7 +10,7 @@
     "build:app": "webpack --mode production",
     "build:cli": "node ./bin/add-shebang-to-cli",
     "test": "echo Tests is not specified!",
-    "lint": "eslint src --fix",
+    "lint": "eslint ./src/**/* --fix",
     "dev": "webpack --watch --progress --mode development",
     "pretty-quick": "pretty-quick --staged",
     "hook:pre-commit": "npm run pretty-quick"
