@@ -29,7 +29,7 @@ async function getAngularInfo(): Promise<IAngularInfo> {
   try {
     const { stdout: angularInfo }: ExecaReturnValue = await command(`npm view @angular/cli --json`);
     const { stdout: codebaseHeads }: ExecaReturnValue = await command(
-      `git ls-remote --refs git@github.com:unifier-tool/codebase-angular.git`
+      `git ls-remote --refs https://github.com/requestum-team/unifier-codebase-angular.git`
     );
     const { 'dist-tags': tags, versions } = JSON.parse(angularInfo);
     const codebaseVersions: number[] = codebaseHeads
