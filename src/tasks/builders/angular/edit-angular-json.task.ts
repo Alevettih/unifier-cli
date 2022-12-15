@@ -5,9 +5,10 @@ import { readJsonSync, writeJsonSync } from 'fs-extra';
 import { IAppInfo } from '@interface/app-info.interface';
 import { IAppContext } from '@interface/app-context.interface';
 import { OutputFormatter } from '@helpers/output-formatter.helper';
+import { major } from 'semver';
 
 export function editAngularJsonTask(
-  { title, applicationsInfo }: IAppContext,
+  { title, applicationsInfo, version }: IAppContext,
   task: ListrTaskWrapper<IAppContext, any>
 ): void {
   task.output = OutputFormatter.info(`Getting ${OutputFormatter.accent('angular.json')} file...`);
@@ -15,7 +16,8 @@ export function editAngularJsonTask(
   let angularJson: any = readJsonSync(pathToJson);
 
   task.output = OutputFormatter.info(`Updating ${OutputFormatter.accent('angular.json')} file...`);
-  angularJson = deepMerge(angularJson, getAngularJsonChanges(applicationsInfo), {
+  const shouldNotUsePolyfillsJs: boolean = major(version) >= 15;
+  angularJson = deepMerge(angularJson, getAngularJsonChanges(applicationsInfo, shouldNotUsePolyfillsJs), {
     arrayMerge: (target: any[], source: any[]): any[] => source
   });
 
@@ -25,7 +27,7 @@ export function editAngularJsonTask(
   return writeJsonSync(pathToJson, angularJson, { spaces: 2 });
 }
 
-function getAngularJsonChanges(applicationsInfo: IAppInfo[]): any {
+function getAngularJsonChanges(applicationsInfo: IAppInfo[], shouldNotUsePolyfillsJs: boolean): any {
   const json: any = {
     projects: {
       default: {
@@ -56,7 +58,7 @@ function getAngularJsonChanges(applicationsInfo: IAppInfo[]): any {
 
   applicationsInfo.forEach(({ name }: IAppInfo): void => {
     const options = {
-      polyfills: 'src/polyfills.ts',
+      polyfills: shouldNotUsePolyfillsJs ? ['zone.js'] : 'src/polyfills.ts',
       assets: ['src/.htaccess', 'src/default.conf', 'src/favicon.ico', 'src/assets'],
       styles: ['src/styles.scss', 'node_modules/ngx-toastr/toastr.css'],
       scripts: [],
@@ -81,7 +83,7 @@ function getAngularJsonChanges(applicationsInfo: IAppInfo[]): any {
             }
           }
         },
-        test: { options }
+        test: { options, polyfills: shouldNotUsePolyfillsJs ? ['zone.js', 'zone.js/testing'] : options.polyfills }
       }
     };
   });

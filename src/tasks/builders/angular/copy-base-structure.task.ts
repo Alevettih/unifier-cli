@@ -1,4 +1,5 @@
 import { join } from 'path';
+import { major } from 'semver';
 import { copySync } from 'fs-extra';
 import { ListrTaskWrapper } from 'listr2';
 import { pascalCase, sentenceCase } from 'change-case';
@@ -11,13 +12,15 @@ import { removeFilesTask } from '@tasks/builders/remove-files.task';
 import { applyTemplatesTask } from '@tasks/builders/apply-templates.task';
 
 export function copyBaseStructureTask(ctx: IAppContext, task: ListrTaskWrapper<IAppContext, any>): void {
-  const { title, applicationsInfo, directories }: IAppContext = ctx;
+  const { title, applicationsInfo, directories, version }: IAppContext = ctx;
   task.output = OutputFormatter.info('Copy codebase files...');
   copySync(join(directories.base.codebase, 'files'), join(title));
 
   task.output = OutputFormatter.info(`Remove useless files in ${OutputFormatter.accent('./src')} folder...`);
   removeFilesTask(
     [
+      join(title, `/tsconfig.app.json`),
+      join(title, `/tsconfig.spec.json`),
       join(title, `/src/main.ts`),
       join(title, `/src/index.html`),
       join(title, `/src/app/app.module.ts`),
@@ -54,7 +57,8 @@ export function copyBaseStructureTask(ctx: IAppContext, task: ListrTaskWrapper<I
         name: app.name,
         token: app.token,
         moduleName: `${pascalCase(app.name)}Module`,
-        title: `${sentenceCase(title)} ${app.name === 'admin' ? `| ${sentenceCase(app.name)}` : ''}`.trim()
+        title: `${sentenceCase(title)} ${app.name === 'admin' ? `| ${sentenceCase(app.name)}` : ''}`.trim(),
+        shouldNotUsePolyfillsJs: major(version) >= 15
       },
       task
     );
